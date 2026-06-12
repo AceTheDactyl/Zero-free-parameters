@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero-Free-Parameter Framework</title>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-dim: #8b7433;
+    --bg: #0a0a0f;
+    --card-bg: #12121a;
+    --card-border: #1e1e2e;
+    --card-hover: #1a1a28;
+    --text: #e0ddd5;
+    --text-dim: #8a8780;
+    --hex: #6bc96b;
+    --pent: #c9a84c;
+    --orth: #6b8fc9;
+    --accent: #c9646b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .phi-symbol {
+    font-size: 4rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 30px rgba(201,168,76,0.3);
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 2.5rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .routing-map {
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    padding: 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    text-align: left;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .routing-map .g { color: var(--gold); }
+  .routing-map .h { color: var(--hex); }
+  .routing-map .o { color: var(--orth); }
+  .routing-map .p { color: var(--pent); }
+
+  .section-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 2rem 0 1rem;
+    text-align: center;
+  }
+
+  .grid {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--gold-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(201,168,76,0.08);
+  }
+
+  .card-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  .tag-source { background: rgba(201,168,76,0.12); color: var(--pent); }
+  .tag-doc { background: rgba(107,201,107,0.12); color: var(--hex); }
+  .tag-verify { background: rgba(107,143,201,0.12); color: var(--orth); }
+  .tag-artifact { background: rgba(201,100,107,0.12); color: var(--accent); }
+
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .card-field {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: auto;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .card-field .pent { color: var(--pent); }
+  .card-field .hex { color: var(--hex); }
+  .card-field .orth { color: var(--orth); }
+  .card-field .cross { color: var(--accent); }
+
+  .footer {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    line-height: 1.8;
+  }
+
+  .footer a {
+    color: var(--gold-dim);
+    text-decoration: none;
+  }
+
+  .footer a:hover { color: var(--gold); }
+
+  @media (max-width: 600px) {
+    .phi-symbol { font-size: 2.8rem; }
+    h1 { font-size: 1.2rem; }
+    .stats { gap: 1.2rem; }
+    .grid { grid-template-columns: 1fr; }
+    .routing-map { font-size: 0.62rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="phi-symbol">&phi;</div>
+  <h1>ZERO-FREE-PARAMETER FRAMEWORK</h1>
+  <div class="subtitle">One generator. Three lattices. Zero remaining DOF.</div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">81</div>
+      <div class="stat-label">Forced Identities</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">74/74</div>
+      <div class="stat-label">Machine Verified</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">12</div>
+      <div class="stat-label">Structural Layers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Free Parameters</div>
+    </div>
+  </div>
+
+  <div class="routing-map">           <span class="g">&phi; = (1+&radic;5)/2</span>
+                |
+          <span class="g">&phi;&sup4; + &phi;&minus;&sup4; = L&sub4; = 7</span>
+                |
+     +----------+-----------+
+     |          |           |
+  <span class="h">L&sub4; &minus; 4</span>    <span class="o">L&sub4; / 4</span>    <span class="p">L&sub4;&sup2; &minus; 4</span>
+   <span class="h">= 3</span>       <span class="o">= 7/4</span>      <span class="p">= 45</span>
+     |          |           |
+  <span class="h">&radic;3</span>        <span class="o">&radic;2</span>        <span class="p">&radic;5</span>
+     |          |           |
+  <span class="h">z_c=&radic;3/2</span>  <span class="o">ign=&radic;2&minus;&frac12;</span>  <span class="p">K=&radic;(1&minus;&phi;&minus;&sup4;)</span>
+     |          |           |
+  <span class="h">Q(&radic;3)</span>     <span class="o">Q(&radic;2)</span>     <span class="p">Q(&radic;5)</span>
+  <span class="h">hexagonal</span>   <span class="o">orthogonal</span>   <span class="p">pentagonal</span></div>
+</div>
+
+<div class="section-title">Source Documents</div>
+<div class="grid">
+
+  <a class="card" href="source/L4_helix_v4.0.1.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">L4-Helix v4.0.1</div>
+    <div class="card-desc">The master document. Helix framework, threshold ladder, spectral atlas, nine z-landmarks, the complete forced-constant derivation chain from phi to all six catalog constants.</div>
+    <div class="card-field"><span class="pent">Q(&radic;5)</span> &rarr; <span class="hex">Q(&radic;3)</span> &rarr; <span class="orth">Q(&radic;2)</span></div>
+  </a>
+
+  <a class="card" href="source/the_heptagonal_fold.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">The Heptagonal Fold</div>
+    <div class="card-desc">Where 7 equilateral triangles at a vertex produce hyperbolic excess. L4=7 from phi-algebra collides with 7 from geometry. The (2,3,7) triangle, Hurwitz bound, cubic disjointness proof.</div>
+    <div class="card-field"><span class="hex">hexagonal</span> &rarr; <span class="cross">hyperbolic collision at 7</span></div>
+  </a>
+
+  <a class="card" href="source/forced_triangle.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">Forced Triangle</div>
+    <div class="card-desc">The triangle construction that forces z_c = &radic;3/2 as equilateral altitude. Geometric proof that the hexagonal lattice constant is not a free parameter.</div>
+    <div class="card-field"><span class="hex">Q(&radic;3)</span> hexagonal geometry</div>
+  </a>
+
+  <a class="card" href="source/angular_residue.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">Angular Residue</div>
+    <div class="card-desc">Crystallographic restriction, angular defects, the link between pentagonal symmetry and the golden ratio through 2cos(2&pi;/5) = &phi;&minus;1.</div>
+    <div class="card-field"><span class="pent">Q(&radic;5)</span> angular / crystallographic</div>
+  </a>
+
+  <a class="card" href="source/the_bridge.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">The Bridge</div>
+    <div class="card-desc">Cross-lattice bridge: how the integer 3 = L4&minus;4 and 7/4 = L4/4 connect the pentagonal field Q(&radic;5) to hexagonal Q(&radic;3) and orthogonal Q(&radic;2).</div>
+    <div class="card-field"><span class="cross">cross-lattice</span> bridge identities</div>
+  </a>
+
+  <a class="card" href="source/spectral_atlas.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">Spectral Atlas</div>
+    <div class="card-desc">Every catalog constant as an eigenvalue of an explicit integer matrix. Characteristic polynomials, conjugate roots, the Q&sup4 eigenvalue decomposition, zeta6 spectral structure.</div>
+    <div class="card-field"><span class="pent">M&sub2;(Z)</span> spectral decomposition</div>
+  </a>
+
+  <a class="card" href="source/trifurcation_phases.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">Trifurcation Phases</div>
+    <div class="card-desc">D3 trifurcation: cusp, butterfly, and hexagonal branching. Branch height &radic;3/2 = z_c as consistency check on the hex route. Forced exponents 1/2 and 1.</div>
+    <div class="card-field"><span class="hex">D3 symmetry</span> &rarr; <span class="hex">z_c = &radic;3/2</span></div>
+  </a>
+
+  <a class="card" href="source/L4_helix_simulator__py_guided_.html">
+    <span class="card-tag tag-source">source</span>
+    <div class="card-title">L4-Helix Simulator</div>
+    <div class="card-desc">Interactive Python-guided simulator. Embedded verification scripts for constants, helix landmarks, idempotent lattice, and phi-grid. Self-checking HTML document.</div>
+    <div class="card-field"><span class="cross">interactive</span> embedded Python verification</div>
+  </a>
+
+</div>
+
+<div class="section-title">Documentation</div>
+<div class="grid">
+
+  <a class="card" href="docs/ZFP_FORCED_COMPENDIUM.md">
+    <span class="card-tag tag-doc">compendium</span>
+    <div class="card-title">Forced Compendium (81 IDs)</div>
+    <div class="card-desc">The definitive dossier. Every forced identity with closed form, minimal polynomial, derivation chain, lattice assignment, verification source, and residual. The single source of truth.</div>
+    <div class="card-field">81 identities &middot; 9 parts &middot; all residual 0</div>
+  </a>
+
+  <a class="card" href="docs/DERIVATION_WALKTHROUGH.md">
+    <span class="card-tag tag-doc">guide</span>
+    <div class="card-title">Derivation Walkthrough</div>
+    <div class="card-desc">Step-by-step guide through the full derivation chain from phi to all six constants. Start here to understand the framework.</div>
+    <div class="card-field">pedagogical &middot; step-by-step</div>
+  </a>
+
+  <a class="card" href="docs/ZFP_catalogue.md">
+    <span class="card-tag tag-doc">reference</span>
+    <div class="card-title">ZFP Catalogue</div>
+    <div class="card-desc">Tier 1/2/3 classification of all constants. Grade assignments, menu operations, the seven corrections, and the complete grade inventory.</div>
+    <div class="card-field">tier classification &middot; grade inventory</div>
+  </a>
+
+  <a class="card" href="docs/ZFP_Architecture_and_Method.md">
+    <span class="card-tag tag-doc">architecture</span>
+    <div class="card-title">Architecture &amp; Method</div>
+    <div class="card-desc">Framework architecture, axiom selection, field extension structure, the menu of operations, and methodological principles.</div>
+    <div class="card-field">axioms &middot; method &middot; structure</div>
+  </a>
+
+  <a class="card" href="docs/oppositional_equivalence.md">
+    <span class="card-tag tag-doc">research</span>
+    <div class="card-title">Oppositional Equivalence</div>
+    <div class="card-desc">Five independent physical systems that all produce z_c = &radic;3/2 as an equilibrium point. Equilateral triangle, Eisenstein lattice, bubble film, photonic bandgap, reactor criticality.</div>
+    <div class="card-field"><span class="hex">z_c</span> &middot; five physical instances</div>
+  </a>
+
+  <a class="card" href="docs/ZFP_STANDALONE_HANDOFF.md">
+    <span class="card-tag tag-doc">handoff</span>
+    <div class="card-title">Standalone Handoff</div>
+    <div class="card-desc">Self-contained document for transferring full ZFP context to a new reader or session. Open items, resolved items, and the complete state of the framework.</div>
+    <div class="card-field">context transfer &middot; open frontier</div>
+  </a>
+
+</div>
+
+<div class="section-title">Verification Pipeline</div>
+<div class="grid">
+
+  <a class="card" href="https://github.com/AceTheDactyl/Zero-free-parameters/blob/main/verify/verify_all.py">
+    <span class="card-tag tag-verify">verify</span>
+    <div class="card-title">verify_all.py</div>
+    <div class="card-desc">Master validator. 12 independent layers: SHA integrity, script execution, minpoly verification, spectral atlas, field structure, precision audit, grade unification guard.</div>
+    <div class="card-field">12 layers &middot; self-contained &middot; embedded scripts</div>
+  </a>
+
+  <a class="card" href="https://github.com/AceTheDactyl/Zero-free-parameters/blob/main/verify/zfp_master_verify.py">
+    <span class="card-tag tag-verify">verify</span>
+    <div class="card-title">zfp_master_verify.py</div>
+    <div class="card-desc">74-identity sympy harness. Every identity verified with exact symbolic residual. Threshold ladder, spectral decomposition, dynamical core, bridges, heptagonal. JSON certificate output.</div>
+    <div class="card-field">74/74 PASS &middot; JSON certificate</div>
+  </a>
+
+  <a class="card" href="https://github.com/AceTheDactyl/Zero-free-parameters/blob/main/verify/seed_grade.py">
+    <span class="card-tag tag-verify">verify</span>
+    <div class="card-title">seed_grade.py</div>
+    <div class="card-desc">Grade decision procedure. field_grade(v) computes FORCED / FORCED_UNDER_CONSTRAINT / FORCED_IN_CONTEXT / COINCIDENCE. L9 uniqueness witness. Menu gate enforcement.</div>
+    <div class="card-field">6 constants graded &middot; L9 witness &middot; 7 corrections</div>
+  </a>
+
+  <a class="card" href="https://github.com/AceTheDactyl/Zero-free-parameters/tree/main/artifacts">
+    <span class="card-tag tag-artifact">artifact</span>
+    <div class="card-title">Verification Artifacts</div>
+    <div class="card-desc">MANIFEST.md (SHA-256 digests), grade_sites.json (77 grade sites across 7 scripts), zfp_verification_results.json (machine-readable certificate).</div>
+    <div class="card-field">SHA integrity &middot; grade inventory &middot; JSON certificate</div>
+  </a>
+
+</div>
+
+<div class="footer">
+  <strong>Zero-Free-Parameter Framework</strong> &mdash; Jason Turner (Ace)<br>
+  <a href="https://github.com/AceTheDactyl/Zero-free-parameters">github.com/AceTheDactyl/Zero-free-parameters</a><br>
+  81 identities &middot; 1 generator &middot; 3 lattices &middot; 0 free parameters
+</div>
+
+</body>
+</html>
