@@ -50,6 +50,14 @@ class Grade(Enum):
     SELECTED                = "SELECTED"
     STRUCTURAL              = "STRUCTURAL"
     OPEN                    = "OPEN"
+    # NOTE: transcendental functions of algebraic inputs (e.g. log2(phi)) are
+    # OUTSIDE the domain of field_grade. They have no minimal polynomial, no
+    # residual, and cannot be verified by the algebraic pipeline. They are
+    # determined by phi but "determined" != "FORCED" — FORCED requires
+    # polynomial verification with residual 0. Gelfond-Schneider proves
+    # transcendence (the value CANNOT be algebraic), which is a different
+    # proof system from ZFP's algebraic grade hierarchy.
+    # Do not add a transcendental grade to this enum.
 
 
 # --- The MENU: pre-committed, declared, index-independent operation set ------
@@ -83,8 +91,21 @@ def _in_menu_image(v):
 # --- correction 6+7: the decision procedure ---------------------------------
 def field_grade(v):
     """Decide a constant's grade from field relationship to Q(sqrt5) + menu membership.
-    Returns (Grade, deg Q(v), deg Q(v, sqrt5))."""
-    d = int(degree(minimal_polynomial(v, x), x))
+    Returns (Grade, deg Q(v), deg Q(v, sqrt5)).
+
+    Transcendental values (log2(phi), exp(phi), etc.) are OUTSIDE the domain
+    of this function. They have no minimal polynomial and cannot be graded by
+    the algebraic criterion. If passed a transcendental, returns (OPEN, None, None)
+    — meaning "this value is not gradeable by field_grade." It is the caller's
+    responsibility to document why, citing Gelfond-Schneider or Lindemann-Weierstrass
+    as appropriate.
+    """
+    # Catch transcendentals before minimal_polynomial raises
+    try:
+        d = int(degree(minimal_polynomial(v, x), x))
+    except (sp.polys.polyerrors.NotAlgebraic, ValueError, sp.polys.polyerrors.GeneratorsError):
+        return Grade.OPEN, None, None  # outside algebraic scope — not gradeable
+
     if d == 1:
         return Grade.FORCED, d, d                          # rational: base of Q(sqrt5)
     D = None
@@ -101,6 +122,8 @@ def field_grade(v):
             return Grade.FORCED_IN_CONTEXT, d, D
         return Grade.COINCIDENCE, d, D                      # genuine off-axis surd
     return Grade.OPEN, d, D
+
+
 
 
 CATALOG = {
