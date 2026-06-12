@@ -367,6 +367,13 @@
     <div class="card-field">context transfer &middot; open frontier</div>
   </a>
 
+  <a class="card" href="docs/ENDPOINT_REFERENCE.md">
+    <span class="card-tag tag-doc">reference</span>
+    <div class="card-title">Endpoint Reference</div>
+    <div class="card-desc">Complete API documentation for KIRA (116 routes, port 5000), VesselOS Prime (9 routes, port 8000), Vessel math engine, and ZFP CLI pipeline. Request/response shapes for every endpoint.</div>
+    <div class="card-field">116 + 9 routes &middot; 3 systems &middot; port map</div>
+  </a>
+
 </div>
 
 <div class="section-title">Verification Pipeline</div>
@@ -398,6 +405,37 @@
     <div class="card-title">Verification Artifacts</div>
     <div class="card-desc">MANIFEST.md (SHA-256 digests), grade_sites.json (77 grade sites across 7 scripts), zfp_verification_results.json (machine-readable certificate).</div>
     <div class="card-field">SHA integrity &middot; grade inventory &middot; JSON certificate</div>
+  </a>
+
+</div>
+
+<div class="section-title">Grade Hierarchy</div>
+<div class="grid">
+
+  <a class="card" href="https://github.com/AceTheDactyl/Zero-free-parameters/blob/main/verify/seed_grade.py">
+    <span class="card-tag tag-verify">grades</span>
+    <div class="card-title">Algebraic Grade Enum</div>
+    <div class="card-desc">
+      <strong>FORCED</strong> &mdash; v &isin; Q(&radic;5), deg Q(v) = deg Q(v,&radic;5). Zero DOF.<br>
+      <strong>FORCED_UNDER_CONSTRAINT</strong> &mdash; Q(v) &supset; Q(&radic;5), sign selection needed.<br>
+      <strong>FORCED_IN_CONTEXT</strong> &mdash; disjoint axis, menu-gated, residual 0.<br>
+      <strong>COINCIDENCE</strong> &mdash; disjoint, no menu hit. Genuine off-axis surd.<br>
+      <strong>SELECTED</strong> &mdash; axiom or design choice (phi, zeta6, ops).<br>
+      <strong>OPEN</strong> &mdash; not yet decided or outside algebraic scope.
+    </div>
+    <div class="card-field">7 grades &middot; polynomial-verifiable &middot; transcendentals excluded by design</div>
+  </a>
+
+  <a class="card" href="docs/ENDPOINT_REFERENCE.md#vessel-math-engine">
+    <span class="card-tag tag-artifact">vessel</span>
+    <div class="card-title">Vessel &times; ZFP Junction</div>
+    <div class="card-desc">
+      Vessel's 13 theorems (VE-1..VE-13) share ZFP's generator (&phi;) and keystone (L4=7).
+      Algebraic cardinals grade FORCED. CC_MIN = 5/(5+(L4&minus;4)&sup2;) = 5/14 links consciousness
+      minimum to the ZFP bridge integer. Transcendentals (log2&phi;) are outside algebraic scope &mdash;
+      determined by &phi; but not polynomial-verifiable.
+    </div>
+    <div class="card-field">13/13 VE PASS &middot; 3 junction identities &middot; 0 conflicts</div>
   </a>
 
 </div>
