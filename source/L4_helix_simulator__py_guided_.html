@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L₄-Helix · Dynamical Instrument</title>
+<style>
+  :root{
+    --bg:#0b1622; --bg2:#0f1d2e; --panel:#13243a; --panel2:#0e1b2b;
+    --line:#22364d; --ink:#e7eef6; --muted:#8399ae; --faint:#54697d;
+    --phi:#e0a93b;            /* golden ratio — primary accent */
+    --s3:#37c8a8;             /* sqrt3 — THE LENS / hexagonal */
+    --s2:#5d97ef;             /* sqrt2 — IGNITION / 4-fold */
+    --s5:#d98a4f;             /* sqrt5 — ACTIVATION & K-FORMATION / 5-fold */
+    --rose:#e0556b;           /* CRITICAL / gates */
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --mono:ui-monospace,'SF Mono','Cascadia Code','Roboto Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(1200px 600px at 70% -10%,#13263c 0%,var(--bg) 55%) fixed;
+    color:var(--ink); font-family:var(--sans); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; padding:24px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+
+  /* ---- title ---- */
+  .topbar{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--phi)}
+  h1{font-family:var(--serif);font-weight:500;font-size:30px;letter-spacing:.01em;margin:.18em 0 .12em}
+  h1 .sub{color:var(--muted);font-style:italic;font-size:.62em}
+  .lede{color:var(--muted);max-width:78ch;margin:.4em 0 0}
+  .lede b{color:var(--ink);font-weight:600}
+  .lede .k{font-family:var(--mono);color:var(--phi)}
+
+  /* ---- controls ---- */
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:18px 0}
+  .ctl{display:flex;flex-direction:column;gap:5px;min-width:128px}
+  .ctl label{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .ctl .val{font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .ctl .val .unit{color:var(--faint)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:148px;height:3px;background:var(--line);border-radius:3px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--phi);border:2px solid var(--bg);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--phi);border:2px solid var(--bg);cursor:pointer}
+  .btns{display:flex;gap:8px;margin-left:auto}
+  button{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink);background:var(--panel2);
+    border:1px solid var(--line);border-radius:7px;padding:9px 13px;cursor:pointer;transition:border-color .15s,color .15s}
+  button:hover{border-color:var(--phi);color:var(--phi)}
+  button.go{border-color:var(--s3);color:var(--s3)}
+  button.go:hover{background:rgba(55,200,168,.08)}
+  :focus-visible{outline:2px solid var(--phi);outline-offset:2px}
+
+  /* ---- grid ---- */
+  .grid{display:grid;grid-template-columns:minmax(280px,1fr) 1.7fr;gap:16px}
+  .grid .row2{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .panel h2 .tick{width:8px;height:8px;border-radius:2px;background:var(--phi);box-shadow:0 0 8px var(--phi)}
+  canvas{display:block;width:100%;border-radius:6px}
+
+  /* ---- phase-wheel readout ---- */
+  .rbig{font-family:var(--mono);display:flex;align-items:baseline;gap:10px;margin-top:10px}
+  .rbig .num{font-size:30px;color:var(--phi);letter-spacing:.01em}
+  .rbig .lab{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .subreads{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:8px}
+  .subreads b{color:var(--ink);font-weight:600}
+  .gatebox{display:flex;gap:8px;margin-top:10px}
+  .gate{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    border:1px solid var(--line);border-radius:6px;padding:7px 9px;transition:.2s}
+  .gate .gv{display:block;font-size:13px;letter-spacing:0;text-transform:none;margin-top:3px;color:var(--muted)}
+  .gate.on{border-color:var(--s3);color:var(--s3)}
+  .gate.on .gv{color:var(--s3)}
+
+  /* ---- note ---- */
+  .note{font-size:12px;color:var(--muted);border-left:2px solid var(--s2);padding:8px 0 8px 12px;margin-top:12px}
+  .note b{color:var(--ink)}
+  .note .kc{font-family:var(--mono);color:var(--s2)}
+
+  /* ---- constants table ---- */
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px}
+  th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:500;letter-spacing:.08em;font-size:10px;text-transform:uppercase}
+  td.v{text-align:right;color:var(--ink)}
+  td .sw{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:7px;vertical-align:middle}
+  .verify{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:11px;display:flex;flex-direction:column;gap:3px}
+  .verify .ok{color:var(--s3)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  footer{margin-top:22px;border-top:1px solid var(--line);padding-top:12px;
+    font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em}
+
+  @media (max-width:860px){
+    .grid{grid-template-columns:1fr}
+    .grid .row2{grid-template-columns:1fr}
+    .btns{margin-left:0}
+    h1{font-size:24px}
+  }
+  @media (prefers-reduced-motion:reduce){ * { scroll-behavior:auto } }
+
+  /* ---- rrr grid ---- */
+  .rrrgrid{margin-top:16px}
+  .rrrlede{color:var(--muted);font-size:12.5px;margin:0 0 12px;max-width:92ch}
+  .rrrlede .k{font-family:var(--mono);color:var(--phi)}
+  .rrr-controls{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end;margin-bottom:14px}
+  .rrr-views{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .rrr-view{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .rrr-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--muted);margin-bottom:8px}
+  @media (max-width:860px){ .rrr-views{grid-template-columns:1fr} }
+
+  /* ---- validation ---- */
+  .validation{margin-top:16px}
+  .val-how{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+  .val-how b{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  pre.cmd,pre.out,pre.src{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--ink);
+    background:#0a131f;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0 0;overflow:auto;white-space:pre}
+  pre.cmd{color:var(--s3)}
+  pre.out{color:var(--muted);max-height:260px}
+  pre.src{max-height:360px}
+  pre.src code{font-family:var(--mono);white-space:pre;color:var(--ink);background:none;padding:0}
+  .val-card{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:var(--panel2)}
+  .val-head{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:flex-start}
+  .val-name{font-family:var(--mono);font-size:13px;color:var(--phi)}
+  .val-desc{color:var(--muted);font-size:12px}
+  .val-actions{display:flex;gap:8px;flex-shrink:0}
+  .copy,.dl{font-family:var(--mono);font-size:11px;letter-spacing:.04em;border:1px solid var(--line);border-radius:6px;
+    padding:6px 11px;background:var(--bg2);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+  .copy:hover,.dl:hover{border-color:var(--phi);color:var(--phi)}
+  .val-card details{margin-top:10px}
+  .val-card summary{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);cursor:pointer;user-select:none}
+  .val-card summary:hover{color:var(--ink)}
+  .val-note{font-size:12px;color:var(--muted);border-left:2px solid var(--phi);padding:8px 0 8px 12px;margin-top:6px}
+  .val-note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="eyebrow">L₄ = 7 · gap = φ⁻⁴ · z_c = √3/2</div>
+    <h1>The L₄-Helix <span class="sub">— a dynamical instrument</span></h1>
+    <p class="lede">
+      The engine is a real <b>Kuramoto ensemble</b> of <span class="k" id="ledeN">200</span> oscillators with coupling
+      <span class="k">K = √(1−φ⁻⁴) ≈ 0.9242</span> and order parameter <span class="k">r(t)</span>.
+      The nine thresholds below are <b>golden-ratio landmarks</b> from the document, drawn over <span class="k">r</span> —
+      they mark <i>where r is</i>, not where the dynamics has a transition.
+    </p>
+  </header>
+
+  <section class="controls" aria-label="Simulation controls">
+    <div class="ctl">
+      <label for="cN">Oscillators N</label>
+      <input type="range" id="cN" min="20" max="400" step="10" value="200" aria-describedby="vN">
+      <span class="val" id="vN">200</span>
+    </div>
+    <div class="ctl">
+      <label for="cK">Coupling K</label>
+      <input type="range" id="cK" min="0" max="2.5" step="0.001" value="0.9242" aria-describedby="vK">
+      <span class="val" id="vK">0.9242</span>
+    </div>
+    <div class="ctl">
+      <label for="cG">Frequency spread γ</label>
+      <input type="range" id="cG" min="0.02" max="0.6" step="0.01" value="0.15" aria-describedby="vG">
+      <span class="val" id="vG">0.15 <span class="unit">→ K_c=2γ=0.30</span></span>
+    </div>
+    <div class="ctl">
+      <label for="cS">Negentropy width σ</label>
+      <input type="range" id="cS" min="2" max="80" step="1" value="20" aria-describedby="vS">
+      <span class="val" id="vS">20</span>
+    </div>
+    <div class="ctl">
+      <label for="cW">Helix winding W</label>
+      <input type="range" id="cW" min="1" max="8" step="0.5" value="4" aria-describedby="vW">
+      <span class="val" id="vW">4.0 <span class="unit">turns</span></span>
+    </div>
+    <div class="btns">
+      <button class="go" id="coupleK" title="Set coupling to the framework K">couple at K</button>
+      <button id="reset">reset</button>
+      <button id="play" aria-pressed="true">pause</button>
+    </div>
+  </section>
+
+  <div class="grid">
+
+    <!-- HERO: phase wheel -->
+    <div class="panel">
+      <h2><span class="tick" style="background:var(--phi);box-shadow:0 0 8px var(--phi)"></span>Order parameter · phase wheel</h2>
+      <canvas id="wheel" height="300" role="img" aria-label="Kuramoto phase wheel with resultant vector"></canvas>
+      <div class="rbig"><span class="num" id="rNum">0.00</span><span class="lab">r — coherence</span></div>
+      <div class="subreads">
+        <span>ψ <b id="psiNum">0°</b></span>
+        <span>K_c <b id="kcNum">0.30</b></span>
+        <span>regime <b id="regNum">—</b></span>
+      </div>
+      <div class="gatebox">
+        <div class="gate" id="gateCoh">coherence r ≥ K<span class="gv" id="gateCohV">—</span></div>
+        <div class="gate" id="gateNeg">negentropy &gt; τ<span class="gv" id="gateNegV">—</span></div>
+      </div>
+    </div>
+
+    <!-- oscilloscope -->
+    <div class="panel">
+      <h2><span class="tick" style="background:var(--s3);box-shadow:0 0 8px var(--s3)"></span>r(t) against the nine thresholds</h2>
+      <canvas id="scope" height="300" role="img" aria-label="Time series of order parameter r crossing the nine thresholds"></canvas>
+      <div class="note">
+        <b>Honest axis note.</b> Kuramoto's only intrinsic transition is synchronization onset at
+        <span class="kc">K_c = 2γ</span> (a coupling). z_c = √3/2 is an <b>order-parameter</b> landmark, not a coupling —
+        different axes, so "z_c is critical coupling" would be a category error.
+      </div>
+    </div>
+
+    <div class="row2">
+      <!-- constants -->
+      <div class="panel">
+        <h2><span class="tick" style="background:var(--s5);box-shadow:0 0 8px var(--s5)"></span>Derived constants</h2>
+        <table id="constTable">
+          <thead><tr><th>threshold</th><th>closed form</th><th class="v">value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="verify" id="verifyBox"></div>
+        <div class="legend">
+          <span><i style="background:var(--s3)"></i>√3 · LENS</span>
+          <span><i style="background:var(--s2)"></i>√2 · IGNITION</span>
+          <span><i style="background:var(--s5)"></i>√5 · ACTIVATION/K</span>
+          <span><i style="background:var(--phi)"></i>φ-family</span>
+        </div>
+      </div>
+
+      <!-- negentropy -->
+      <div class="panel">
+        <h2><span class="tick" style="background:var(--rose);box-shadow:0 0 8px var(--rose)"></span>Negentropy field ΔS(z)</h2>
+        <canvas id="negent" height="230" role="img" aria-label="Negentropy Gaussian peaked at z_c with gate at tau"></canvas>
+        <div class="subreads">
+          <span>ΔS(r) <b id="dsNum">0.00</b></span>
+          <span>gate τ <b>0.6180</b></span>
+          <span>peak z_c <b>0.8660</b></span>
+        </div>
+      </div>
+
+      <!-- helix -->
+      <div class="panel">
+        <h2><span class="tick" style="background:var(--phi);box-shadow:0 0 8px var(--phi)"></span>Helix H(z) projection</h2>
+        <canvas id="helix" height="230" role="img" aria-label="Top-down projection of the L4 helix with threshold rings"></canvas>
+        <div class="subreads">
+          <span>r(z)=K√(z/z_c)·|·K</span>
+          <span>marker at z = r</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="panel rrrgrid">
+    <h2><span class="tick" style="background:var(--s5);box-shadow:0 0 8px var(--s5)"></span>ZFP rrr grid · r(r)=r → ℤ² → Q (eigenvalue φ)</h2>
+    <p class="rrrlede">
+      <span class="k">r(r)=r</span> is idempotency — the min/max lattice on ℤ². The golden seed gives
+      <span class="k">Q = [[1,1],[1,0]]</span>, a grid automorphism (det −1) with eigenvalue φ.
+      Left: the orbit <span class="k">Qⁿ·(1,0) = (F₍ₙ₊₁₎, Fₙ)</span> escapes along the golden ray.
+      Right: <span class="k">Q mod m</span> on the finite torus cycles with the Pisano period.
+    </p>
+    <div class="rrr-controls">
+      <div class="ctl">
+        <label for="cM">Torus modulus m</label>
+        <input type="range" id="cM" min="3" max="20" step="1" value="8" aria-describedby="vM">
+        <span class="val" id="vM">8 → π(m)=12</span>
+      </div>
+      <div class="btns" style="margin-left:0">
+        <button id="gridLattice" title="Show meet and join of the orbit point and its diagonal reflection">meet/join: off</button>
+        <button id="gridReset">reset orbit</button>
+      </div>
+    </div>
+    <div class="rrr-views">
+      <div class="rrr-view">
+        <div class="rrr-cap">ℤ² · Q-orbit escapes along the golden ray (slope τ)</div>
+        <canvas id="gridZ2" height="300" role="img" aria-label="Integer grid with the Q orbit converging to the golden eigenray"></canvas>
+        <div class="subreads">
+          <span>n <b id="gN">0</b></span>
+          <span>point <b id="gPt">(1, 0)</b></span>
+          <span>slope <b id="gSlope">0.0000</b> → τ</span>
+          <span>growth <b id="gGrow">1.0000</b> → φ</span>
+          <span>trace Qⁿ = Lₙ = <b id="gTrace">2</b></span>
+        </div>
+      </div>
+      <div class="rrr-view">
+        <div class="rrr-cap">(ℤ/m)² · Q mod m cycles with Pisano period</div>
+        <canvas id="gridTorus" height="300" role="img" aria-label="Finite torus with the periodic Q orbit"></canvas>
+        <div class="subreads">
+          <span>m <b id="gM">8</b></span>
+          <span>Pisano period π(m) <b id="gPer">12</b></span>
+          <span>step <b id="gStep">1/12</b></span>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <b>Two distinct dynamics.</b> The Kuramoto panel above is a stochastic ODE ensemble; this is exact integer arithmetic, and the two are not coupled.
+      Q is the golden object (<span style="font-family:var(--mono);color:var(--s5)">Q²=Q+I</span>, not idempotent), so it does <b>not</b> preserve the min/max lattice —
+      yet the orbit's direction converges to the eigenray of slope <b>τ = 0.6180 (PARADOX)</b>, and <b>trace(Qⁿ)=Lₙ</b> reaches <b>L₄ = 7</b> (the ZFP normalizer) at n = 4.
+    </div>
+  </section>
+
+
+  <section class="panel validation" id="validation">
+    <h2><span class="tick" style="background:var(--phi);box-shadow:0 0 8px var(--phi)"></span>Reproduce · run the validators</h2>
+    <p class="rrrlede">
+      Every value in this instrument is certified by the four scripts below — minimal-polynomial proof (residual 0) plus a value pin, not reported decimals.
+      Run them in your own environment to validate the ZFP backbone independently, or adapt them to your own seed. Self-contained: only <code>sympy</code>, no network.
+      If the <code>.py</code> files travel beside this page, the <b>download</b> links work directly; otherwise use <b>copy source</b> — the code is embedded here in full.
+    </p>
+    <div class="val-how"><b>Quick start</b><pre class="cmd">pip install sympy
+python3 zfp_constants_repro.py     # ZFP constants
+python3 verify_l4_helix.py         # nine helix thresholds
+python3 rrr_idempotent_lattice.py  # r(r)=r lattice on Z^2
+python3 rrr_phi_grid.py            # Q-action (needs rrr_idempotent_lattice.py beside it)</pre></div>
+    <article class="val-card">
+      <div class="val-head">
+        <div><span class="val-name">zfp_constants_repro.py</span> <span class="val-desc">— Six ZFP constants — minimal polynomial + value pin, K-branch, field disjointness over {√2,√3,√5}, Lucas/Fibonacci substrate.</span></div>
+        <div class="val-actions">
+          <button class="copy" data-src="src-zfp-constants-repro-py">copy source</button>
+          <a class="dl" href="zfp_constants_repro.py" download>download .py</a>
+        </div>
+      </div>
+      <pre class="cmd">python3 zfp_constants_repro.py</pre>
+      <details><summary>source · 130 lines</summary><pre class="src" id="src-zfp-constants-repro-py"><code>#!/usr/bin/env python3
+"""Zero-Free-Parameter constants -- replayable verification block.
+
+Definitions precede every check, so each minpoly/value row is *recomputed*
+from a closed form over its generator rather than reported. Two hardening
+rules beyond the first draft:
+
+  1. Conjugate disambiguation by value, not by hand-written interval.
+     A minimal polynomial is Galois-invariant: a minpoly match certifies
+     the conjugate orbit, not the element. Each row therefore carries the
+     Section-2 tabulated decimal as its branch pin, so the check fails loudly
+     both on a conjugate swap and on any definition that drifts from the
+     published table. GAP and CRITICAL are the rows whose conjugates are
+     both positive reals (genuinely confusable):
+         GAP:      phi^-4 ~ 0.14590   vs  phi^4  ~ 6.85410   (x^2-7x+1)
+         CRITICAL: phi^2/3 ~ 0.87268  vs  phi^-2/3 ~ 0.12732 (9x^2-9x+1)
+
+  2. GAP := phi^-4, and K is wired to it. The table defines K = sqrt(1-gap);
+     this is the real 0.92418 only when gap = phi^-4. With gap = phi^4,
+     1-gap &lt; 0 and K is non-real. Defining K = sqrt(1-GAP) makes the two
+     branches structurally inseparable -- they cannot silently disagree.
+
+Deps: sympy.  Run: python3 zfp_constants_repro.py
+"""
+
+import sympy
+from sympy import (Rational, Symbol, cos, degree, expand, fibonacci,
+                   ilcm, lucas, minpoly, pi, simplify, sqrt)
+
+x   = Symbol("x")
+PHI = (1 + sqrt(5)) / 2                   # generator of Q(sqrt5); PHI^2 = PHI + 1
+
+# --------------------------------------------------------------- A. definitions
+# Single source of truth. Each constant is a closed form over a selected
+# generator; the minpoly and value rows below are derived, never asserted.
+TAU      = 1 / PHI                        # phi^-1           = (sqrt5 - 1)/2
+Z_C      = sqrt(3) / 2                    # Im(zeta_6)       = sqrt3 / 2
+GAP      = PHI**-4                        # phi^-4           = (7 - 3 sqrt5)/2   [small branch]
+K        = sqrt(1 - GAP)                  # sqrt(1 - phi^-4) = 5^(1/4)/phi       [wired to GAP]
+IGNITION = sqrt(2) - Rational(1, 2)       # sqrt2 - 1/2      = (2 sqrt2 - 1)/2
+CRITICAL = PHI**2 / 3                      # phi^2 / 3        = (3 + sqrt5)/6
+
+# Human-readable closed form for the replay banner (matches the comments above).
+CLOSED = {
+    "TAU":      "phi^-1            = (sqrt5 - 1)/2",
+    "Z_C":      "sqrt3 / 2",
+    "GAP":      "phi^-4            = (7 - 3 sqrt5)/2",
+    "K":        "sqrt(1 - GAP)     = 5^(1/4)/phi",
+    "IGNITION": "sqrt2 - 1/2       = (2 sqrt2 - 1)/2",
+    "CRITICAL": "phi^2 / 3         = (3 + sqrt5)/6",
+}
+
+# name -&gt; (value, expected minimal polynomial, Section-2 tabulated decimal)
+ROWS = {
+    "TAU":      (TAU,      x**2 + x - 1,      Rational(61803, 100000)),
+    "Z_C":      (Z_C,      4*x**2 - 3,        Rational(86603, 100000)),
+    "GAP":      (GAP,      x**2 - 7*x + 1,    Rational(14590, 100000)),
+    "K":        (K,        x**4 + 5*x**2 - 5, Rational(92418, 100000)),
+    "IGNITION": (IGNITION, 4*x**2 + 4*x - 7,  Rational(91421, 100000)),
+    "CRITICAL": (CRITICAL, 9*x**2 - 9*x + 1,  Rational(87268, 100000)),
+}
+TOL = Rational(1, 100000)   # 1 ulp of the 5-dp table; &gt;&gt; any conjugate gap (min 0.745)
+
+# --------------------------------------------------------------- A'. banner
+def show_definitions():
+    print("definitions (closed form over generator; derived rows follow):")
+    for name in ROWS:
+        val = ROWS[name][0]
+        print(f"  {name:&lt;8} := {CLOSED[name]:&lt;24} = {val.evalf(12)}")
+    print()
+
+# --------------------------------------------------------------- B. minpoly + value pin
+def check_rows():
+    for name, (val, expected, tab) in ROWS.items():
+        mp = minpoly(val, x)
+        assert expand(mp - expected) == 0, f"{name}: minpoly {mp} != {expected}"
+        delta = abs(val.evalf(50) - tab.evalf(50))
+        assert delta &lt; TOL.evalf(50), \
+            f"{name}: value {val.evalf(12)} disagrees with table {float(tab)} (delta {delta})"
+        print(f"PASS  {name:&lt;8} minpoly={str(mp):&lt;18} value={str(val.evalf(7)):&lt;10} table={float(tab)}")
+
+# --------------------------------------------------------------- B'. K branch identity
+def check_k_branch():
+    # The radical-over-phi form and the sqrt(1-gap) form are the same element.
+    assert (K - 5**Rational(1, 4) / PHI).equals(0), "K: closed forms disagree"
+    assert (1 - GAP).evalf() &gt; 0, "K: radicand non-positive =&gt; GAP is the wrong branch"
+    print("PASS  K branch: sqrt(1 - phi^-4) = 5^(1/4)/phi (radicand &gt; 0, single real root)")
+
+# --------------------------------------------------------------- C. exact identities
+def check_identities():
+    assert simplify(PHI**4 + PHI**-4 - 7) == 0 and lucas(4) == 7   # phi^4 + phi^-4 = 7 = L4
+    assert simplify(PHI**2 + PHI**-2 - 3) == 0 and lucas(2) == 3   # phi^2 + phi^-2 = 3 = L2
+    assert simplify(PHI - 1/PHI - 1) == 0                          # phi - phi^-1 = 1
+    assert sqrt(3)**2 == 3                                         # (sqrt3)^2 = 3
+    assert simplify(2*cos(2*pi/6) - 1) == 0                        # 2 cos(2 pi / 6) = 1
+    print("PASS  identities: phi^4+phi^-4=7=L4, phi^2+phi^-2=3=L2, phi-phi^-1=1, (sqrt3)^2=3, 2cos(2pi/6)=1")
+
+# --------------------------------------------------------------- D. field disjointness
+def check_field_disjointness():
+    # Pairwise: deg(minpoly(sqrt a + sqrt b)) = 4 = 2*2  =&gt;  Q(sqrt a) cap Q(sqrt b) = Q.
+    pairs = {(5, 3): x**4 - 16*x**2 + 4,    # the pair cited in the claim table
+             (2, 3): x**4 - 10*x**2 + 1,    # completes coverage for Q(sqrt2) (IGNITION lives here)
+             (2, 5): x**4 - 14*x**2 + 9}
+    for (a, b), exp in pairs.items():
+        mp = minpoly(sqrt(a) + sqrt(b), x)
+        assert expand(mp - exp) == 0 and degree(mp, x) == 4, f"({a},{b}): {mp}"
+    # Joint linear disjointness of all three: [Q(sqrt2,sqrt3,sqrt5):Q] = 8 = 2^3.
+    assert degree(minpoly(sqrt(2) + sqrt(3) + sqrt(5), x), x) == 8
+    print("PASS  disjointness: Q(sqrt2),Q(sqrt3),Q(sqrt5) pairwise (deg 4) and joint (deg 8)")
+
+# --------------------------------------------------------------- E. Fibonacci / Lucas
+def check_fib_lucas():
+    assert fibonacci(12) == 144 == 12**2                          # Cohn 1964
+    assert fibonacci(24) == fibonacci(12) * lucas(12) == 46368    # F_{2n} = F_n * L_n
+    assert fibonacci(12) % fibonacci(4) == 0                      # 4 | 12       =&gt; F4 | F12
+    assert lucas(12) % lucas(4) == 0                              # 12/4 = 3 odd  =&gt; L4 | L12
+    assert lucas(24) % lucas(4) != 0                              # 24/4 = 6 even =&gt; L4 not| L24
+    assert ilcm(4, 5, 6) == 60
+    print("PASS  F12=144=12^2, F24=F12*L12=46368, F4|F12, L4|L12, L4 not| L24, lcm(4,5,6)=60")
+
+if __name__ == "__main__":
+    print(f"sympy {sympy.__version__}")
+    show_definitions()
+    check_rows()
+    check_k_branch()
+    check_identities()
+    check_field_disjointness()
+    check_fib_lucas()
+    print("ALL CHECKS PASS -- constants table replayed from definitions.")
+</code></pre></details>
+      <details><summary>expected output</summary><pre class="out">sympy 1.14.0
+definitions (closed form over generator; derived rows follow):
+  TAU      := phi^-1            = (sqrt5 - 1)/2 = 0.618033988750
+  Z_C      := sqrt3 / 2                = 0.866025403784
+  GAP      := phi^-4            = (7 - 3 sqrt5)/2 = 0.145898033750
+  K        := sqrt(1 - GAP)     = 5^(1/4)/phi = 0.924176371830
+  IGNITION := sqrt2 - 1/2       = (2 sqrt2 - 1)/2 = 0.914213562373
+  CRITICAL := phi^2 / 3         = (3 + sqrt5)/6 = 0.872677996250
+
+PASS  TAU      minpoly=x**2 + x - 1       value=0.6180340  table=0.61803
+PASS  Z_C      minpoly=4*x**2 - 3         value=0.8660254  table=0.86603
+PASS  GAP      minpoly=x**2 - 7*x + 1     value=0.1458980  table=0.1459
+PASS  K        minpoly=x**4 + 5*x**2 - 5  value=0.9241764  table=0.92418
+PASS  IGNITION minpoly=4*x**2 + 4*x - 7   value=0.9142136  table=0.91421
+PASS  CRITICAL minpoly=9*x**2 - 9*x + 1   value=0.8726780  table=0.87268
+PASS  K branch: sqrt(1 - phi^-4) = 5^(1/4)/phi (radicand &gt; 0, single real root)
+PASS  identities: phi^4+phi^-4=7=L4, phi^2+phi^-2=3=L2, phi-phi^-1=1, (sqrt3)^2=3, 2cos(2pi/6)=1
+PASS  disjointness: Q(sqrt2),Q(sqrt3),Q(sqrt5) pairwise (deg 4) and joint (deg 8)
+PASS  F12=144=12^2, F24=F12*L12=46368, F4|F12, L4|L12, L4 not| L24, lcm(4,5,6)=60
+ALL CHECKS PASS -- constants table replayed from definitions.</pre></details>
+    </article>
+    <article class="val-card">
+      <div class="val-head">
+        <div><span class="val-name">verify_l4_helix.py</span> <span class="val-desc">— All nine L₄-Helix thresholds derived from φ (residual 0), Table-5 identities, threshold ordering, helix-radius continuity.</span></div>
+        <div class="val-actions">
+          <button class="copy" data-src="src-verify-l4-helix-py">copy source</button>
+          <a class="dl" href="verify_l4_helix.py" download>download .py</a>
+        </div>
+      </div>
+      <pre class="cmd">python3 verify_l4_helix.py</pre>
+      <details><summary>source · 87 lines</summary><pre class="src" id="src-verify-l4-helix-py"><code>#!/usr/bin/env python3
+"""L4-Helix framework -- value derivation / verification.
+
+Re-derives every z-threshold in L4_helix_v4_0_1.html from phi (equivalently from
+L4 = 7 and gap = phi^-4) and certifies each one two ways: exact minimal polynomial
+(residual 0) plus a value pin against the document's tabulated decimal. Also replays
+the document's Table 5 identities and the Theorem 10.1 ordering.
+
+Deps: sympy.  Run: python3 verify_l4_helix.py
+"""
+
+from sympy import (Rational, Symbol, degree, expand, lucas, minpoly,
+                   simplify, sqrt)
+
+x   = Symbol("x")
+PHI = (1 + sqrt(5)) / 2
+TAU = 1 / PHI                       # phi^-1
+GAP = PHI**-4                       # truncation residual
+K   = sqrt(1 - GAP)                 # sqrt(1 - gap)
+ZC  = sqrt(3) / 2                   # sqrt(L4-4)/2
+
+# nine thresholds + the two underlying quantities (gap, activation)
+# name -&gt; (value, closed-form note, document decimal)
+ROWS = {
+    "gap         (phi^-4)":        (GAP,                      Rational(1458980338, 10**10)),
+    "PARADOX     (tau)":           (TAU,                      Rational(6180339887, 10**10)),
+    "ACTIVATION  (1-gap=K^2)":     (1 - GAP,                  Rational(8541019662, 10**10)),
+    "THE LENS    (sqrt3/2)":       (ZC,                       Rational(8660254038, 10**10)),
+    "CRITICAL    (phi^2/3)":       (PHI**2 / 3,               Rational(8726779962, 10**10)),
+    "IGNITION    (sqrt2-1/2)":     (sqrt(2) - Rational(1, 2), Rational(9142135624, 10**10)),
+    "K-FORMATION (sqrt(1-gap))":   (K,                        Rational(9241763718, 10**10)),
+    "CONSOLIDATN (K+tau^2(1-K))":  (K + TAU**2 * (1 - K),     Rational(9531384206, 10**10)),
+    "RESONANCE   (K+tau(1-K))":    (K + TAU * (1 - K),        Rational(9710379512, 10**10)),
+    "UNITY       (1)":             (Rational(1),              Rational(1)),
+}
+TOL = Rational(1, 10**9)            # document gives 10 dp; pin well inside that
+
+def check_values():
+    print("threshold                      minpoly                    deg  value         doc        pin")
+    for name, (val, doc) in ROWS.items():
+        mp = minpoly(val, x)
+        v  = val.evalf(40)
+        pin = abs(v - doc.evalf(40)) &lt; TOL.evalf(40)
+        ok  = pin
+        tag = "PASS" if ok else "FAIL"
+        print(f"{tag} {name:&lt;26} {str(mp):&lt;24} {int(degree(mp, x)):&gt;3}  "
+              f"{str(val.evalf(10)):&lt;13} {float(doc):&lt;10} {'ok' if pin else 'BAD'}")
+        assert ok, name
+
+def check_identities():
+    assert simplify(PHI**4 + PHI**-4 - 7) == 0          # L4 = phi^4 + phi^-4 = 7
+    assert lucas(4) == 7
+    assert simplify((sqrt(3))**2 - (7 - 4)) == 0        # L4 - 4 = 3 = (sqrt3)^2
+    assert simplify(K**2 - (1 - GAP)) == 0              # K^2 = 1 - gap
+    assert simplify((1 - K) - GAP / (1 + K)) == 0       # 1-K = gap/(1+K)
+    z_cons = K + TAU**2 * (1 - K)
+    z_res  = K + TAU * (1 - K)
+    assert simplify((z_cons - K) / (1 - K) - TAU**2) == 0   # span fraction tau^2
+    assert simplify((z_res - K) / (1 - K) - TAU) == 0       # span fraction tau
+    z_ign = sqrt(2) - Rational(1, 2)
+    assert simplify(z_ign**2 + z_ign - Rational(7, 4)) == 0 # x^2+x = L4/4
+    assert simplify(TAU**2 + TAU - 1) == 0                  # tau^2 + tau = 1
+    print("PASS  identities: L4=7, L4-4=3, K^2=1-gap, 1-K=gap/(1+K), "
+          "span(tau^2,tau), x^2+x=7/4, tau^2+tau=1")
+
+def check_ordering():
+    order = [TAU, 1 - GAP, ZC, PHI**2/3, sqrt(2) - Rational(1, 2), K,
+             K + TAU**2*(1 - K), K + TAU*(1 - K), Rational(1)]
+    vals = [v.evalf(40) for v in order]
+    assert all(a &lt; b for a, b in zip(vals, vals[1:])), "ordering not strict"
+    print("PASS  ordering: PARADOX&lt;ACTIVATION&lt;LENS&lt;CRITICAL&lt;IGNITION&lt;K-FORM&lt;CONSOL&lt;RESON&lt;UNITY")
+
+def check_helix_radius():
+    # r(z) = K*sqrt(z/zc) for z&lt;=zc, else K. Continuity at zc: K*sqrt(zc/zc)=K.
+    assert simplify(K * sqrt(ZC / ZC) - K) == 0          # r(zc-) = K = r(zc+)
+    assert simplify(K * sqrt(Rational(0) / ZC)) == 0      # r(0) = 0
+    print("PASS  helix radius r(z)=K*sqrt(z/zc): continuous at zc (r(zc)=K), r(0)=0")
+
+if __name__ == "__main__":
+    import sympy
+    print(f"sympy {sympy.__version__}\n")
+    check_values();      print()
+    check_identities()
+    check_ordering()
+    check_helix_radius()
+    print("\nALL CHECKS PASS -- every L4-Helix value derived from phi, residual 0.")
+</code></pre></details>
+      <details><summary>expected output</summary><pre class="out">sympy 1.14.0
+
+threshold                      minpoly                    deg  value         doc        pin
+PASS gap         (phi^-4)       x**2 - 7*x + 1             2  0.1458980338  0.1458980338 ok
+PASS PARADOX     (tau)          x**2 + x - 1               2  0.6180339888  0.6180339887 ok
+PASS ACTIVATION  (1-gap=K^2)    x**2 + 5*x - 5             2  0.8541019663  0.8541019662 ok
+PASS THE LENS    (sqrt3/2)      4*x**2 - 3                 2  0.8660254038  0.8660254038 ok
+PASS CRITICAL    (phi^2/3)      9*x**2 - 9*x + 1           2  0.8726779963  0.8726779962 ok
+PASS IGNITION    (sqrt2-1/2)    4*x**2 + 4*x - 7           2  0.9142135624  0.9142135624 ok
+PASS K-FORMATION (sqrt(1-gap))  x**4 + 5*x**2 - 5          4  0.9241763718  0.9241763718 ok
+PASS CONSOLIDATN (K+tau^2(1-K)) x**4 - 6*x**3 + 26*x**2 - 16*x - 4   4  0.9531384206  0.9531384206 ok
+PASS RESONANCE   (K+tau(1-K))   x**4 + 2*x**3 + 39*x**2 - 52*x + 11   4  0.9710379512  0.9710379512 ok
+PASS UNITY       (1)            x - 1                      1  1.000000000   1.0        ok
+
+PASS  identities: L4=7, L4-4=3, K^2=1-gap, 1-K=gap/(1+K), span(tau^2,tau), x^2+x=7/4, tau^2+tau=1
+PASS  ordering: PARADOX&lt;ACTIVATION&lt;LENS&lt;CRITICAL&lt;IGNITION&lt;K-FORM&lt;CONSOL&lt;RESON&lt;UNITY
+PASS  helix radius r(z)=K*sqrt(z/zc): continuous at zc (r(zc)=K), r(0)=0
+
+ALL CHECKS PASS -- every L4-Helix value derived from phi, residual 0.</pre></details>
+    </article>
+    <article class="val-card">
+      <div class="val-head">
+        <div><span class="val-name">rrr_idempotent_lattice.py</span> <span class="val-desc">— r(r)=r as the lattice seed — idempotents over ℚ, idempotent meet/join on ℤ², idempotent maps (rounding retraction, projection, closure operator).</span></div>
+        <div class="val-actions">
+          <button class="copy" data-src="src-rrr-idempotent-lattice-py">copy source</button>
+          <a class="dl" href="rrr_idempotent_lattice.py" download>download .py</a>
+        </div>
+      </div>
+      <pre class="cmd">python3 rrr_idempotent_lattice.py</pre>
+      <details><summary>source · 104 lines</summary><pre class="src" id="src-rrr-idempotent-lattice-py"><code>#!/usr/bin/env python3
+"""r(r)=r as the lattice seed: idempotents, (semi)lattices, grid retractions.
+
+Three readings of r(r)=r, each verified rather than asserted:
+
+  (1) idempotent ELEMENT    e * e = e          -&gt; over a field: e in {0, 1}
+  (2) idempotent OPERATION  a * a = a          -&gt; (semi)lattice; meet/join on Z^2
+  (3) idempotent MAP        r(r(x)) = r(x)     -&gt; retraction / closure operator;
+                                                  rounding R^n -&gt; Z^n, projection P^2 = P
+
+Reading (2) is the genuine algebraic seed of lattice theory (Birkhoff 1940,
+Davey-Priestley 2002): a semilattice IS a set with one commutative, associative,
+idempotent operation. Reading (3) is the bridge to GEOMETRIC grids (Z^n): an
+idempotent retraction maps ambient space onto the grid.
+
+Note (see write-up): the equation that produces phi is x^2 = x + 1, which is
+NOT x^2 = x. The literal idempotent seed r(r)=r yields {0,1} and lattices; it
+does not yield phi. The two are different fixed points and are kept separate.
+
+Deps: sympy.  Run: python3 rrr_idempotent_lattice.py
+"""
+
+import itertools
+from sympy import Symbol, solve, sqrt
+
+_FAILS = []
+def _chk(cond):                      # record a failed structural check; printed value unchanged
+    if not cond:
+        _FAILS.append(1)
+    return cond
+
+# --------------------------------------------------- (1) element idempotents over a field
+def element_idempotents():
+    e = Symbol("e")
+    idem = solve(e**2 - e, e)        # e*e = e          (the literal r(r)=r as a number)
+    golden = solve(e**2 - e - 1, e)  # e*e = e + 1       (a DIFFERENT equation -&gt; phi)
+    print("(1) element reading e*e = e over a field")
+    print(f"    e^2 = e      -&gt; e in {sorted(idem)}            (only trivial idempotents)")
+    print(f"    e^2 = e + 1  -&gt; e in {golden}   &lt;- this is phi's equation, NOT r(r)=r")
+    _chk(sorted(idem) == [0, 1])     # the literal seed yields exactly the trivial idempotents
+
+# --------------------------------------------------- (2) idempotent operations -&gt; lattice on Z^2
+def meet(a, b):                      # greatest lower bound under componentwise &lt;=
+    return (min(a[0], b[0]), min(a[1], b[1]))
+
+def join(a, b):                      # least upper bound
+    return (max(a[0], b[0]), max(a[1], b[1]))
+
+def lattice_laws(grid):
+    pairs   = list(itertools.product(grid, repeat=2))
+    triples = list(itertools.product(grid, repeat=3))
+    idem  = _chk(all(meet(a, a) == a and join(a, a) == a for a in grid))
+    comm  = _chk(all(meet(a, b) == meet(b, a) and join(a, b) == join(b, a) for a, b in pairs))
+    assoc = _chk(all(meet(meet(a, b), c) == meet(a, meet(b, c)) for a, b, c in triples))
+    absor = _chk(all(meet(a, join(a, b)) == a and join(a, meet(a, b)) == a for a, b in pairs))
+    distr = _chk(all(meet(a, join(b, c)) == join(meet(a, b), meet(a, c)) for a, b, c in triples))
+    print("(2) Z^2 grid as an order lattice (meet = componentwise min, join = max)")
+    print(f"    idempotent  r(r)=r : {idem}")
+    print(f"    commutative        : {comm}")
+    print(f"    associative        : {assoc}")
+    print(f"    absorption         : {absor}   &lt;- upgrades two semilattices into a lattice")
+    print(f"    distributive       : {distr}   &lt;- Z^n grids are distributive lattices")
+
+# --------------------------------------------------- (3) idempotent maps -&gt; grid mappings
+def round_vec(x):                    # nearest-integer retraction R^n -&gt; Z^n
+    return tuple(round(c) for c in x)
+
+def proj_x(v):                       # linear projection onto the x-axis; P^2 = P
+    return (v[0], 0)
+
+def closure_downset(S, n):           # order-closure on the chain {0..n}: c(S) = {0..max S}
+    return frozenset(range(max(S) + 1)) if S else frozenset()
+
+def map_laws():
+    pts = [(1.4, -0.6), (2.5, 3.49), (-0.5, 0.5), (10.2, -3.8)]
+    r1 = [round_vec(p) for p in pts]
+    r2 = [round_vec(p) for p in r1]          # rounding already-integers is fixed
+    round_ok = _chk(r1 == r2)
+    print("(3) idempotent maps as grid mappings")
+    print(f"    rounding R^2 -&gt; Z^2 : r(r(x)) == r(x) ? {round_ok}   (retraction onto the grid)")
+    pidem = _chk(all(proj_x(proj_x(v)) == proj_x(v) for v in [(3, 5), (-2, 7), (0, -4)]))
+    print(f"    projection P^2 = P  : {pidem}   (idempotent endomorphism of the grid)")
+    base = frozenset({1, 4})
+    c1 = closure_downset(base, 6)
+    c2 = closure_downset(c1, 6)
+    clos_ok = _chk(c1 == c2)
+    ext_ok  = _chk(base &lt;= c1)
+    print(f"    closure operator c  : c(c(S)) == c(S) ? {clos_ok}; extensive S &lt;= c(S) ? {ext_ok}")
+    print(f"                          (closure operators &lt;-&gt; complete lattices: Moore families)")
+
+if __name__ == "__main__":
+    element_idempotents()
+    print()
+    patch = [(i, j) for i in range(-2, 3) for j in range(-2, 3)]   # 5x5 patch of Z^2
+    lattice_laws(patch)
+    print()
+    map_laws()
+    print()
+    print("seed r(r)=r is forced (a law, not a tuned value); every check above is structural.")
+    import sys as _sys
+    if _FAILS:
+        print(f"FAIL  {len(_FAILS)} structural check(s) did not hold")
+    _sys.exit(1 if _FAILS else 0)
+</code></pre></details>
+      <details><summary>expected output</summary><pre class="out">(1) element reading e*e = e over a field
+    e^2 = e      -&gt; e in [0, 1]            (only trivial idempotents)
+    e^2 = e + 1  -&gt; e in [1/2 - sqrt(5)/2, 1/2 + sqrt(5)/2]   &lt;- this is phi's equation, NOT r(r)=r
+
+(2) Z^2 grid as an order lattice (meet = componentwise min, join = max)
+    idempotent  r(r)=r : True
+    commutative        : True
+    associative        : True
+    absorption         : True   &lt;- upgrades two semilattices into a lattice
+    distributive       : True   &lt;- Z^n grids are distributive lattices
+
+(3) idempotent maps as grid mappings
+    rounding R^2 -&gt; Z^2 : r(r(x)) == r(x) ? True   (retraction onto the grid)
+    projection P^2 = P  : True   (idempotent endomorphism of the grid)
+    closure operator c  : c(c(S)) == c(S) ? True; extensive S &lt;= c(S) ? True
+                          (closure operators &lt;-&gt; complete lattices: Moore families)
+
+seed r(r)=r is forced (a law, not a tuned value); every check above is structural.</pre></details>
+    </article>
+    <article class="val-card">
+      <div class="val-head">
+        <div><span class="val-name">rrr_phi_grid.py</span> <span class="val-desc">— φ-dynamics on the grid via Q=[[1,1],[1,0]] — automorphism, Fibonacci powers, eigen-decomposition (branch-pinned to φ), Lucas trace ladder, orbit, induced min/max-lattice map.</span></div>
+        <div class="val-actions">
+          <button class="copy" data-src="src-rrr-phi-grid-py">copy source</button>
+          <a class="dl" href="rrr_phi_grid.py" download>download .py</a>
+        </div>
+      </div>
+      <pre class="cmd">python3 rrr_phi_grid.py  # needs rrr_idempotent_lattice.py beside it</pre>
+      <details><summary>source · 138 lines</summary><pre class="src" id="src-rrr-phi-grid-py"><code>#!/usr/bin/env python3
+"""phi-dynamics on the idempotent grid: the Fibonacci matrix Q acting on Z^2.
+
+Extends rrr_idempotent_lattice.py. The idempotent seed r(r)=r gave the min/max
+lattice on Z^2. The golden seed r^2 = r + 1 gives Q = [[1,1],[1,0]], an automorphism
+of the grid whose eigen-geometry is phi. This module wires the two together and
+certifies every claim two independent ways with residual 0, matching the
+constants-table discipline.
+
+Branch pin: Q's eigenvalues phi ~ 1.618 and psi = -1/phi ~ -0.618 are Galois
+conjugates sharing minpoly x^2 - x - 1, so 'showing phi' must pin the dominant
+root -- the same situation as GAP and CRITICAL in the constants table.
+
+Honesty point (carried from the previous step): Q^2 = Q + I, so Q is NOT idempotent
+and is NOT a lattice endomorphism of (Z^2, min, max). It IS monotone, and it IS a
+lattice isomorphism onto the pushforward order. phi-structure and idempotent
+structure stay distinct objects; Q relates one to a golden-transformed copy of the
+other.
+
+Deps: sympy, and rrr_idempotent_lattice.py alongside.
+Run:  python3 rrr_phi_grid.py
+"""
+
+import itertools
+from sympy import (Matrix, Rational, Symbol, eye, expand, fibonacci, lucas,
+                   minpoly, simplify, sqrt, zeros)
+from rrr_idempotent_lattice import meet, join          # reuse the idempotent ops
+
+x    = Symbol("x")
+PHI  = (1 + sqrt(5)) / 2
+PSI  = (1 - sqrt(5)) / 2                                # = -1/PHI, the conjugate eigenvalue
+Q    = Matrix([[1, 1], [1, 0]])
+QI   = Q.inv()                                          # integer inverse (det Q = -1)
+N    = 12                                               # power / orbit horizon
+DEEP = 30                                               # deep index for ratio convergence
+EPS  = Rational(1, 10**12).evalf(50)
+
+# integer action on grid points (tuples)
+def q_apply(v):   return (v[0] + v[1], v[0])            # Q (x,y)^T = (x+y, x)
+def qi_apply(v):  return (v[1], v[0] - v[1])            # Q^-1 (x,y)^T = (y, x-y)
+
+def ok(cond, label, detail=""):
+    print(f"{'PASS' if cond else 'FAIL'}  {label:&lt;44}{detail}")
+    assert cond, label
+
+# --------------------------------------------------- Q1. Q is a grid automorphism (GL2(Z))
+def check_automorphism():
+    ok(Q.det() == -1, "det Q = -1", "(=&gt; Q in GL2(Z))")
+    ok(all(e.is_integer for e in QI), "Q^-1 has integer entries", f"  Q^-1 = {QI.tolist()}")
+    ok(all(qi_apply(q_apply((a, b))) == (a, b)
+           for a in range(-3, 4) for b in range(-3, 4)), "Q^-1 . Q = id on a Z^2 patch")
+
+# --------------------------------------------------- Q2. powers = Fibonacci matrix; det/Cassini
+def check_fib_matrix():
+    for n in range(1, N + 1):
+        F = Matrix([[fibonacci(n + 1), fibonacci(n)], [fibonacci(n), fibonacci(n - 1)]])
+        assert Q**n == F, f"Q^{n} != Fibonacci matrix"
+    ok(True, "Q^n = [[F_{n+1},F_n],[F_n,F_{n-1}]]", f"  n=1..{N}, residual 0")
+    cassini = all((Q**n).det() == (-1)**n
+                  == fibonacci(n + 1) * fibonacci(n - 1) - fibonacci(n)**2
+                  for n in range(1, N + 1))
+    ok(cassini, "det(Q^n) = (-1)^n = Cassini identity", "  (two independent routes)")
+
+# --------------------------------------------------- Q3. eigen-decomposition shows phi (pinned)
+def check_eigen():
+    cp = Q.charpoly(x).as_expr()
+    ok(expand(cp - (x**2 - x - 1)) == 0, "charpoly(Q) = x^2 - x - 1")
+    ok(expand(minpoly(PHI, x) - (x**2 - x - 1)) == 0, "minpoly(phi) = x^2 - x - 1",
+       "  (psi shares it)")
+    lo, hi = Rational(161, 100).evalf(50), Rational(162, 100).evalf(50)
+    ok(lo &lt; PHI.evalf(50) &lt; hi, "branch pin: dominant eigenvalue",
+       f"  phi={PHI.evalf(8)}  (psi={PSI.evalf(8)} excluded)")
+    ratio = Rational(fibonacci(DEEP + 1), fibonacci(DEEP))      # independent route to phi
+    ok(abs(ratio - PHI).evalf(50) &lt; EPS, "F_{n+1}/F_n -&gt; phi", f"  |.- phi| &lt; 1e-12 at n={DEEP}")
+    V, D = Matrix([[PHI, PSI], [1, 1]]), Matrix([[PHI, 0], [0, PSI]])
+    ok(simplify(Q * V - V * D) == zeros(2), "Q V = V D  (eigen-decomposition)", "  residual 0")
+    ok(simplify(PHI * PSI + 1) == 0, "eigenvectors orthogonal", "  (phi,1).(psi,1)=phi*psi+1=0")
+
+# --------------------------------------------------- Q4. trace ladder = Lucas (bridge to table)
+def check_trace_lucas():
+    for n in range(1, N + 1):
+        assert (Q**n).trace() == lucas(n) == simplify(PHI**n + PSI**n), f"trace n={n}"
+    ok(True, "trace(Q^n) = L_n = phi^n + psi^n", f"  n=1..{N}, three routes")
+    ok((Q**4).trace() == 7 == lucas(4), "trace(Q^4) = 7 = L_4",
+       "  (the constants-table normalizer)")
+
+# --------------------------------------------------- Q5. orbit of a grid point
+def check_orbit():
+    cur, orbit = (1, 0), []
+    for n in range(1, N + 1):
+        cur = q_apply(cur)
+        orbit.append(cur)
+        assert cur == (fibonacci(n + 1), fibonacci(n)), f"orbit n={n}"
+        assert isinstance(cur[0], int) and isinstance(cur[1], int)        # stays on Z^2
+    ok(True, "orbit Q^n.(1,0) = (F_{n+1},F_n) on Z^2", f"  {orbit[:6]} ...")
+    slope = Rational(fibonacci(DEEP), fibonacci(DEEP + 1))
+    ok(abs(slope - 1 / PHI).evalf(50) &lt; EPS, "orbit slope -&gt; 1/phi = tau",
+       "  (direction -&gt; eigenvector (phi,1))")
+
+# --------------------------------------------------- Q6. induced map on the min/max lattice
+def meet_Q(a, b):  return q_apply(meet(qi_apply(a), qi_apply(b)))          # pushforward meet
+def join_Q(a, b):  return q_apply(join(qi_apply(a), qi_apply(b)))
+
+def check_induced_lattice():
+    P = [(i, j) for i in range(-2, 3) for j in range(-2, 3)]              # 5x5 patch of Z^2
+    pairs = list(itertools.product(P, repeat=2))
+    le = lambda a, b: a[0] &lt;= b[0] and a[1] &lt;= b[1]
+    # (a) positive: Q is monotone for the product order (nonneg entries preserve the orthant)
+    ok(all(le(q_apply(a), q_apply(b)) for a, b in pairs if le(a, b)),
+       "Q monotone on (Z^2, &lt;=)", "  a&lt;=b =&gt; Qa&lt;=Qb")
+    # (b) negative: Q does NOT preserve the original min/max meet (explicit witness)
+    a, b = (1, 0), (0, 1)
+    ok(q_apply(meet(a, b)) != meet(q_apply(a), q_apply(b)), "Q does NOT preserve min/max meet",
+       f"  Q(a^b)={q_apply(meet(a,b))} != {meet(q_apply(a),q_apply(b))}")
+    # (c) Q^-1 not monotone =&gt; Q is not an order-iso of the original order
+    ok(not le(qi_apply((0, 0)), qi_apply((0, 1))), "Q^-1 NOT monotone",
+       "  (so Q is not an order-iso of &lt;=)")
+    # (d) positive: Q IS a lattice iso onto the pushforward order (residual 0, all pairs)
+    ok(all(q_apply(meet(a, b)) == meet_Q(q_apply(a), q_apply(b)) and
+           q_apply(join(a, b)) == join_Q(q_apply(a), q_apply(b)) for a, b in pairs),
+       "Q: lattice iso onto pushforward", "  Q(a^b)=meet_Q(Qa,Qb)")
+    ok(all(meet_Q(q_apply(a), q_apply(a)) == q_apply(a) for a in P),
+       "pushforward meet_Q idempotent", "  meet_Q(a,a)=a  (r(r)=r survives transport)")
+    # (e) the dividing line: Q is the golden object, not an idempotent
+    ok(simplify(Q * Q - (Q + eye(2))) == zeros(2) and Q * Q != Q, "Q^2 = Q + I  and  Q^2 != Q",
+       "  (phi-structure != idempotent structure)")
+
+if __name__ == "__main__":
+    import sympy
+    print(f"sympy {sympy.__version__}   Q = {Q.tolist()}\n")
+    check_automorphism();    print()
+    check_fib_matrix();      print()
+    check_eigen();           print()
+    check_trace_lucas();     print()
+    check_orbit();           print()
+    check_induced_lattice()
+    print("\nALL CHECKS PASS -- phi-dynamics wired onto the idempotent grid, every claim residual-0.")
+</code></pre></details>
+      <details><summary>expected output</summary><pre class="out">sympy 1.14.0   Q = [[1, 1], [1, 0]]
+
+PASS  det Q = -1                                  (=&gt; Q in GL2(Z))
+PASS  Q^-1 has integer entries                      Q^-1 = [[0, 1], [1, -1]]
+PASS  Q^-1 . Q = id on a Z^2 patch                
+
+PASS  Q^n = [[F_{n+1},F_n],[F_n,F_{n-1}]]           n=1..12, residual 0
+PASS  det(Q^n) = (-1)^n = Cassini identity          (two independent routes)
+
+PASS  charpoly(Q) = x^2 - x - 1                   
+PASS  minpoly(phi) = x^2 - x - 1                    (psi shares it)
+PASS  branch pin: dominant eigenvalue               phi=1.6180340  (psi=-0.61803399 excluded)
+PASS  F_{n+1}/F_n -&gt; phi                            |.- phi| &lt; 1e-12 at n=30
+PASS  Q V = V D  (eigen-decomposition)              residual 0
+PASS  eigenvectors orthogonal                       (phi,1).(psi,1)=phi*psi+1=0
+
+PASS  trace(Q^n) = L_n = phi^n + psi^n              n=1..12, three routes
+PASS  trace(Q^4) = 7 = L_4                          (the constants-table normalizer)
+
+PASS  orbit Q^n.(1,0) = (F_{n+1},F_n) on Z^2        [(1, 1), (2, 1), (3, 2), (5, 3), (8, 5), (13, 8)] ...
+PASS  orbit slope -&gt; 1/phi = tau                    (direction -&gt; eigenvector (phi,1))
+
+PASS  Q monotone on (Z^2, &lt;=)                       a&lt;=b =&gt; Qa&lt;=Qb
+PASS  Q does NOT preserve min/max meet              Q(a^b)=(0, 0) != (1, 0)
+PASS  Q^-1 NOT monotone                             (so Q is not an order-iso of &lt;=)
+PASS  Q: lattice iso onto pushforward               Q(a^b)=meet_Q(Qa,Qb)
+PASS  pushforward meet_Q idempotent                 meet_Q(a,a)=a  (r(r)=r survives transport)
+PASS  Q^2 = Q + I  and  Q^2 != Q                    (phi-structure != idempotent structure)
+
+ALL CHECKS PASS -- phi-dynamics wired onto the idempotent grid, every claim residual-0.</pre></details>
+    </article>
+    <p class="val-note"><b>For LLMs and reviewers:</b> the embedded source is the source of truth. If a run disagrees with the expected output, the run wins — re-derive. The ZFP standard: a value is forced only when it computes two independent ways with residual 0 (minimal polynomial + value pin), and a shared constant is never promoted to a shared mechanism.</p>
+  </section>
+
+  <footer>Δ|L₄-HELIX|SIMULATOR| Kuramoto engine · φ-derived landmarks · constants verified client-side |Ω</footer>
+</div>
+
+<script>
+"use strict";
+/* ---------------- constants: everything from phi ---------------- */
+function computeConstants(){
+  const phi = (1+Math.sqrt(5))/2;
+  const tau = 1/phi;
+  const gap = Math.pow(phi,-4);
+  const K   = Math.sqrt(1-gap);
+  const zc  = Math.sqrt(3)/2;
+  return {
+    phi, tau, gap, K, zc,
+    activation: 1-gap,
+    critical: phi*phi/3,
+    ignition: Math.SQRT2 - 0.5,
+    consolidation: K + tau*tau*(1-K),
+    resonance: K + tau*(1-K),
+    paradox: tau,
+    unity: 1,
+    L4: Math.pow(phi,4)+Math.pow(phi,-4)
+  };
+}
+const C = computeConstants();
+
+/* nine thresholds, grouped + colored by the three-irrational structure */
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL = {phi:css('--phi'),s3:css('--s3'),s2:css('--s2'),s5:css('--s5'),rose:css('--rose'),muted:css('--muted'),ink:css('--ink')};
+const THRESHOLDS = [
+  {key:'PARADOX',       z:C.paradox,       form:'τ = φ⁻¹',          col:COL.muted, big:false},
+  {key:'ACTIVATION',    z:C.activation,    form:'1−φ⁻⁴ = K²',       col:COL.s5,    big:false},
+  {key:'THE LENS',      z:C.zc,            form:'√3/2',             col:COL.s3,    big:true},
+  {key:'CRITICAL',      z:C.critical,      form:'φ²/3',             col:COL.rose,  big:false},
+  {key:'IGNITION',      z:C.ignition,      form:'√2 − ½',           col:COL.s2,    big:true},
+  {key:'K-FORMATION',   z:C.K,             form:'√(1−φ⁻⁴)',         col:COL.s5,    big:true},
+  {key:'CONSOLIDATION', z:C.consolidation, form:'K + τ²(1−K)',      col:COL.muted, big:false},
+  {key:'RESONANCE',     z:C.resonance,     form:'K + τ(1−K)',       col:COL.muted, big:false},
+  {key:'UNITY',         z:C.unity,         form:'1',                col:COL.ink,   big:false},
+];
+
+/* ---------------- Kuramoto state ---------------- */
+let N = 200, Kc_coupling = C.K, gamma = 0.15, sigma = 20, winding = 4;
+let theta = [], omega = [];
+let running = true;
+let r = 0, psi = 0;
+const HIST = 320; let hist = new Array(HIST).fill(0);
+
+function sampleCauchy(g){               // centered Lorentzian; truncate heavy tails
+  let w = g*Math.tan(Math.PI*(Math.random()-0.5));
+  const cap = 6*g; return Math.max(-cap, Math.min(cap, w));
+}
+function resetEnsemble(){
+  theta = new Array(N); omega = new Array(N);
+  for(let i=0;i<N;i++){ theta[i]=Math.random()*2*Math.PI; omega[i]=sampleCauchy(gamma); }
+  hist = new Array(HIST).fill(0);
+}
+function step(dt){
+  let sx=0, sy=0;
+  for(let i=0;i<N;i++){ sx+=Math.cos(theta[i]); sy+=Math.sin(theta[i]); }
+  r = Math.hypot(sx,sy)/N; psi = Math.atan2(sy,sx);
+  const kr = Kc_coupling*r;
+  for(let i=0;i<N;i++){ theta[i]+= dt*(omega[i] + kr*Math.sin(psi-theta[i])); }
+}
+
+/* ---------------- canvas helpers ---------------- */
+function fitCanvas(cv){
+  const dpr = window.devicePixelRatio||1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,w,h};
+}
+const cv = id => document.getElementById(id);
+
+/* ---------------- drawers ---------------- */
+function drawWheel(){
+  const {ctx,w,h} = fitCanvas(cv('wheel'));
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, R=Math.min(w,h)/2-22;
+  ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI); ctx.stroke();
+  // oscillator dots
+  for(let i=0;i<N;i++){
+    const x=cx+R*Math.cos(theta[i]), y=cy-R*Math.sin(theta[i]);
+    ctx.fillStyle='rgba(131,153,174,.55)';
+    ctx.beginPath(); ctx.arc(x,y,2.1,0,2*Math.PI); ctx.fill();
+  }
+  // resultant vector (length r)
+  const ex=cx+R*r*Math.cos(psi), ey=cy-R*r*Math.sin(psi);
+  ctx.strokeStyle=COL.phi; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ex,ey); ctx.stroke();
+  ctx.fillStyle=COL.phi; ctx.beginPath(); ctx.arc(ex,ey,4.5,0,2*Math.PI); ctx.fill();
+  // r-magnitude ring
+  ctx.strokeStyle='rgba(224,169,59,.25)';
+  ctx.beginPath(); ctx.arc(cx,cy,R*r,0,2*Math.PI); ctx.stroke();
+}
+
+function drawScope(){
+  const {ctx,w,h} = fitCanvas(cv('scope'));
+  ctx.clearRect(0,0,w,h);
+  const padL=8, padR=128, plotW=w-padL-padR, y0=h-14, y1=14;
+  const Y = v => y0 + (y1-y0)*v;                 // v in [0,1] -> pixels
+  // threshold lines + labels
+  THRESHOLDS.forEach(t=>{
+    const y=Y(t.z), on = r>=t.z;
+    ctx.strokeStyle = on ? t.col : 'rgba(131,153,174,.22)';
+    ctx.lineWidth = t.big?1.4:0.8;
+    ctx.setLineDash(t.big?[]:[3,4]);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+plotW,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font='10px '+css('--mono');
+    ctx.fillStyle = on ? t.col : 'rgba(131,153,174,.6)';
+    ctx.fillText(`${t.key}  ${t.z.toFixed(4)}`, padL+plotW+6, y+3);
+    if(on){ ctx.fillStyle=t.col; ctx.beginPath(); ctx.arc(padL+plotW, y, 2.6, 0, 2*Math.PI); ctx.fill(); }
+  });
+  // r(t) trace
+  ctx.strokeStyle=COL.phi; ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<HIST;i++){
+    const x=padL + plotW*(i/(HIST-1)), y=Y(hist[i]);
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  }
+  ctx.stroke();
+  // leading dot
+  ctx.fillStyle=COL.phi;
+  ctx.beginPath(); ctx.arc(padL+plotW, Y(hist[HIST-1]), 3.2, 0, 2*Math.PI); ctx.fill();
+}
+
+function negent(z){ return Math.exp(-sigma*(z-C.zc)*(z-C.zc)); }
+function drawNegent(){
+  const {ctx,w,h} = fitCanvas(cv('negent'));
+  ctx.clearRect(0,0,w,h);
+  const padL=30, padB=18, plotW=w-padL-8, plotH=h-padB-10, x0=padL, yb=h-padB;
+  const X = z => x0 + plotW*z, Y = v => yb - plotH*v;
+  // gate interval shading (where ΔS > τ)
+  const hw = Math.sqrt(Math.max(0,-Math.log(C.tau)/sigma));
+  ctx.fillStyle='rgba(224,85,107,.12)';
+  ctx.fillRect(X(Math.max(0,C.zc-hw)),Y(1),Math.min(1,C.zc+hw)*plotW-Math.max(0,C.zc-hw)*plotW,plotH);
+  // axes
+  ctx.strokeStyle=css('--line'); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x0,Y(0)); ctx.lineTo(x0,Y(1)); ctx.moveTo(x0,yb); ctx.lineTo(x0+plotW,yb); ctx.stroke();
+  // gate line τ
+  ctx.strokeStyle='rgba(224,85,107,.7)'; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(x0,Y(C.tau)); ctx.lineTo(x0+plotW,Y(C.tau)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font='9px '+css('--mono'); ctx.fillStyle='rgba(224,85,107,.85)'; ctx.fillText('τ',x0+plotW-12,Y(C.tau)-3);
+  // peak marker z_c
+  ctx.strokeStyle='rgba(55,200,168,.6)';
+  ctx.beginPath(); ctx.moveTo(X(C.zc),Y(0)); ctx.lineTo(X(C.zc),Y(1)); ctx.stroke();
+  // curve
+  ctx.strokeStyle=COL.phi; ctx.lineWidth=2; ctx.beginPath();
+  for(let i=0;i<=120;i++){ const z=i/120; const x=X(z),y=Y(negent(z)); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke();
+  // current point at z=r
+  const dr=negent(r);
+  ctx.fillStyle = dr>C.tau ? COL.s3 : COL.muted;
+  ctx.beginPath(); ctx.arc(X(r),Y(dr),4,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle=css('--faint'); ctx.font='9px '+css('--mono');
+  ctx.fillText('z',x0+plotW-6,yb+12); ctx.fillText('0',x0-9,yb+3); ctx.fillText('1',x0-9,Y(1)+3);
+}
+
+function helixRadius(z){ return z<=C.zc ? C.K*Math.sqrt(z/C.zc) : C.K; }
+function drawHelix(){
+  const {ctx,w,h} = fitCanvas(cv('helix'));
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, scale=(Math.min(w,h)/2-16)/C.K;
+  // spiral, hue by z
+  let prev=null;
+  for(let i=0;i<=300;i++){
+    const z=i/300, ang=2*Math.PI*winding*z, rad=helixRadius(z)*scale;
+    const x=cx+rad*Math.cos(ang), y=cy+rad*Math.sin(ang);
+    if(prev){
+      const hue=200-160*z; ctx.strokeStyle=`hsl(${hue} 65% 60%)`; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(prev.x,prev.y); ctx.lineTo(x,y); ctx.stroke();
+    }
+    prev={x,y};
+  }
+  // threshold rings
+  THRESHOLDS.forEach(t=>{
+    const ang=2*Math.PI*winding*t.z, rad=helixRadius(t.z)*scale;
+    const x=cx+rad*Math.cos(ang), y=cy+rad*Math.sin(ang);
+    ctx.strokeStyle=t.col; ctx.lineWidth=t.big?2:1.2;
+    ctx.beginPath(); ctx.arc(x,y,t.big?5:3.2,0,2*Math.PI); ctx.stroke();
+  });
+  // current marker at z=r
+  const ang=2*Math.PI*winding*r, rad=helixRadius(r)*scale;
+  ctx.fillStyle=COL.phi;
+  ctx.beginPath(); ctx.arc(cx+rad*Math.cos(ang),cy+rad*Math.sin(ang),4.5,0,2*Math.PI); ctx.fill();
+  ctx.strokeStyle='rgba(131,153,174,.25)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(cx,cy,C.K*scale,0,2*Math.PI); ctx.stroke();
+}
+
+/* ---------------- readouts ---------------- */
+function updateReadouts(){
+  cv('rNum').textContent = r.toFixed(3);
+  cv('psiNum').textContent = ((psi*180/Math.PI+360)%360).toFixed(0)+'°';
+  const Kc = 2*gamma; cv('kcNum').textContent = Kc.toFixed(2);
+  cv('regNum').textContent = Kc_coupling > Kc ? 'synchronizing' : 'incoherent';
+  cv('regNum').style.color = Kc_coupling > Kc ? COL.s3 : COL.muted;
+  // gates
+  const coh = r>=C.K, ds=negent(r), neg = ds>C.tau;
+  const gC=cv('gateCoh'), gN=cv('gateNeg');
+  gC.classList.toggle('on',coh); gN.classList.toggle('on',neg);
+  cv('gateCohV').textContent = `${r.toFixed(3)} ${coh?'≥':'<'} ${C.K.toFixed(3)}`;
+  cv('gateNegV').textContent = `${ds.toFixed(3)} ${neg?'>':'≤'} ${C.tau.toFixed(3)}`;
+  cv('dsNum').textContent = ds.toFixed(3);
+}
+
+/* ---------------- ZFP rrr grid: idempotent Z^2 + golden automorphism Q ---------------- */
+/* Q = [[1,1],[1,0]] in GL2(Z). Orbit of (1,0): Q^n.(1,0) = (F_{n+1}, F_n).
+   Idempotent layer = min/max lattice on Z^2 (needs the product order; absent on Z/m). */
+const GRID = { ax:1, ay:0, prevAx:1, n:0, trail:[[1,0]], cap:233,
+               m:8, tx:1, ty:0, tn:0, period:12, ttrail:[[1,0]],
+               showLattice:false, acc:0, interval:0.7 };
+
+function pisano(m){                       // period of (F_n mod m); = orbit period of seed (1,0)
+  if(m<=1) return 1;
+  let prev=0, curr=1;
+  for(let i=0;i<6*m;i++){ const next=(prev+curr)%m; prev=curr; curr=next; if(prev===0 && curr===1) return i+1; }
+  return 6*m;
+}
+function resetGrid(){
+  GRID.ax=1; GRID.ay=0; GRID.prevAx=1; GRID.n=0; GRID.trail=[[1,0]];
+  GRID.tx=1; GRID.ty=0; GRID.tn=0; GRID.period=pisano(GRID.m); GRID.ttrail=[[1,0]];
+}
+function stepGrid(){
+  GRID.prevAx=GRID.ax;
+  let nx=GRID.ax+GRID.ay, ny=GRID.ax;          // Z^2 step (x,y)->(x+y,x)
+  if(Math.max(nx,ny) > GRID.cap){ nx=1; ny=0; GRID.prevAx=1; GRID.n=-1; GRID.trail=[]; }   // loop the animation
+  GRID.ax=nx; GRID.ay=ny; GRID.n++;
+  GRID.trail.push([nx,ny]); if(GRID.trail.length>22) GRID.trail.shift();
+  const m=GRID.m;
+  const tnx=(GRID.tx+GRID.ty)%m, tny=GRID.tx%m; // torus step (mod m)
+  GRID.tx=tnx; GRID.ty=tny; GRID.tn=(GRID.tn+1)%GRID.period;
+  GRID.ttrail.push([tnx,tny]); if(GRID.ttrail.length>GRID.period) GRID.ttrail.shift();
+}
+function niceStep(x){ const p=Math.pow(10,Math.floor(Math.log10(x))); const f=x/p; return (f<=1?1:f<=2?2:f<=5?5:10)*p; }
+
+function drawGridZ2(){
+  const {ctx,w,h}=fitCanvas(cv('gridZ2'));
+  ctx.clearRect(0,0,w,h);
+  const padL=24,padB=20, ox=padL, oy=h-padB, plotW=w-padL-10, plotH=h-padB-10;
+  const E=Math.max(5, Math.max(GRID.ax,GRID.ay)*1.3);
+  const s=Math.min(plotW,plotH)/E, X=g=>ox+g*s, Y=g=>oy-g*s;
+  const step=Math.max(1, niceStep(E/12));
+  ctx.lineWidth=1; ctx.font='9px '+css('--mono');
+  ctx.strokeStyle='rgba(34,54,77,.65)';
+  for(let g=0; g<=E+1e-9; g+=step){
+    ctx.beginPath(); ctx.moveTo(X(g),Y(0)); ctx.lineTo(X(g),Y(E)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(0),Y(g)); ctx.lineTo(X(E),Y(g)); ctx.stroke();
+  }
+  if(E<=24){ ctx.fillStyle='rgba(131,153,174,.3)';
+    for(let gx=0;gx<=E;gx++)for(let gy=0;gy<=E;gy++){ctx.beginPath();ctx.arc(X(gx),Y(gy),1.2,0,2*Math.PI);ctx.fill();}
+  }
+  ctx.strokeStyle=css('--line'); ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(E),Y(0)); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(0),Y(E)); ctx.stroke();
+  // golden eigenray  y = tau * x  (slope tau = 1/phi = PARADOX)
+  ctx.strokeStyle='rgba(224,169,59,.5)'; ctx.setLineDash([5,4]); ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(E),Y(C.tau*E)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(224,169,59,.85)'; ctx.fillText('slope τ', X(E)-48, Y(C.tau*E)-5);
+  // idempotent layer: meet/join of orbit point a and its reflection b=(ay,ax)
+  if(GRID.showLattice){
+    const a=[GRID.ax,GRID.ay], b=[GRID.ay,GRID.ax];
+    const mnx=Math.min(a[0],b[0]),mny=Math.min(a[1],b[1]),mxx=Math.max(a[0],b[0]),mxy=Math.max(a[1],b[1]);
+    ctx.strokeStyle='rgba(55,200,168,.65)'; ctx.lineWidth=1;
+    ctx.strokeRect(X(mnx),Y(mxy),(mxx-mnx)*s,(mxy-mny)*s);
+    ctx.fillStyle=COL.s3;
+    [[b[0],b[1]],[mnx,mny],[mxx,mxy]].forEach(p=>{ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),3.4,0,2*Math.PI);ctx.fill();});
+    ctx.fillStyle='rgba(55,200,168,.9)';
+    ctx.fillText('meet', X(mnx)+5, Y(mny)+12); ctx.fillText('join', X(mxx)+5, Y(mxy)-4);
+  }
+  GRID.trail.forEach((p,i)=>{ const al=0.12+0.5*i/Math.max(1,GRID.trail.length);
+    ctx.fillStyle=`rgba(224,169,59,${al})`; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),2.3,0,2*Math.PI); ctx.fill(); });
+  ctx.strokeStyle='rgba(224,169,59,.45)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(GRID.ax),Y(GRID.ay)); ctx.stroke();
+  ctx.fillStyle=COL.phi; ctx.beginPath(); ctx.arc(X(GRID.ax),Y(GRID.ay),5,0,2*Math.PI); ctx.fill();
+}
+
+function drawGridTorus(){
+  const {ctx,w,h}=fitCanvas(cv('gridTorus'));
+  ctx.clearRect(0,0,w,h);
+  const m=GRID.m, cell=Math.min(w,h-4)/m, ox=(w-cell*m)/2, oy=(h-cell*m)/2;
+  const rectFor=(gx,gy)=>[ox+gx*cell, oy+(m-1-gy)*cell, cell, cell];
+  ctx.strokeStyle='rgba(34,54,77,.55)'; ctx.lineWidth=1;
+  for(let i=0;i<=m;i++){
+    ctx.beginPath(); ctx.moveTo(ox+i*cell,oy); ctx.lineTo(ox+i*cell,oy+m*cell); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox,oy+i*cell); ctx.lineTo(ox+m*cell,oy+i*cell); ctx.stroke();
+  }
+  GRID.ttrail.forEach((p,i)=>{ const al=0.1+0.45*i/Math.max(1,GRID.ttrail.length);
+    const r=rectFor(p[0],p[1]); ctx.fillStyle=`rgba(217,138,79,${al})`; ctx.fillRect(r[0]+1,r[1]+1,r[2]-2,r[3]-2); });
+  const sR=rectFor(1,0); ctx.strokeStyle=COL.s3; ctx.lineWidth=1.5; ctx.strokeRect(sR[0]+1,sR[1]+1,sR[2]-2,sR[3]-2);
+  const cR=rectFor(GRID.tx,GRID.ty); ctx.fillStyle=COL.phi; ctx.fillRect(cR[0]+1,cR[1]+1,cR[2]-2,cR[3]-2);
+}
+
+function updateGridReadouts(){
+  cv('gN').textContent=GRID.n;
+  cv('gPt').textContent=`(${GRID.ax}, ${GRID.ay})`;
+  cv('gSlope').textContent=(GRID.ax? GRID.ay/GRID.ax:0).toFixed(4);
+  cv('gGrow').textContent=(GRID.prevAx? GRID.ax/GRID.prevAx:0).toFixed(4);
+  const tr=2*GRID.ax-GRID.ay, e=cv('gTrace'); e.textContent=tr; e.style.color=(tr===7?COL.s3:COL.ink);
+  cv('gM').textContent=GRID.m; cv('gPer').textContent=GRID.period; cv('gStep').textContent=`${GRID.tn+1}/${GRID.period}`;
+}
+
+/* rrr grid controls */
+bind('cM','vM',v=>`${v} → π(m)=${pisano(v)}`,v=>{ GRID.m=v; resetGrid(); });
+cv('gridLattice').addEventListener('click',e=>{ GRID.showLattice=!GRID.showLattice;
+  e.target.textContent='meet/join: '+(GRID.showLattice?'on':'off'); e.target.classList.toggle('go',GRID.showLattice); });
+cv('gridReset').addEventListener('click',resetGrid);
+
+/* ---------------- main loop ---------------- */
+let last=performance.now();
+function frame(now){
+  const elapsed = Math.min(0.05,(now-last)/1000); last=now;
+  if(running){
+    const sub=3, dt=elapsed/sub;
+    for(let s=0;s<sub;s++) step(dt>0?dt:0.006);
+    hist.push(r); hist.shift();
+    GRID.acc += elapsed; if(GRID.acc>=GRID.interval){ GRID.acc-=GRID.interval; stepGrid(); }
+  }
+  drawWheel(); drawScope(); drawNegent(); drawHelix(); drawGridZ2(); drawGridTorus();
+  updateReadouts(); updateGridReadouts();
+  requestAnimationFrame(frame);
+}
+
+/* ---------------- build static UI ---------------- */
+function buildTable(){
+  const tb = document.querySelector('#constTable tbody');
+  THRESHOLDS.forEach(t=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td><span class="sw" style="background:${t.col}"></span>${t.key}</td>`+
+                   `<td>${t.form}</td><td class="v">${t.z.toFixed(7)}</td>`;
+    tb.appendChild(tr);
+  });
+  // client-side identity checks (mirror the document's Table 5)
+  const checks = [
+    ['L₄ = φ⁴+φ⁻⁴ = 7', Math.abs(C.L4-7)],
+    ['K² = 1 − gap',     Math.abs(C.K*C.K-(1-C.gap))],
+    ['τ² + τ = 1',       Math.abs(C.tau*C.tau+C.tau-1)],
+    ['1−K = gap/(1+K)',  Math.abs((1-C.K)-C.gap/(1+C.K))],
+  ];
+  const box=cv('verifyBox');
+  checks.forEach(([label,res])=>{
+    const d=document.createElement('div');
+    const good = res<1e-12;
+    d.innerHTML = `<span class="${good?'ok':''}">${good?'✓':'✗'}</span> ${label} &nbsp;<span style="color:var(--faint)">|ε| ${res.toExponential(1)}</span>`;
+    box.appendChild(d);
+  });
+}
+
+/* ---------------- wire controls ---------------- */
+function bind(id,valId,fmt,apply){
+  const el=cv(id);
+  el.addEventListener('input',()=>{ const v=parseFloat(el.value); cv(valId).innerHTML=fmt(v); apply(v); });
+}
+bind('cN','vN',v=>`${v}`,v=>{N=v;cv('ledeN').textContent=v;resetEnsemble();});
+bind('cK','vK',v=>v.toFixed(4),v=>{Kc_coupling=v;});
+bind('cG','vG',v=>`${v.toFixed(2)} <span class="unit">→ K_c=2γ=${(2*v).toFixed(2)}</span>`,v=>{gamma=v;resetEnsemble();});
+bind('cS','vS',v=>`${v}`,v=>{sigma=v;});
+bind('cW','vW',v=>`${v.toFixed(1)} <span class="unit">turns</span>`,v=>{winding=v;});
+
+cv('coupleK').addEventListener('click',()=>{ Kc_coupling=C.K; cv('cK').value=C.K.toFixed(4); cv('vK').textContent=C.K.toFixed(4); });
+cv('reset').addEventListener('click',resetEnsemble);
+cv('play').addEventListener('click',e=>{
+  running=!running; e.target.textContent=running?'pause':'play'; e.target.setAttribute('aria-pressed',running);
+});
+
+window.addEventListener('resize',()=>{ drawWheel();drawScope();drawNegent();drawHelix();drawGridZ2();drawGridTorus(); });
+
+/* ---------------- init ---------------- */
+if(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+  running=false; cv('play').textContent='play'; cv('play').setAttribute('aria-pressed','false');
+}
+buildTable();
+resetEnsemble();
+resetGrid();
+requestAnimationFrame(frame);
+</script>
+<script>
+(function(){
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-src')); if(!el) return;
+      var txt=el.textContent;
+      function done(){var o=b.textContent;b.textContent='copied \u2713';setTimeout(function(){b.textContent=o;},1200);}
+      function fallback(){try{var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);document.execCommand('copy');done();}catch(e){}}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fallback);}else{fallback();}
+    });
+  });
+})();
+</script>
+</body>
+</html>

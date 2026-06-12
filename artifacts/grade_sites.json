@@ -1,0 +1,618 @@
+[
+  {
+    "constant": "phi",
+    "file": "zfp_relational.py",
+    "line": 10,
+    "stated_grade": "FORCED (absolute)",
+    "kind": "constant",
+    "text": "  FORCED (absolute)        -- holds from the generator alone: phi, L4=7, tau^2+tau=1."
+  },
+  {
+    "constant": "L4",
+    "file": "zfp_relational.py",
+    "line": 10,
+    "stated_grade": "FORCED (absolute)",
+    "kind": "constant",
+    "text": "  FORCED (absolute)        -- holds from the generator alone: phi, L4=7, tau^2+tau=1."
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_relational.py",
+    "line": 10,
+    "stated_grade": "FORCED (absolute)",
+    "kind": "structural",
+    "text": "  FORCED (absolute)        -- holds from the generator alone: phi, L4=7, tau^2+tau=1."
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_relational.py",
+    "line": 12,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "  FORCED UNDER CONSTRAINT  -- forced GIVEN the seed + a selected relation"
+  },
+  {
+    "constant": "ign",
+    "file": "zfp_relational.py",
+    "line": 12,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "  FORCED UNDER CONSTRAINT  -- forced GIVEN the seed + a selected relation"
+  },
+  {
+    "constant": "relations/operations",
+    "file": "zfp_relational.py",
+    "line": 14,
+    "stated_grade": "SELECTED",
+    "kind": "structural",
+    "text": "  SELECTED                 -- which relations/operations to instantiate (-4, +1, ^2-4, x^2+x)."
+  },
+  {
+    "constant": "helix_embedding",
+    "file": "zfp_relational.py",
+    "line": 15,
+    "stated_grade": "REPRESENTATION",
+    "kind": "structural",
+    "text": "  REPRESENTATION           -- the helical embedding r(z)=K*sqrt(z/z_c), pitch, winding."
+  },
+  {
+    "constant": "L4",
+    "file": "zfp_relational.py",
+    "line": 37,
+    "stated_grade": "FORCED (absolute)",
+    "kind": "constant",
+    "text": "print(f\"SEED (forced absolute):  L4 = phi^4 + phi^-4 =\", simplify(L4))"
+  },
+  {
+    "constant": "axes_from_seed",
+    "file": "zfp_relational.py",
+    "line": 40,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "structural",
+    "text": "print(\"THREE AXES FROM ONE SEED  (forced under constraint: seed + selected op)\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_relational.py",
+    "line": 59,
+    "stated_grade": "absolute",
+    "kind": "structural",
+    "text": "print(f\"  tau^2 + tau = 1                     {ok(simplify(tau**2+tau-1)==0)}   [absolute]\")"
+  },
+  {
+    "constant": "ign",
+    "file": "zfp_relational.py",
+    "line": 61,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "print(f\"  ignition^2 + ignition = L4/4 = 7/4  {ok(simplify(ign**2+ign-L4/4)==0)}   [under L4]\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_relational.py",
+    "line": 62,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "print(f\"  z_c^2 = (L4-4)/4 = 3/4              {ok(simplify((sqrt(3)/2)**2-(L4-4)/4)==0)}   [under L4]\")"
+  },
+  {
+    "constant": "phi",
+    "file": "zfp_relational.py",
+    "line": 68,
+    "stated_grade": "FORCED (absolute)",
+    "kind": "constant",
+    "text": "print(\"  The interactions (which operations on L4 / the constants) are the SELECTION;\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_relational.py",
+    "line": 70,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "print(\"  most 'forced at this point under other forced constraints' (sqrt3/sqrt2/sqrt5,\")"
+  },
+  {
+    "constant": "ign",
+    "file": "zfp_relational.py",
+    "line": 70,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "print(\"  z_c, ignition, the deltas). The helix is one REPRESENTATION of this web.\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_relational.py",
+    "line": 70,
+    "stated_grade": "FORCED UNDER CONSTRAINT",
+    "kind": "constant",
+    "text": "print(\"  z_c, ignition, the deltas). The helix is one REPRESENTATION of this web.\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_helix.py",
+    "line": 9,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "  FORCED       -- the z-LANDMARKS (nine thresholds), z_c, K, Delta: exact algebraic"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 9,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "  FORCED       -- the z-LANDMARKS (nine thresholds), z_c, K, Delta: exact algebraic"
+  },
+  {
+    "constant": "K",
+    "file": "zfp_helix.py",
+    "line": 9,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "  FORCED       -- the z-LANDMARKS (nine thresholds), z_c, K, Delta: exact algebraic"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_helix.py",
+    "line": 9,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "  FORCED       -- the z-LANDMARKS (nine thresholds), z_c, K, Delta: exact algebraic"
+  },
+  {
+    "constant": "radius_form",
+    "file": "zfp_helix.py",
+    "line": 11,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "  CONSTRUCTION -- the radius FORM r(z)=K*sqrt(z/z_c), pitch=Delta, the golden-angle"
+  },
+  {
+    "constant": "golden_angle_turn",
+    "file": "zfp_helix.py",
+    "line": 78,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "print(f\"  turn-as-golden-angle: 360*phi^-2 = {ga} deg = {float(ga):.2f} deg   [CONSTRUCTION]\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 88,
+    "stated_grade": "COINCIDENCE",
+    "kind": "constant",
+    "text": "print(f\"  L4-4 = 3 = (sqrt3)^2 -> {ok(simplify((sqrt(3))**2-(7-4))==0)}  [COINCIDENCE, not a forcing]\")"
+  },
+  {
+    "constant": "ordering",
+    "file": "zfp_helix.py",
+    "line": 102,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"  FORCED       : nine z-landmarks + z_c + K + DELTA (minpoly, residual 0), strict\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 102,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"  FORCED       : nine z-landmarks + z_c + K + DELTA (minpoly, residual 0), strict\")"
+  },
+  {
+    "constant": "K",
+    "file": "zfp_helix.py",
+    "line": 102,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"  FORCED       : nine z-landmarks + z_c + K + DELTA (minpoly, residual 0), strict\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_helix.py",
+    "line": 102,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"  FORCED       : nine z-landmarks + z_c + K + DELTA (minpoly, residual 0), strict\")"
+  },
+  {
+    "constant": "radius_form",
+    "file": "zfp_helix.py",
+    "line": 104,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "print(\"  CONSTRUCTION : radius form r(z)=K*sqrt(z/z_c); pitch=DELTA; golden-angle turn;\")"
+  },
+  {
+    "constant": "threshold_names",
+    "file": "zfp_helix.py",
+    "line": 105,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "print(\"                 all threshold NAMES; 'weight'/'elevation'/'lens' reading.\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 106,
+    "stated_grade": "COINCIDENCE",
+    "kind": "constant",
+    "text": "print(\"  COINCIDENCE  : L4-4=3=(sqrt3)^2 -- the route to z_c via L4, not a forced phi->sqrt3 step.\")"
+  },
+  {
+    "constant": "helix_scaffold",
+    "file": "zfp_helix.py",
+    "line": 107,
+    "stated_grade": "NOT LOAD-BEARING",
+    "kind": "structural",
+    "text": "print(\"  LOAD-BEARING : NO. Nothing in sections 1,2,4 references the helix form. Strip the\")"
+  },
+  {
+    "constant": "branch_counts",
+    "file": "zfp_trifurcation.py",
+    "line": 130,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"  FORCED       : branch counts, discriminants, trifurcation point a=0,\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_trifurcation.py",
+    "line": 132,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"                 sqrt3/2 = Z_C identity, firewall -- all residual 0 above.\")"
+  },
+  {
+    "constant": "D3_equivariance",
+    "file": "zfp_trifurcation.py",
+    "line": 131,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"                 D3 equivariance + three 120-deg branches, r=|lambda|,\")"
+  },
+  {
+    "constant": "firewall",
+    "file": "zfp_trifurcation.py",
+    "line": 132,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"                 sqrt3/2 = Z_C identity, firewall -- all residual 0 above.\")"
+  },
+  {
+    "constant": "specific_realization",
+    "file": "zfp_trifurcation.py",
+    "line": 133,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "print(\"  CONSTRUCTION : a specific (a,b,..) realizing a given count is illustrative;\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_trifurcation.py",
+    "line": 136,
+    "stated_grade": "OPEN/ASSUMPTION",
+    "kind": "constant",
+    "text": "print(\"                 constant needs the operator+metric. sqrt3/2 here is a real\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_trifurcation.py",
+    "line": 111,
+    "stated_grade": "COINCIDENCE",
+    "kind": "structural",
+    "text": "print(f\"  COINCIDENCE flag (NOT a forcing): (sqrt3)^2 = {sqrt(3)**2} = the D3 branch count 3;\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_hex_closure.py",
+    "line": 100,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"    terminus of the order chain (CRT) + triple-independent agreement on Z_C.   [FORCED]\")"
+  },
+  {
+    "constant": "two_towers",
+    "file": "zfp_hex_closure.py",
+    "line": 102,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"  It does NOT close the phi-tower; CRT via tau enforces the firewall geometrically.\")"
+  },
+  {
+    "constant": "physical_D6_bifurcation",
+    "file": "zfp_hex_closure.py",
+    "line": 103,
+    "stated_grade": "OPEN",
+    "kind": "structural",
+    "text": "print(\"  A physical system *being* a D6 bifurcation at a forced constant: still OPEN.\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_delta_pentagon.py",
+    "line": 115,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"  FORCED      : Delta = 1-tau = phi^-2 (minpoly x^2-3x+1); 2cos72=phi^-1,\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_delta_pentagon.py",
+    "line": 115,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"  FORCED      : Delta = 1-tau = phi^-2 (minpoly x^2-3x+1); 2cos72=phi^-1,\")"
+  },
+  {
+    "constant": "phi",
+    "file": "zfp_delta_pentagon.py",
+    "line": 116,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"                2cos144=-phi (x^2+x-1); trace(Q^4)=phi^4+phi^-4=L4=7; firewall.\")"
+  },
+  {
+    "constant": "L4",
+    "file": "zfp_delta_pentagon.py",
+    "line": 116,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(\"                2cos144=-phi (x^2+x-1); trace(Q^4)=phi^4+phi^-4=L4=7; firewall.\")"
+  },
+  {
+    "constant": "firewall",
+    "file": "zfp_delta_pentagon.py",
+    "line": 116,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"                2cos144=-phi (x^2+x-1); trace(Q^4)=phi^4+phi^-4=L4=7; firewall.\")"
+  },
+  {
+    "constant": "phi_self_validation",
+    "file": "zfp_delta_pentagon.py",
+    "line": 117,
+    "stated_grade": "STRUCTURAL",
+    "kind": "structural",
+    "text": "print(\"  STRUCTURAL  : phi self-validation across substrate(assumed) & pentagon(derived).\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_delta_pentagon.py",
+    "line": 118,
+    "stated_grade": "COINCIDENCE",
+    "kind": "constant",
+    "text": "print(\"  COINCIDENCE : L4-4 = 3 = (sqrt3)^2 -- the L4-helix route to Z_C is naming, not forcing.\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_delta_pentagon.py",
+    "line": 119,
+    "stated_grade": "INTERPRETIVE",
+    "kind": "constant",
+    "text": "print(\"  INTERPRETIVE: 360*phi^-2 = golden angle; reading Delta as a helix turn is a choice.\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_delta_pentagon.py",
+    "line": 63,
+    "stated_grade": "INTERPRETIVE",
+    "kind": "constant",
+    "text": "print(f\"  as a turn fraction: 360*phi^-2 = {golden} deg = {float(golden):.2f} deg \")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_delta_pentagon.py",
+    "line": 90,
+    "stated_grade": "COINCIDENCE",
+    "kind": "constant",
+    "text": "print(f\"    the step L4-4 = 3 = (sqrt3)^2 is the small-integer COINCIDENCE, not a forced\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 29,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "cat={\"tau=1/phi\":(1/PHI,x**2+x-1),\"gap=phi^-4\":(PHI**-4,x**2-7*x+1),"
+  },
+  {
+    "constant": "gap",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 29,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "cat={\"tau=1/phi\":(1/PHI,x**2+x-1),\"gap=phi^-4\":(PHI**-4,x**2-7*x+1),"
+  },
+  {
+    "constant": "K",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 30,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "     \"K=sqrt(1-phi^-4)\":(sqrt(1-PHI**-4),x**4+5*x**2-5),\"z_c=sqrt3/2\":(sqrt(3)/2,4*x**2-3),"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 30,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "     \"K=sqrt(1-phi^-4)\":(sqrt(1-PHI**-4),x**4+5*x**2-5),\"z_c=sqrt3/2\":(sqrt(3)/2,4*x**2-3),"
+  },
+  {
+    "constant": "ign",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 31,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "     \"ignition=sqrt2-1/2\":(sqrt(2)-Rational(1,2),4*x**2+4*x-7),\"critical=phi^2/3\":(PHI**2/3,9*x**2-9*x+1)}"
+  },
+  {
+    "constant": "crit",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 31,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "     \"ignition=sqrt2-1/2\":(sqrt(2)-Rational(1,2),4*x**2+4*x-7),\"critical=phi^2/3\":(PHI**2/3,9*x**2-9*x+1)}"
+  },
+  {
+    "constant": "lambda_parameter",
+    "file": "zfp_free_parameter_audit.py",
+    "line": 52,
+    "stated_grade": "FREE (TUNABLE)",
+    "kind": "structural",
+    "text": "print(f\"  spread(x*y*) over lam in [-0.3,0.3] = {max(prods)-min(prods):.3f}   -> JOINT observable is TUNABLE (fails R2)\")"
+  },
+  {
+    "constant": "r(r)=r_seed",
+    "file": "rrr_idempotent_lattice.py",
+    "line": 99,
+    "stated_grade": "FORCED",
+    "kind": "structural",
+    "text": "print(\"seed r(r)=r is forced (a law, not a tuned value); every check above is structural.\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_helix.py",
+    "line": 41,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"PARADOX  tau=phi^-1\",      TAU,                   x**2+x-1,                          Rational(6180339887,10**10)),"
+  },
+  {
+    "constant": "gap",
+    "file": "zfp_helix.py",
+    "line": 42,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"ACTIVATN 1-gap=K^2\",       1-GAP,                 x**2+5*x-5,                         Rational(8541019662,10**10)),"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 43,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"LENS z_c sqrt3/2\",         ZC,                    4*x**2-3,                           Rational(8660254038,10**10)),"
+  },
+  {
+    "constant": "crit",
+    "file": "zfp_helix.py",
+    "line": 44,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"CRITICAL phi^2/3\",         PHI**2/3,              9*x**2-9*x+1,                       Rational(8726779962,10**10)),"
+  },
+  {
+    "constant": "ign",
+    "file": "zfp_helix.py",
+    "line": 45,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"IGNITION sqrt2-1/2\",       sqrt(2)-Rational(1,2), 4*x**2+4*x-7,                       Rational(9142135624,10**10)),"
+  },
+  {
+    "constant": "K",
+    "file": "zfp_helix.py",
+    "line": 46,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "    (\"K-FORM   sqrt(1-gap)\",     K,                     x**4+5*x**2-5,                      Rational(9241763718,10**10)),"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_helix.py",
+    "line": 66,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  z_c = sqrt3/2 ; minpoly {minpoly(ZC,x)} -> {ok(minpoly(ZC,x)==4*x**2-3)}\")"
+  },
+  {
+    "constant": "K",
+    "file": "zfp_helix.py",
+    "line": 67,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  K   = sqrt(1-phi^-4) ; minpoly {minpoly(K,x)} -> {ok(minpoly(K,x)==x**4+5*x**2-5)}\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_helix.py",
+    "line": 68,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  DELTA = phi^-2 = 1 - tau = {simplify(DELTA)} ; equals 1-tau ? {ok(simplify(DELTA-(1-TAU))==0)}\")"
+  },
+  {
+    "constant": "Delta",
+    "file": "zfp_helix.py",
+    "line": 72,
+    "stated_grade": "CONSTRUCTION",
+    "kind": "structural",
+    "text": "print(\"3. THE DELTA AS WEIGHT/PITCH  (value forced; using it as pitch is construction)\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_hex_closure.py",
+    "line": 45,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  n=5 obstruction: 2cos(72deg) = {t5} = phi^-1 = tau ; \")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_hex_closure.py",
+    "line": 57,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  Z_C = sqrt3/2 ; minpoly = {minpoly(zc,x)} -> {ok(minpoly(zc,x)==4*x**2-3)}\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_hex_closure.py",
+    "line": 72,
+    "stated_grade": "FORCED (SELF-VALIDATING)",
+    "kind": "constant",
+    "text": "print(f\"  => the structural relationship computes 3 independent ways -> SELF-VALIDATING.\")"
+  },
+  {
+    "constant": "tau",
+    "file": "zfp_delta_pentagon.py",
+    "line": 68,
+    "stated_grade": "FORCED (DERIVED)",
+    "kind": "constant",
+    "text": "t72  = simplify(2*cos(2*pi/5))                      # = (sqrt5-1)/2 = tau = phi^-1"
+  },
+  {
+    "constant": "phi",
+    "file": "zfp_delta_pentagon.py",
+    "line": 69,
+    "stated_grade": "FORCED (DERIVED)",
+    "kind": "constant",
+    "text": "t144 = simplify(2*cos(4*pi/5))                      # = -(sqrt5+1)/2 = -phi"
+  },
+  {
+    "constant": "phi",
+    "file": "zfp_delta_pentagon.py",
+    "line": 74,
+    "stated_grade": "FORCED (DERIVED)",
+    "kind": "constant",
+    "text": "print(f\"  the regular pentagon yields phi and phi^-1 directly -> phi is DERIVED here.\")"
+  },
+  {
+    "constant": "phi",
+    "file": "zfp_delta_pentagon.py",
+    "line": 86,
+    "stated_grade": "FORCED (INPUT/ASSUMED)",
+    "kind": "constant",
+    "text": "print(f\"  L4-helix uses L4 = phi^4 + phi^-4 = {L4_phi} -> {ok(L4_phi==7)}  (phi is its INPUT)\")"
+  },
+  {
+    "constant": "z_c",
+    "file": "zfp_trifurcation.py",
+    "line": 93,
+    "stated_grade": "FORCED",
+    "kind": "constant",
+    "text": "print(f\"  branch height at |lambda|=1 is sqrt(3)/2 = Im(zeta_6) = Z_C ; \")"
+  }
+]

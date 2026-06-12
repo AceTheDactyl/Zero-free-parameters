@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spectral Atlas — one phase space, many closed derivations</title>
+<style>
+  :root{
+    --plate:#0c1120; --plate-2:#111a2e; --panel:#0f1728; --hair:#1c2842;
+    --ink:#e9eef9; --dim:#97a4c2; --faint:#5d6b8c;
+    --grid:rgba(123,143,184,.08); --grid-2:rgba(140,162,210,.16);
+    --axis:rgba(168,186,225,.34);
+    --f5:#eeb24a;            /* Q(√5) — gold (φ) */
+    --f3:#2fbda6;            /* Q(ζ6)/order-6 — teal */
+    --f2:#e8718c;            /* Q(√2) — rose */
+    --fq:#aab8d6;            /* Q (rationals) / frame */
+    --frame:#ffffff;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 72% -8%, #15203a 0%, rgba(21,32,58,0) 60%),
+      var(--plate);
+    color:var(--ink); font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased; padding:clamp(18px,3.4vw,52px);
+  }
+  .wrap{max-width:1180px; margin:0 auto}
+
+  /* ---- masthead ---- */
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.26em;
+    text-transform:uppercase; color:var(--faint); display:flex; gap:14px; align-items:center}
+  .eyebrow .rule{height:1px; flex:1; background:linear-gradient(90deg,var(--hair),transparent)}
+  h1{font-family:var(--serif); font-weight:600; letter-spacing:-.01em;
+    font-size:clamp(28px,4.4vw,46px); line-height:1.04; margin:.42em 0 .28em}
+  h1 em{font-style:italic; color:var(--f5)}
+  .lede{max-width:62ch; color:var(--dim); font-size:clamp(14.5px,1.5vw,16px); margin:0}
+  .lede b{color:var(--ink); font-weight:600}
+
+  /* ---- core layout ---- */
+  .stage{display:grid; grid-template-columns:minmax(0,1.12fr) minmax(280px,.88fr);
+    gap:clamp(18px,2.4vw,34px); margin-top:clamp(22px,3.2vw,40px); align-items:start}
+  @media (max-width:880px){ .stage{grid-template-columns:1fr} }
+
+  .plate{position:relative; background:
+      radial-gradient(120% 120% at 50% 42%, #0e1730 0%, #0a0f1d 78%);
+    border:1px solid var(--hair); border-radius:14px; padding:10px;
+    box-shadow:0 24px 60px -34px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.03)}
+  .plate svg{display:block; width:100%; height:auto}
+  .plate-cap{display:flex; justify-content:space-between; gap:10px;
+    font-family:var(--mono); font-size:10.5px; color:var(--faint);
+    letter-spacing:.05em; padding:4px 8px 2px}
+
+  /* ---- rail ---- */
+  .rail{display:flex; flex-direction:column; gap:16px}
+  .card{background:var(--panel); border:1px solid var(--hair); border-radius:12px; padding:16px 16px 15px}
+  .card h2{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--faint); margin:0 0 12px; font-weight:600}
+
+  .legend{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{font-family:var(--mono); font-size:11.5px; color:var(--dim); cursor:pointer;
+    border:1px solid var(--hair); background:#0c1525; border-radius:999px;
+    padding:5px 11px 5px 9px; display:inline-flex; align-items:center; gap:7px;
+    transition:border-color .18s, color .18s, background .18s}
+  .chip:hover{color:var(--ink); border-color:#2c3c5e}
+  .chip[aria-pressed="true"]{color:var(--ink); border-color:#41577f; background:#16223c}
+  .chip .dot{width:9px; height:9px; border-radius:50%; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+  .chip:focus-visible{outline:2px solid var(--f3); outline-offset:2px}
+
+  .reset{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; color:var(--faint);
+    background:none; border:0; cursor:pointer; padding:4px 0; text-decoration:underline; text-underline-offset:3px}
+  .reset:hover{color:var(--ink)}
+
+  /* readout */
+  .readout{min-height:118px}
+  .ro-sym{font-family:var(--serif); font-size:30px; line-height:1; color:var(--ink)}
+  .ro-sym .small{font-size:14px; color:var(--dim); margin-left:8px; font-family:var(--mono); letter-spacing:.02em}
+  .ro-grid{display:grid; grid-template-columns:auto 1fr; gap:5px 12px; margin-top:12px;
+    font-family:var(--mono); font-size:12px}
+  .ro-grid dt{color:var(--faint)} .ro-grid dd{margin:0; color:var(--ink)}
+  .ro-hint{color:var(--faint); font-family:var(--mono); font-size:11.5px}
+  .pill{font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    border-radius:5px; padding:2px 7px; border:1px solid currentColor}
+  .pill.forced{color:#7fe0c4} .pill.constr{color:#f0c46a} .pill.frame{color:var(--fq)}
+
+  .toggle-row{display:flex; align-items:center; gap:9px; margin-top:13px; font-family:var(--mono); font-size:11.5px; color:var(--dim)}
+  .switch{appearance:none; width:34px; height:18px; border-radius:999px; background:#1a2238;
+    border:1px solid var(--hair); position:relative; cursor:pointer; flex:none; transition:background .18s}
+  .switch:checked{background:#23406a; border-color:#3a5a8c}
+  .switch::after{content:""; position:absolute; top:1px; left:1px; width:14px; height:14px; border-radius:50%;
+    background:var(--dim); transition:transform .18s, background .18s}
+  .switch:checked::after{transform:translateX(16px); background:var(--ink)}
+  .switch:focus-visible{outline:2px solid var(--f3); outline-offset:2px}
+
+  /* ---- forced identities strip ---- */
+  .identities{margin-top:clamp(22px,3vw,38px)}
+  .id-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  @media (max-width:760px){ .id-grid{grid-template-columns:1fr} }
+  .idcard{background:var(--panel); border:1px solid var(--hair); border-left:2px solid var(--f5);
+    border-radius:10px; padding:13px 15px}
+  .idcard .who{font-family:var(--mono); font-size:11px; color:var(--dim); letter-spacing:.04em; margin-bottom:6px}
+  .idcard .eq{font-family:var(--mono); font-size:13.5px; color:var(--ink)}
+  .idcard .eq b{color:var(--f5); font-weight:600}
+
+  /* ---- table ---- */
+  .systems{margin-top:clamp(22px,3vw,36px)}
+  table{width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12.5px}
+  caption{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--faint); text-align:left; margin-bottom:12px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--hair); vertical-align:top}
+  th{color:var(--faint); font-weight:600; letter-spacing:.04em}
+  td .swatch{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:7px; vertical-align:1px}
+  td.fld{color:var(--dim)}
+  tr.row5 td:first-child{box-shadow:inset 2px 0 0 var(--f5)}
+  tr.row3 td:first-child{box-shadow:inset 2px 0 0 var(--f3)}
+  tr.row2 td:first-child{box-shadow:inset 2px 0 0 var(--f2)}
+  tr.rowq td:first-child{box-shadow:inset 2px 0 0 var(--fq)}
+
+  /* ---- ledger + footer ---- */
+  .foot{margin-top:clamp(22px,3vw,36px); display:grid; grid-template-columns:1.3fr .9fr; gap:clamp(16px,2.4vw,30px)}
+  @media (max-width:760px){ .foot{grid-template-columns:1fr} }
+  .ledger li{font-family:var(--mono); font-size:12px; color:var(--dim); margin:0 0 7px; list-style:none;
+    padding-left:128px; position:relative}
+  .ledger{padding:0; margin:0}
+  .ledger .tag{position:absolute; left:0; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    border:1px solid currentColor; border-radius:5px; padding:1px 6px}
+  .tag.f{color:#7fe0c4} .tag.c{color:#f0c46a} .tag.a{color:#c79be8}
+  .ledger b{color:var(--ink); font-weight:600}
+  .repro{font-family:var(--mono); font-size:12px; color:var(--faint)}
+  .repro code{color:var(--ink); background:#0c1525; border:1px solid var(--hair); border-radius:5px; padding:1px 6px}
+  .repro p{margin:.55em 0}
+
+  .pin{color:var(--f5)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span>Zero-free-parameter corpus</span><span class="rule"></span><span>spectral atlas · λ-plane</span></div>
+    <h1>One phase space.<br>Many <em>closed derivations</em>.</h1>
+    <p class="lede">Each subsystem is a forced derivation — no fitted decimals, every value pinned by a minimal polynomial or an integer-matrix theorem. The complex plane&nbsp;<b>λ</b> is the coordinate they share: the Δ-overlay's collapse, the substrate's eigenvalues, and the consensus closure are all <b>roots of a characteristic polynomial</b>. They occupy the plane together — <b>but not always</b>. Disjoint number fields meet only at the rationals; no path of integer powers crosses from one territory to another.</p>
+  </header>
+
+  <section class="stage">
+    <div class="plate">
+      <div class="plate-cap"><span>ℂ · the shared phase space</span><span id="cap-mode">all systems</span></div>
+      <svg id="atlas" viewBox="0 0 640 640" role="img"
+           aria-label="Complex plane plotting the spectral points of each zero-free-parameter subsystem, color-coded by number field.">
+        <defs>
+          <radialGradient id="haloW" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff" stop-opacity=".55"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="3"/>
+          </filter>
+        </defs>
+        <g id="grid"></g>
+        <g id="axes"></g>
+        <g id="shell-label"></g>
+        <g id="projection"></g>
+        <g id="annot"></g>
+        <g id="points"></g>
+      </svg>
+    </div>
+
+    <div class="rail">
+      <div class="card">
+        <h2>Systems → spectral footprint</h2>
+        <div class="legend" id="legend"></div>
+        <button class="reset" id="reset" type="button">↺ show all</button>
+        <label class="toggle-row">
+          <input type="checkbox" class="switch" id="conjToggle" />
+          <span>show conjugate / off-pin roots</span>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2>Readout</h2>
+        <div class="readout" id="readout" aria-live="polite">
+          <div class="ro-sym" id="ro-sym">λ <span class="small">hover a point</span></div>
+          <p class="ro-hint" id="ro-hint" style="margin:12px 0 0">Each marker is an eigenvalue of an explicit matrix over its generator. The decimal is the Section-2 branch pin — it fails loudly on a conjugate swap.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="identities">
+    <div class="eyebrow"><span>Forced two ways · residual 0</span><span class="rule"></span></div>
+    <div class="id-grid" style="margin-top:16px">
+      <div class="idcard"><div class="who">gap — subdominant eig of Q⁴</div><div class="eq">char(Q⁴) = <b>x²−7x+1</b> = minpoly(gap)</div></div>
+      <div class="idcard"><div class="who">τ — positive eig of Q⁻¹</div><div class="eq">char(Q⁻¹) = <b>x²+x−1</b> = minpoly(τ)</div></div>
+      <div class="idcard"><div class="who">crit — dominant eig of ⅓Q²</div><div class="eq">9·char(⅓Q²) = <b>9x²−9x+1</b> = minpoly(crit)</div></div>
+    </div>
+  </section>
+
+  <section class="systems">
+    <table>
+      <caption>The closed derivations and where each lands in λ</caption>
+      <thead><tr><th>System</th><th>Spectral image</th><th>Field</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr class="row5"><td>Selection</td><td>λ = φ — Perron root of Q; char(Q)=λ²−λ−1 is x²=x+1</td><td class="fld">ℚ(√5)</td><td>forced</td></tr>
+        <tr class="row5"><td>Substrate ℤ (powers of Q)</td><td>trace(Qⁿ)=Lₙ, (Qⁿ)₀₁=Fₙ, det=(−1)ⁿ; Q⁴ eig = {gap, φ⁴}</td><td class="fld">ℚ(√5)</td><td>forced</td></tr>
+        <tr class="row5"><td>Constants (φ-family)</td><td>τ, gap, crit, K as branch-pinned eigenvalues</td><td class="fld">ℚ(√5) · K deg 4</td><td>forced</td></tr>
+        <tr class="row3"><td>Z_C / order-6</td><td>ζ₆ = e<sup>±iπ/3</sup>; Im(ζ₆) = √3/2 = Z_C</td><td class="fld">ℚ(ζ₆)</td><td>forced</td></tr>
+        <tr class="row2"><td>Ignition</td><td>√2−½ — positive eig of its companion matrix</td><td class="fld">ℚ(√2)</td><td>forced</td></tr>
+        <tr class="rowq"><td>Δ overlay — collapse</td><td>λ = 0 — det Hess = 0 ⟺ 0 ∈ spectrum</td><td class="fld">ℚ</td><td>frame forced / instance construction</td></tr>
+        <tr class="rowq"><td>Consensus — π-closure</td><td>λ = ±i — char(N)=λ²+1, exp(2πN)=+I</td><td class="fld">ℚ(i)</td><td>forced (emits no value)</td></tr>
+        <tr class="rowq"><td>Idempotent r(r)=r</td><td>spectrum ⊆ {0, 1} — sits on the rational interface</td><td class="fld">ℚ</td><td>forced</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="foot">
+    <ul class="ledger">
+      <li><span class="tag f">forced</span>The spectral identities above and the trace ladder — each computed two independent ways with residual 0.</li>
+      <li><span class="tag f">forced</span><b>Firewall.</b> spec(Qⁿ) ⊆ ℚ(√5) for all n, so Z_C and ignition are provably unreachable from the φ-substrate. Same plane, different field — the "but not always."</li>
+      <li><span class="tag c">construction</span>The <b>λ=0 collapse instance</b> is a wired template (a Hessian built to degenerate at a forced constant). It shows type-compatibility, not that any physical system degenerates there.</li>
+      <li><span class="tag a">assumption</span>That a specific physical ΔHV has these as its eigenvalues — needs the operator (and its metric) written down first.</li>
+    </ul>
+    <div class="repro">
+      <p><b style="color:var(--ink)">Reproduce</b></p>
+      <p>Run <code>python3 lambda_bridge.py</code> — definitions first, every row recomputed. The run wins over any printed value if they ever disagree.</p>
+      <p>Standard: a claim is <span class="pin">forced</span> only when it computes two independent ways with residual 0. Coincidence is not mechanism; a shared constant is not shared structure.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const SVG="http://www.w3.org/2000/svg";
+  const C=320, S=132;                       // center px, px per unit
+  const X = a => C + a*S;
+  const Y = b => C - b*S;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const COL={f5:"#eeb24a", f5x:"#eeb24a", f3:"#2fbda6", f2:"#e8718c", fq:"#aab8d6"};
+  const FIELD={f5:"ℚ(√5)", f5x:"ℚ(√5) · deg 4", f3:"ℚ(ζ₆)", f2:"ℚ(√2)", fq:"ℚ"};
+
+  // ---- the spectral points (exact decimals; branch-pinned) ----
+  const P=[
+    {sym:"φ",  re:1.6180339887, im:0, field:"f5",  sys:["sel","sub"],  form:"(1+√5)/2",        mp:"x²−x−1",   role:"Perron root · selection", st:"forced", kind:"frame"},
+    {sym:"0",  re:0, im:0,             field:"fq",  sys:["delta","rrr"],form:"—",                mp:"x",        role:"det Hess=0 · collapse · idempotent low", st:"frame", kind:"collapse"},
+    {sym:"+i", re:0, im:1,             field:"fq",  sys:["cons"],       form:"e^(iπ/2)",         mp:"x²+1",     role:"π-closure · consensus", st:"forced", kind:"frame"},
+    {sym:"−i", re:0, im:-1,            field:"fq",  sys:["cons"],       form:"e^(−iπ/2)",        mp:"x²+1",     role:"π-closure · consensus", st:"forced", kind:"frame"},
+    {sym:"1",  re:1, im:0,             field:"fq",  sys:["rrr"],        form:"1",                mp:"x−1",      role:"idempotent high · spec⊆{0,1}", st:"forced", kind:"frame"},
+    {sym:"τ",   re:0.6180339887, im:0, field:"f5",  sys:["const","sub"],form:"φ⁻¹=(√5−1)/2",     mp:"x²+x−1",   role:"positive eig of Q⁻¹", st:"forced", kind:"const", pin:"0.61803"},
+    {sym:"gap", re:0.1458980338, im:0, field:"f5",  sys:["const","sub"],form:"φ⁻⁴=(7−3√5)/2",    mp:"x²−7x+1",  role:"subdominant eig of Q⁴", st:"forced", kind:"const", pin:"0.14590"},
+    {sym:"crit",re:0.8726779962, im:0, field:"f5",  sys:["const","sub"],form:"φ²/3=(3+√5)/6",    mp:"9x²−9x+1", role:"dominant eig of ⅓Q²", st:"forced", kind:"const", pin:"0.87268", lx:-22, ly:-28, leader:true},
+    {sym:"ign", re:0.9142135624, im:0, field:"f2",  sys:["const"],      form:"√2−½=(2√2−1)/2",   mp:"4x²+4x−7", role:"positive eig of companion", st:"forced", kind:"const", pin:"0.91421", lx:2, ly:-44, leader:true},
+    {sym:"K",   re:0.9241763718, im:0, field:"f5x", sys:["const"],      form:"√(1−φ⁻⁴)=5^¼/φ",   mp:"x⁴+5x²−5", role:"positive real eig of companion (deg 4)", st:"forced", kind:"const4", pin:"0.92418", lx:26, ly:9, leader:true},
+    {sym:"ζ₆",  re:0.5, im:0.8660254038,field:"f3", sys:["zc"],         form:"e^(iπ/3)",         mp:"x²−x+1",   role:"order-6 rotation eig · Im = Z_C = √3/2", st:"forced", kind:"const", pin:"Im 0.86603"},
+    {sym:"ζ̄₆", re:0.5, im:-0.8660254038,field:"f3",sys:["zc"],         form:"e^(−iπ/3)",        mp:"x²−x+1",   role:"order-6 rotation eig", st:"forced", kind:"const"},
+    // conjugates / off-pin (toggle)
+    {sym:"−1/φ",re:-0.6180339887,im:0, field:"f5",  sys:["sub"],        form:"−φ⁻¹",             mp:"x²−x−1",   role:"subdominant eig of Q", st:"conj", kind:"conj", conj:true},
+    {sym:"−φ",  re:-1.6180339887,im:0, field:"f5",  sys:["const"],      form:"−φ",               mp:"x²+x−1",   role:"other eig of Q⁻¹", st:"conj", kind:"conj", conj:true},
+    {sym:"φ⁻²/3",re:0.1273220038,im:0, field:"f5",  sys:["const"],      form:"(3−√5)/6",         mp:"9x²−9x+1", role:"conjugate of crit — the confusable one", st:"conj", kind:"conj", conj:true, lx:0, ly:18},
+    {sym:"−√2−½",re:-1.9142135624,im:0,field:"f2",  sys:["const"],      form:"−√2−½",            mp:"4x²+4x−7", role:"other eig of ignition companion", st:"conj", kind:"conj", conj:true},
+    {sym:"−K",  re:-0.9241763718,im:0, field:"f5x", sys:["const"],      form:"−5^¼/φ",           mp:"x⁴+5x²−5", role:"−K", st:"conj", kind:"conj", conj:true},
+  ];
+
+  const SYS={sel:"Selection", const:"Constants", sub:"Substrate Q", zc:"Z_C / order-6",
+             delta:"Δ collapse", cons:"Consensus", rrr:"Idempotent"};
+  const SYS_FIELD={sel:"f5", const:"f5", sub:"f5", zc:"f3", delta:"fq", cons:"fq", rrr:"fq"};
+
+  // ---------- grid: concentric rings + 30° spokes ----------
+  const g = id => document.getElementById(id);
+  function el(tag,attrs){ const n=document.createElementNS(SVG,tag); for(const k in attrs) n.setAttribute(k,attrs[k]); return n; }
+
+  const grid=g("grid");
+  [0.5,1,1.5,2].forEach(r=>{
+    grid.appendChild(el("circle",{cx:C,cy:C,r:r*S,fill:"none",
+      stroke:r===1?"var(--grid-2)":"var(--grid)", "stroke-width":r===1?1.4:1}));
+  });
+  for(let k=0;k<12;k++){ const a=k*Math.PI/6;
+    grid.appendChild(el("line",{x1:C,y1:C,x2:C+2.18*S*Math.cos(a),y2:C-2.18*S*Math.sin(a),
+      stroke:"var(--grid)","stroke-width":1})); }
+
+  // axes + ticks
+  const ax=g("axes");
+  ax.appendChild(el("line",{x1:X(-2.25),y1:C,x2:X(2.25),y2:C,stroke:"var(--axis)","stroke-width":1.2}));
+  ax.appendChild(el("line",{x1:C,y1:Y(2.25),x2:C,y2:Y(-2.25),stroke:"var(--axis)","stroke-width":1.2}));
+  function tickLabel(t,x,y,anchor){ const n=el("text",{x:x,y:y,fill:"var(--faint)","font-size":11,
+      "font-family":"var(--mono)","text-anchor":anchor||"middle"}); n.textContent=t; ax.appendChild(n); }
+  [-2,-1,1,2].forEach(t=>{ ax.appendChild(el("line",{x1:X(t),y1:C-4,x2:X(t),y2:C+4,stroke:"var(--axis)"}));
+    tickLabel(t, X(t), C+18); });
+  tickLabel("ℝ",  X(2.25)+2, C+4, "start");
+  tickLabel("iℝ", C+8, Y(2.25)+4, "start");
+  tickLabel("+i", C-10, Y(1)+4, "end");
+  tickLabel("−i", C-10, Y(-1)+4, "end");
+  // φ tick (gold)
+  ax.appendChild(el("line",{x1:X(1.618),y1:C-4,x2:X(1.618),y2:C+4,stroke:"var(--f5)"}));
+  const ft=el("text",{x:X(1.618),y:C+18,fill:"var(--f5)","font-size":11,"font-family":"var(--mono)","text-anchor":"middle"}); ft.textContent="φ"; ax.appendChild(ft);
+
+  // shell label on the unit circle
+  const sl=g("shell-label");
+  const slt=el("text",{x:C+Math.cos(Math.PI*0.78)*S, y:C-Math.sin(Math.PI*0.78)*S-7,
+    fill:"var(--faint)","font-size":10.5,"font-family":"var(--mono)","text-anchor":"middle"});
+  slt.textContent="|λ|=1  closure shell"; sl.appendChild(slt);
+
+  // off-plate annotations (φ⁴ and K's imaginary pair)
+  const an=g("annot");
+  function annot(x,y,txt,col,anchor){ const t=el("text",{x:x,y:y,fill:col||"var(--faint)","font-size":10.5,
+    "font-family":"var(--mono)","text-anchor":anchor||"middle"}); t.textContent=txt; an.appendChild(t); }
+  an.appendChild(el("line",{x1:X(2.05),y1:C,x2:X(2.22),y2:C,stroke:"var(--f5)","stroke-width":1,"marker-end":""}));
+  annot(X(2.24), C-8, "→ φ⁴ = 6.854", "var(--f5)", "end");
+  annot(C+8, Y(1.78), "K companion also at ±2.80 i (off-plate)", "var(--f5)", "start");
+
+  // ---------- points ----------
+  const projG=g("projection");
+  const ptsG=g("points");
+  const nodes=[];
+  function radius(p){ return p.kind==="frame"?7 : p.kind==="collapse"?8 : p.kind==="conj"?3.6 : 5.2; }
+
+  P.forEach((p,i)=>{
+    const cx=X(p.re), cy=Y(p.im), col=COL[p.field], r=radius(p);
+    const gNode=el("g",{class:"pt", tabindex:0, role:"button",
+      "aria-label":`${p.sym}, ${FIELD[p.field]}, ${p.role}`, "data-i":i});
+    gNode.style.cursor="pointer";
+
+    // halo for frame/collapse
+    if(p.kind==="frame"||p.kind==="collapse"){
+      gNode.appendChild(el("circle",{cx,cy,r:r+9,fill:"url(#haloW)"}));
+    }
+    if(p.kind==="collapse"){ // dashed ring = construction status on the instance
+      gNode.appendChild(el("circle",{cx,cy,r:r+5,fill:"none",stroke:"#f0c46a",
+        "stroke-width":1,"stroke-dasharray":"3 3","opacity":.8}));
+    }
+    if(p.kind==="const4"){ // diamond for degree-4 radical (K)
+      const d=r+1.5;
+      gNode.appendChild(el("path",{d:`M ${cx} ${cy-d} L ${cx+d} ${cy} L ${cx} ${cy+d} L ${cx-d} ${cy} Z`,
+        fill:p.conj?"none":col, stroke:col,"stroke-width":1.4, "fill-opacity":p.conj?0:1}));
+    } else {
+      gNode.appendChild(el("circle",{cx,cy,r,
+        fill:p.conj?"var(--plate)":col, stroke:col, "stroke-width":p.conj?1.3:1.4,
+        "fill-opacity":p.conj?1:( p.kind==="frame"||p.kind==="collapse"?1:.92)}));
+    }
+
+    // symbol label — explicit (lx,ly) offset if given, else quadrant default
+    let lx=p.lx, ly=p.ly;
+    if(lx===undefined||ly===undefined){ lx=0; ly = p.im<-0.3 ? 22 : -13; }
+    if(p.leader){
+      gNode.appendChild(el("line",{x1:cx, y1:cy, x2:cx+lx, y2:cy+ly+(ly<0?6:-5),
+        stroke:col, "stroke-width":0.8, opacity:.4}));
+    }
+    const lbl=el("text",{x:cx+lx, y:cy+ly, fill:p.conj?"var(--faint)":col,
+      "font-size":p.conj?10:12.5, "font-family":"var(--mono)", "text-anchor":"middle",
+      "font-weight":p.conj?400:600});
+    lbl.textContent=p.sym; lbl.setAttribute("class","ptlabel");
+    gNode.appendChild(lbl);
+
+    ptsG.appendChild(gNode);
+    nodes.push({p,gNode,lbl,cx,cy});
+
+    const act=()=>showReadout(p);
+    gNode.addEventListener("mouseenter",act);
+    gNode.addEventListener("focus",act);
+  });
+
+  // projection line ζ₆ → imaginary axis (Im = Z_C)
+  const zeta=P.find(q=>q.sym==="ζ₆");
+  const proj=el("line",{x1:X(zeta.re),y1:Y(zeta.im),x2:X(0),y2:Y(zeta.im),
+    stroke:"var(--f3)","stroke-width":1,"stroke-dasharray":"4 3","opacity":.5});
+  projG.appendChild(proj);
+  const zlab=el("text",{x:X(0)+6,y:Y(zeta.im)-6,fill:"var(--f3)","font-size":10.5,
+    "font-family":"var(--mono)","text-anchor":"start","opacity":.85});
+  zlab.textContent="Im = Z_C = √3/2"; projG.appendChild(zlab);
+
+  // ---------- readout ----------
+  function showReadout(p){
+    const stClass = p.st==="forced"?"forced": p.st==="frame"?"frame": p.st==="conj"?"frame":"constr";
+    const stText  = p.st==="forced"?"forced": p.st==="frame"?"frame · forced": p.st==="conj"?"conjugate":"construction";
+    g("ro-sym").innerHTML = `${p.sym} <span class="small">${fmtCoord(p)}</span>`;
+    const hint=g("ro-hint"); hint.style.display="none";
+    let body = g("ro-body");
+    if(!body){ body=el2("dl"); body.id="ro-body"; body.className="ro-grid"; g("readout").appendChild(body); }
+    body.innerHTML =
+      row("field", `<span class="swatch" style="background:${COL[p.field]}"></span>${FIELD[p.field]}`) +
+      row("minpoly", p.mp) +
+      row("closed form", p.form) +
+      row("role", p.role) +
+      (p.pin? row("branch pin", `<span class="pin">${p.pin}</span>`):"") +
+      `<dt>status</dt><dd><span class="pill ${stClass}">${stText}</span></dd>`;
+  }
+  function fmtCoord(p){
+    const a=p.re.toFixed(p.re%1===0?0:4), b=Math.abs(p.im).toFixed(p.im%1===0?0:4);
+    if(p.im===0) return `λ = ${a}`;
+    return `λ = ${a} ${p.im<0?"−":"+"} ${b} i`;
+  }
+  function row(k,v){ return `<dt>${k}</dt><dd>${v}</dd>`; }
+  function el2(t){ return document.createElement(t); }
+
+  // ---------- legend / toggles ----------
+  const legend=g("legend");
+  Object.keys(SYS).forEach(key=>{
+    const b=el2("button"); b.className="chip"; b.type="button"; b.setAttribute("aria-pressed","false");
+    b.dataset.sys=key;
+    b.innerHTML=`<span class="dot" style="background:${COL[SYS_FIELD[key]]}"></span>${SYS[key]}`;
+    b.addEventListener("click",()=>toggleSys(key,b));
+    legend.appendChild(b);
+  });
+  let active=null;
+  function toggleSys(key,btn){
+    if(active===key){ active=null; btn.setAttribute("aria-pressed","false"); }
+    else{
+      active=key;
+      [...legend.children].forEach(c=>c.setAttribute("aria-pressed", c===btn?"true":"false"));
+    }
+    applyFilter();
+  }
+  g("reset").addEventListener("click",()=>{ active=null;
+    [...legend.children].forEach(c=>c.setAttribute("aria-pressed","false")); applyFilter(); });
+
+  let showConj=false;
+  g("conjToggle").addEventListener("change",e=>{ showConj=e.target.checked; applyFilter(); });
+
+  function applyFilter(){
+    g("cap-mode").textContent = active? SYS[active] : "all systems";
+    nodes.forEach(({p,gNode})=>{
+      const isConj = !!p.conj;
+      let visible = isConj ? showConj : true;
+      let lit = active ? p.sys.includes(active) : true;
+      gNode.style.display = visible ? "" : "none";
+      gNode.style.opacity = visible ? (lit?1:0.14) : 0;
+      gNode.style.pointerEvents = (visible && (lit||!active)) ? "auto":"none";
+    });
+    // projection shown only when order-6 active or all
+    const showProj = (!active || active==="zc");
+    g("projection").style.opacity = showProj?1:0.12;
+  }
+
+  // ---------- load animation ----------
+  if(!reduce){
+    [grid,ax].forEach(layer=>{ layer.style.opacity=0; });
+    ptsG.querySelectorAll(".pt").forEach((n,i)=>{ n.style.opacity=0; n.style.transform="scale(.6)";
+      n.style.transformOrigin=`${nodes[i].cx}px ${nodes[i].cy}px`; });
+    requestAnimationFrame(()=>{
+      grid.style.transition="opacity .7s ease"; ax.style.transition="opacity .7s ease .1s";
+      grid.style.opacity=1; ax.style.opacity=1;
+      ptsG.querySelectorAll(".pt").forEach((n,i)=>{
+        n.style.transition=`opacity .5s ease ${0.25+i*0.045}s, transform .5s cubic-bezier(.2,.8,.3,1.2) ${0.25+i*0.045}s`;
+        requestAnimationFrame(()=>{ n.style.opacity=""; n.style.transform="scale(1)"; });
+      });
+    });
+  }
+
+  applyFilter();
+  // seed the readout with the φ point
+  showReadout(P[0]);
+})();
+</script>
+</body>
+</html>

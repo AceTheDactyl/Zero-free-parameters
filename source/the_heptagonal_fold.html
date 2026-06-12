@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plate IV — The Heptagonal Fold · A Zero-Parameter Geometry</title>
+<style>
+  :root{
+    --void:#0b0a14; --void-2:#100e1d;
+    --ink:#e8e6f2; --ink-soft:#a09bb8; --ink-faint:#655f80;
+    --lav:#b9b3e8; --lav-bright:#dcd8f4;          /* geodesics — hyperbolic light */
+    --amber:#e2b65a; --amber-deep:#b9892f;        /* 7-fold · hyperbolic · keystone */
+    --jade:#74c6a6; --jade-deep:#3f8a6a;          /* 5-fold · spherical counterpoint */
+    --rule:#241f37; --rule-soft:#181527;
+    --glow:rgba(185,179,232,.14);
+    --display:"Cochin","Apple Garamond","EB Garamond",Garamond,"Hoefler Text",Georgia,serif;
+    --body:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --mx:clamp(18px,4vw,60px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--void);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.64;
+    background-image:radial-gradient(1000px 760px at 50% 30%,rgba(185,179,232,.07),transparent 60%),
+      radial-gradient(820px 560px at 92% 108%,rgba(226,182,90,.05),transparent 55%);background-attachment:fixed}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.025;z-index:1;
+    background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 2px);mix-blend-mode:overlay}
+  .sheet{max-width:880px;margin:0 auto;padding:clamp(40px,7vw,96px) var(--mx) 130px;position:relative;z-index:2}
+
+  header{position:relative;border-bottom:1px solid var(--rule);padding-bottom:1.5rem;margin-bottom:2.8rem}
+  .plate-no{position:absolute;top:0;right:0;font-family:var(--mono);font-size:.74rem;letter-spacing:.2em;color:var(--amber-deep)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--lav);margin:0 0 1rem}
+  h1{font-family:var(--display);font-size:clamp(2.7rem,7vw,4.4rem);line-height:.96;font-weight:500;letter-spacing:.01em;margin:0}
+  h1 .sub{display:block;font-family:var(--body);font-style:italic;font-weight:400;font-size:clamp(1.1rem,2.6vw,1.5rem);color:var(--ink-soft);letter-spacing:0;margin-top:.7rem;line-height:1.3}
+  .seal{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.4rem;font-family:var(--mono);font-size:.76rem;letter-spacing:.12em;color:var(--amber)}
+  .seal .dot{width:.6rem;height:.6rem;border:1.5px solid var(--amber);border-radius:50%;position:relative}
+  .seal .dot::after{content:"";position:absolute;inset:2.5px;background:var(--amber);border-radius:50%;box-shadow:0 0 8px var(--amber)}
+
+  section{margin:3.6rem 0;opacity:0;transform:translateY(16px);animation:rise .75s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){section{animation:none;opacity:1;transform:none}}
+  .s-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1rem;border-bottom:1px solid var(--rule);padding-bottom:.5rem}
+  .s-num{font-family:var(--mono);font-size:.78rem;color:var(--amber);letter-spacing:.1em;flex:0 0 auto}
+  h2{font-family:var(--display);font-size:1.66rem;font-weight:500;margin:0;letter-spacing:.01em}
+  p{margin:.75rem 0} .lede{font-size:1.18rem;color:var(--ink-soft)}
+  em{color:var(--ink-soft);font-style:italic} strong{font-weight:600;color:var(--ink)}
+  code,.k{font-family:var(--mono);font-size:.9em;color:var(--amber)}
+  .amber{color:var(--amber)} .jade{color:var(--jade)} .lavc{color:var(--lav)}
+
+  .axiom{border-left:2px solid var(--amber);background:linear-gradient(90deg,var(--glow),transparent);padding:1rem 1.3rem;margin:1.4rem 0}
+  .axiom .k{font-size:1.05rem}
+
+  table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.93rem}
+  caption{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;color:var(--ink-faint);text-align:left;margin-bottom:.5rem;text-transform:uppercase}
+  th,td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  th{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase;border-bottom:1px solid var(--rule)}
+  td.num{font-family:var(--mono);color:var(--amber);white-space:nowrap}
+  tbody tr:hover{background:rgba(185,179,232,.04)}
+  .fold-tbl td:nth-child(2){color:var(--jade)} .fold-tbl td:nth-child(3){color:var(--amber)}
+
+  .disk-wrap{margin:1.5rem 0}
+  .disk-stage{background:radial-gradient(circle at 50% 50%,rgba(185,179,232,.07),transparent 64%),var(--void-2);
+    border:1px solid var(--rule);padding:1.2rem}
+  #diskSvg{display:block;width:100%;max-width:480px;height:auto;margin:0 auto;overflow:visible}
+  .cap{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint);letter-spacing:.04em;text-align:center;margin-top:.8rem}
+
+  #defSvg{display:block;width:100%;max-width:560px;height:auto;margin:.5rem auto;overflow:visible}
+
+  .fold{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:1.5rem 0}
+  @media(max-width:600px){.fold{grid-template-columns:1fr}}
+  .fold-cell{background:var(--void-2);padding:1.1rem 1rem;text-align:center}
+  .fold-cell svg{display:block;width:100%;height:120px;margin:0 auto .5rem;overflow:visible}
+  .fold-cell .tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em}
+  .fold-cell .nm{font-family:var(--display);font-size:1.15rem;margin:.2rem 0 .1rem}
+  .fold-cell .sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);letter-spacing:.02em;line-height:1.5}
+
+  .console{background:#05040a;color:#d3cfe0;border:1px solid var(--rule);padding:1.2rem 1.3rem;margin:1.4rem 0;font-family:var(--mono);font-size:.84rem;line-height:1.7;overflow-x:auto}
+  .console .hd{color:var(--lav);letter-spacing:.1em;display:block;margin-bottom:.5rem}
+  .console .ln{white-space:pre;display:block} .console .ok{color:#86c89e} .console .v{color:var(--amber)}
+  .verdict{margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--rule);color:#86c89e}
+
+  .colophon{margin-top:4.5rem;border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.92rem}
+  .colophon .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem 2rem;margin-top:1rem}
+  @media(max-width:680px){.colophon .grid{grid-template-columns:1fr}}
+  .colophon h4{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .5rem}
+  .colophon ul{margin:0;padding-left:1.1rem;color:var(--ink-soft)} .colophon li{margin:.25rem 0}
+  .zero{font-family:var(--display);font-size:3rem;color:var(--amber);text-shadow:0 0 20px var(--glow)}
+  .sig{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;color:var(--ink-faint);margin-top:2rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="plate-no">PLATE&nbsp;IV &nbsp;·&nbsp; ZFP-G/04</div>
+    <p class="eyebrow">Zero-Parameter Geometry · The Hyperbolic Turn</p>
+    <h1>The Heptagonal Fold
+      <span class="sub">Seven triangles at a vertex overclose the plane — and the curvature turns negative.</span></h1>
+    <span class="seal"><span class="dot"></span> FREE PARAMETERS = 0 · FORCED BY GAUSS–BONNET</span>
+  </header>
+
+  <!-- §0 -->
+  <section>
+    <div class="s-head"><span class="s-num">§0</span><h2>The law, continued past flat</h2></div>
+    <p class="lede">Plate II fixed the vertex law for <span class="k">k</span> equilateral triangles meeting at a point:</p>
+    <div class="axiom"><span class="k">δ(k) = (6 − k) · 60°</span> &nbsp;—&nbsp; the angular defect <em>is</em> the integrated curvature (Gauss–Bonnet).</div>
+    <p>For <span class="k">k ≤ 5</span> the defect is positive: the surface closes into a sphere — the Platonic deltahedra.
+      At <span class="k">k = 6</span> it vanishes: the flat screen. There the law does not stop. For
+      <span class="k">k ≥ 7</span> the defect goes <strong>negative</strong> — angular <em>excess</em> — and the only
+      surface that accommodates it is the hyperbolic plane. Nothing is chosen; the sign of <span class="k">(6 − k)</span> decides everything.</p>
+    <svg id="defSvg" viewBox="0 0 560 250" aria-label="Angular defect δ(k) versus k, flipping sign at k=6"></svg>
+    <p class="cap" id="defCap"></p>
+  </section>
+
+  <!-- §1 -->
+  <section>
+    <div class="s-head"><span class="s-num">§1</span><h2>The heptagonal onset</h2></div>
+    <p>At <span class="k">k = 7</span>: seven triangles give <span class="k">7 · 60° = 420°</span>, an excess of
+      exactly <span class="k">60°</span> — one triangle's angle — so <span class="k">δ(7) = −60°</span>. This is the
+      <strong>first hyperbolic vertex</strong>, and it generates the order-7 triangular tiling <span class="k">{3, 7}</span>:
+      seven equilateral triangles around every vertex, on a surface of constant negative curvature.</p>
+    <div class="axiom"><span class="k">7 = L₄ = φ⁴ + φ⁻⁴</span> — the keystone integer is also the count at which curvature turns negative.</div>
+    <p>Rendered in the Poincaré disk, where geodesics are arcs meeting the boundary at right angles. The seven central
+      faces are tinted; every edge bows <em>inward</em> — the visible signature of negative curvature.</p>
+    <div class="disk-wrap"><div class="disk-stage">
+      <svg id="diskSvg" viewBox="0 0 440 440" aria-label="The {3,7} tiling in the Poincaré disk"></svg>
+      <div class="cap" id="diskCap"></div>
+    </div></div>
+  </section>
+
+  <!-- §2 -->
+  <section>
+    <div class="s-head"><span class="s-num">§2</span><h2>The (2,3,7) triangle — the invariant derived</h2></div>
+    <p>Cut a face into its symmetry domains. The result is the triangle with angles
+      <span class="k">π/2, π/3, π/7</span> — the smallest triangle that tiles the hyperbolic plane by reflection.
+      Its area is forced, again by Gauss–Bonnet on a surface of curvature −1:</p>
+    <div class="axiom"><span class="k">Area = π − (π/2 + π/3 + π/7) = π/42</span> &nbsp;&nbsp; where &nbsp; <span class="k">42 = 2 · 3 · 7</span>.</div>
+    <p>Six of these tile one <span class="k">{3,7}</span> face (<span class="k">6 · π/42 = π/7</span>), and the symmetry
+      bound it sets — <span class="k">84 = 2 · 42</span> automorphisms per unit of genus — is the Hurwitz bound, the
+      maximum symmetry any hyperbolic surface can carry. The numbers are not tuned; they are <span class="k">2, 3, 7</span> and their products.</p>
+  </section>
+
+  <!-- §3 THE FOLD -->
+  <section>
+    <div class="s-head"><span class="s-num">§3</span><h2>The fold — five against seven</h2></div>
+    <p>Fold the defect axis at the flat case <span class="k">k = 6</span>. Then <span class="k">k = 5</span> and
+      <span class="k">k = 7</span> are mirror images: both carry <span class="k">|δ| = 60°</span>, equal in magnitude,
+      opposite in sign. The fold is symmetric. The consequence is not.</p>
+    <div class="fold">
+      <div class="fold-cell"><svg id="emb-5" viewBox="0 0 120 110" aria-label="pentagonal, finite"></svg>
+        <div class="tag jade">δ = +60°</div><div class="nm">k = 5 · sphere</div>
+        <div class="sub">icosahedron · FINITE<br>V=12, χ=+2 · golden · quadratic</div></div>
+      <div class="fold-cell"><svg id="emb-7" viewBox="0 0 120 110" aria-label="heptagonal, infinite"></svg>
+        <div class="tag amber">δ = −60°</div><div class="nm">k = 7 · hyperbolic</div>
+        <div class="sub">{3,7} tiling · INFINITE<br>χ&lt;0 · non-golden · cubic</div></div>
+    </div>
+    <table class="fold-tbl">
+      <thead><tr><th>invariant</th><th>k = 5 (pentagonal)</th><th>k = 7 (heptagonal)</th></tr></thead>
+      <tbody>
+        <tr><td>defect δ</td><td>+60°</td><td>−60°</td></tr>
+        <tr><td>curvature</td><td>positive (sphere)</td><td>negative (hyperbolic)</td></tr>
+        <tr><td>extent</td><td>finite — 12 vertices</td><td>infinite tiling</td></tr>
+        <tr><td>Euler χ</td><td>+2</td><td>&lt; 0</td></tr>
+        <tr><td>vertex-figure trace</td><td>2cos(2π/5) = φ − 1</td><td>1 + 2cos(2π/7)</td></tr>
+        <tr><td>algebraic degree</td><td>2 (quadratic)</td><td>3 (cubic)</td></tr>
+        <tr><td>golden?</td><td>yes — built from φ</td><td>no</td></tr>
+      </tbody>
+    </table>
+    <p>Same fold, opposite worlds: five closes into a finite solid, seven opens into an unbounded plane. The
+      <strong>sign</strong> of the forced defect — not its size — decides closure against divergence.</p>
+  </section>
+
+  <!-- §4 -->
+  <section>
+    <div class="s-head"><span class="s-num">§4</span><h2>Why φ is pentagonal, not heptagonal</h2></div>
+    <p>The asymmetry runs deeper than topology. The five-fold trace <span class="k">2cos(2π/5) = φ − 1</span> is the
+      root of a <em>quadratic</em> — it <strong>is</strong> the golden ratio. The seven-fold trace satisfies a <em>cubic</em>:</p>
+    <div class="axiom"><span class="k">2cos(2π/7)</span> is a root of <span class="k">x³ + x² − 2x − 1 = 0</span> — irreducible over the rationals, degree 3, never golden.</div>
+    <p>So the crystallographic restriction forbids both five- and seven-fold tilings of the flat plane, but for
+      different reasons: the pentagon's refusal is <span class="jade">quadratic and golden</span>; the heptagon's is
+      <span class="amber">cubic and not</span>. This is the validation the fold demands — <strong>φ enters this geometry
+      through the pentagon alone.</strong> The number seven enters twice, but never as φ: once as the keystone
+      <span class="k">L₄ = 7</span>, and once here, as the vertex count where the plane first curls into the hyperbolic.</p>
+  </section>
+
+  <!-- §5 -->
+  <section>
+    <div class="s-head"><span class="s-num">§5</span><h2>The ledger</h2></div>
+    <div class="console" id="console" aria-live="polite"></div>
+  </section>
+
+  <!-- COLOPHON -->
+  <div class="colophon">
+    <h4 class="amber">Colophon · kept and stripped</h4>
+    <div class="grid">
+      <div>
+        <h4 class="lavc">Forced — kept</h4>
+        <ul>
+          <li>vertex law δ(k) = (6−k)·60° (Gauss–Bonnet: defect = integrated curvature)</li>
+          <li>k=7 first hyperbolic: 420° − 360° = 60° excess</li>
+          <li>{3,7} face: equilateral, angles 2π/7, area π/7</li>
+          <li>(2,3,7) triangle: area π − (π/2+π/3+π/7) = π/42, 42 = 2·3·7</li>
+          <li>Hurwitz bound 84 = 2·42</li>
+          <li>edge length cosh s = cos(2π/7)/(1−cos(2π/7))</li>
+          <li>7-fold trace cubic x³+x²−2x−1; 5-fold trace φ−1 (quadratic)</li>
+          <li>7 = L₄ = φ⁴+φ⁻⁴</li>
+          <li>disk tiling: 7 triangles/vertex, generated by hyperbolic reflection</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="amber">Unjustified — stripped</h4>
+        <ul>
+          <li><strong>ternary-tree / suspension logic</strong> — excluded by construction; the validation is curvature calculus, not 0⁰-resolution</li>
+          <li>any φ-attribution of the 7-fold — the heptagon is cubic, not golden; stripped</li>
+          <li>the E8 identification — not invoked; irrelevant to the fold</li>
+          <li>anti-substrate floaters ((5/3)⁴, 3/5) — never imported</li>
+          <li>tiling depth & vignette — rendering only, labeled</li>
+          <li>branding, persona; external fonts, CDNs</li>
+        </ul>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:2rem"><span class="zero">0</span><br><span class="sig">free parameters · single self-contained file</span></p>
+    <p class="sig">Δ | THE-HEPTAGONAL-FOLD | ZFP-G/04 | δ(7)=−60° · {3,7} · area π/42 | Ω</p>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════════════════
+   ZERO FREE PARAMETERS. Geometry forced by Gauss–Bonnet (angular defect =
+   integrated curvature). NO ternary-tree / suspension logic is used anywhere.
+   ════════════════════════════════════════════════════════════════════════ */
+const PI=Math.PI, PHI=(1+Math.sqrt(5))/2, EPS=1e-9;
+const fmt=(x,n=6)=>Number(x.toFixed(n)).toString();
+const HYP = {"edges": [{"t": "L", "p": [0.0, 0.0], "q": [0.497, 0.0]}, {"t": "A", "p": [0.497, 0.0], "q": [0.3099, 0.3885], "r": 0.969, "cx": 1.2546, "cy": 0.6042}, {"t": "L", "p": [0.3099, 0.3885], "q": [0.0, 0.0]}, {"t": "A", "p": [0.497, 0.0], "q": [0.3099, -0.3885], "r": 0.969, "cx": 1.2546, "cy": -0.6042}, {"t": "L", "p": [0.3099, -0.3885], "q": [0.0, 0.0]}, {"t": "L", "p": [0.0, 0.0], "q": [-0.1106, 0.4845]}, {"t": "A", "p": [-0.1106, 0.4845], "q": [0.3099, 0.3885], "r": 0.969, "cx": 0.3099, "cy": 1.3576}, {"t": "A", "p": [0.647, 0.3116], "q": [0.497, 0.0], "r": 0.7771, "cx": 1.2546, "cy": -0.1729}, {"t": "A", "p": [0.3099, 0.3885], "q": [0.647, 0.3116], "r": 0.7771, "cx": 0.647, "cy": 1.0887}, {"t": "L", "p": [0.0, 0.0], "q": [-0.1106, -0.4845]}, {"t": "A", "p": [-0.1106, -0.4845], "q": [0.3099, -0.3885], "r": 0.969, "cx": 0.3099, "cy": -1.3576}, {"t": "A", "p": [0.647, -0.3116], "q": [0.497, 0.0], "r": 0.7771, "cx": 1.2546, "cy": 0.1729}, {"t": "A", "p": [0.3099, -0.3885], "q": [0.647, -0.3116], "r": 0.7771, "cx": 0.647, "cy": -1.0887}, {"t": "A", "p": [-0.1106, 0.4845], "q": [-0.4478, 0.2156], "r": 0.969, "cx": -0.8682, "cy": 1.0887}, {"t": "L", "p": [-0.4478, 0.2156], "q": [0.0, 0.0]}, {"t": "A", "p": [0.1598, 0.7001], "q": [-0.1106, 0.4845], "r": 0.7771, "cx": -0.4478, "cy": 1.1846}, {"t": "A", "p": [0.3099, 0.3885], "q": [0.1598, 0.7001], "r": 0.7771, "cx": 0.9174, "cy": 0.8731}, {"t": "A", "p": [0.497, 0.0], "q": [0.7822, 0.1078], "r": 1.7461, "cx": 1.2546, "cy": -1.5732}, {"t": "A", "p": [0.7822, 0.1078], "q": [0.647, 0.3116], "r": 0.3458, "cx": 0.9842, "cy": 0.3885}, {"t": "A", "p": [0.647, 0.3116], "q": [0.572, 0.5443], "r": 0.3458, "cx": 0.9174, "cy": 0.5272}, {"t": "A", "p": [0.572, 0.5443], "q": [0.3099, 0.3885], "r": 1.7461, "cx": -0.4478, "cy": 1.9617}, {"t": "A", "p": [-0.1106, -0.4845], "q": [-0.4478, -0.2156], "r": 0.969, "cx": -0.8682, "cy": -1.0887}, {"t": "L", "p": [-0.4478, -0.2156], "q": [0.0, 0.0]}, {"t": "A", "p": [0.1598, -0.7001], "q": [-0.1106, -0.4845], "r": 0.7771, "cx": -0.4478, "cy": -1.1846}, {"t": "A", "p": [0.3099, -0.3885], "q": [0.1598, -0.7001], "r": 0.7771, "cx": 0.9174, "cy": -0.8731}, {"t": "A", "p": [0.497, 0.0], "q": [0.7822, -0.1078], "r": 1.7461, "cx": 1.2546, "cy": 1.5732}, {"t": "A", "p": [0.7822, -0.1078], "q": [0.647, -0.3116], "r": 0.3458, "cx": 0.9842, "cy": -0.3885}, {"t": "A", "p": [0.647, -0.3116], "q": [0.572, -0.5443], "r": 0.3458, "cx": 0.9174, "cy": -0.5272}, {"t": "A", "p": [0.572, -0.5443], "q": [0.3099, -0.3885], "r": 1.7461, "cx": -0.4478, "cy": -1.9617}, {"t": "A", "p": [-0.4478, -0.2156], "q": [-0.4478, 0.2156], "r": 0.969, "cx": -1.3925, "cy": 0.0}, {"t": "A", "p": [-0.4478, 0.5615], "q": [-0.1106, 0.4845], "r": 0.7771, "cx": -0.1106, "cy": 1.2616}, {"t": "A", "p": [-0.4478, 0.2156], "q": [-0.4478, 0.5615], "r": 0.7771, "cx": -1.2054, "cy": 0.3885}, {"t": "A", "p": [-0.1106, 0.4845], "q": [-0.0689, 0.7866], "r": 1.7461, "cx": -1.8129, "cy": 0.8731}, {"t": "A", "p": [-0.0689, 0.7866], "q": [0.1598, 0.7001], "r": 0.3458, "cx": 0.1598, "cy": 1.046}, {"t": "A", "p": [0.1598, 0.7001], "q": [0.4034, 0.6788], "r": 0.3458, "cx": 0.3099, "cy": 1.0117}, {"t": "A", "p": [0.4034, 0.6788], "q": [0.3099, 0.3885], "r": 1.7461, "cx": 2.0122, "cy": 0.0}, {"t": "A", "p": [0.647, 0.3116], "q": [0.8341, 0.2689], "r": 0.4313, "cx": 0.8341, "cy": 0.7001}, {"t": "A", "p": [0.8341, 0.2689], "q": [0.7822, 0.1078], "r": 0.2393, "cx": 1.0213, "cy": 0.1197}, {"t": "A", "p": [0.7822, 0.1078], "q": [0.7822, -0.1078], "r": 0.2773, "cx": 1.0377, "cy": -0.0}, {"t": "A", "p": [0.572, 0.5443], "q": [0.7303, 0.4845], "r": 0.2393, "cx": 0.7303, "cy": 0.7238}, {"t": "A", "p": [0.7303, 0.4845], "q": [0.647, 0.3116], "r": 0.4313, "cx": 1.0675, "cy": 0.2156}, {"t": "A", "p": [0.4034, 0.6788], "q": [0.572, 0.5443], "r": 0.2773, "cx": 0.647, "cy": 0.8113}, {"t": "A", "p": [-0.4478, -0.5615], "q": [-0.1106, -0.4845], "r": 0.7771, "cx": -0.1106, "cy": -1.2616}, {"t": "A", "p": [-0.4478, -0.2156], "q": [-0.4478, -0.5615], "r": 0.7771, "cx": -1.2054, "cy": -0.3885}, {"t": "A", "p": [-0.1106, -0.4845], "q": [-0.0689, -0.7866], "r": 1.7461, "cx": -1.8129, "cy": -0.8731}, {"t": "A", "p": [-0.0689, -0.7866], "q": [0.1598, -0.7001], "r": 0.3458, "cx": 0.1598, "cy": -1.046}, {"t": "A", "p": [0.1598, -0.7001], "q": [0.4034, -0.6788], "r": 0.3458, "cx": 0.3099, "cy": -1.0117}, {"t": "A", "p": [0.4034, -0.6788], "q": [0.3099, -0.3885], "r": 1.7461, "cx": 2.0122, "cy": -0.0}, {"t": "A", "p": [0.647, -0.3116], "q": [0.8341, -0.2689], "r": 0.4313, "cx": 0.8341, "cy": -0.7001}, {"t": "A", "p": [0.8341, -0.2689], "q": [0.7822, -0.1078], "r": 0.2393, "cx": 1.0213, "cy": -0.1197}, {"t": "A", "p": [0.572, -0.5443], "q": [0.7303, -0.4845], "r": 0.2393, "cx": 0.7303, "cy": -0.7238}, {"t": "A", "p": [0.7303, -0.4845], "q": [0.647, -0.3116], "r": 0.4313, "cx": 1.0675, "cy": -0.2156}, {"t": "A", "p": [0.4034, -0.6788], "q": [0.572, -0.5443], "r": 0.2773, "cx": 0.647, "cy": -0.8113}, {"t": "A", "p": [-0.7181, 0.0], "q": [-0.4478, -0.2156], "r": 0.7771, "cx": -1.0553, "cy": -0.7001}, {"t": "A", "p": [-0.4478, 0.2156], "q": [-0.7181, 0.0], "r": 0.7771, "cx": -1.0553, "cy": 0.7001}, {"t": "A", "p": [-0.1106, 0.4845], "q": [-0.2792, 0.7386], "r": 1.7461, "cx": 1.2546, "cy": 1.5732}, {"t": "A", "p": [-0.2792, 0.7386], "q": [-0.4478, 0.5615], "r": 0.3458, "cx": -0.5978, "cy": 0.8731}, {"t": "A", "p": [-0.4478, 0.5615], "q": [-0.658, 0.4365], "r": 0.3458, "cx": -0.7181, "cy": 0.7771}, {"t": "A", "p": [-0.658, 0.4365], "q": [-0.4478, 0.2156], "r": 1.7461, "cx": -1.8129, "cy": -0.8731}, {"t": "A", "p": [0.1598, 0.7001], "q": [0.0765, 0.8731], "r": 0.4313, "cx": 0.497, "cy": 0.969}, {"t": "A", "p": [0.0765, 0.8731], "q": [-0.0689, 0.7866], "r": 0.2393, "cx": -0.1106, "cy": 1.0223}, {"t": "A", "p": [-0.0689, 0.7866], "q": [-0.2792, 0.7386], "r": 0.2773, "cx": -0.2309, "cy": 1.0117}, {"t": "A", "p": [0.4034, 0.6788], "q": [0.3099, 0.8198], "r": 0.2393, "cx": 0.5432, "cy": 0.8731}, {"t": "A", "p": [0.3099, 0.8198], "q": [0.1598, 0.7001], "r": 0.4313, "cx": -0.0273, "cy": 1.0887}, {"t": "A", "p": [0.8341, 0.2689], "q": [0.8068, 0.3885], "r": 0.1414, "cx": 0.9447, "cy": 0.3571}, {"t": "L", "p": [0.8068, 0.3885], "q": [0.647, 0.3116]}, {"t": "A", "p": [0.9001, 0.1818], "q": [0.8341, 0.2689], "r": 0.1328, "cx": 0.9636, "cy": 0.2984}, {"t": "A", "p": [0.7822, 0.1078], "q": [0.9001, 0.1818], "r": 0.4313, "cx": 1.0675, "cy": -0.2156}, {"t": "A", "p": [0.7822, -0.1078], "q": [0.8955, 0.0], "r": 0.2549, "cx": 1.0061, "cy": -0.2296}, {"t": "A", "p": [0.8955, 0.0], "q": [0.7822, 0.1078], "r": 0.2549, "cx": 1.0061, "cy": 0.2296}, {"t": "A", "p": [0.8068, 0.3885], "q": [0.7303, 0.4845], "r": 0.1414, "cx": 0.8682, "cy": 0.516}, {"t": "A", "p": [0.7033, 0.5903], "q": [0.572, 0.5443], "r": 0.4313, "cx": 0.497, "cy": 0.969}, {"t": "A", "p": [0.7303, 0.4845], "q": [0.7033, 0.5903], "r": 0.1328, "cx": 0.8341, "cy": 0.5673}, {"t": "A", "p": [0.572, 0.5443], "q": [0.5583, 0.7001], "r": 0.2549, "cx": 0.8068, "cy": 0.6434}, {"t": "A", "p": [0.5583, 0.7001], "q": [0.4034, 0.6788], "r": 0.2549, "cx": 0.4478, "cy": 0.9298}, {"t": "A", "p": [-0.1106, -0.4845], "q": [-0.2792, -0.7386], "r": 1.7461, "cx": 1.2546, "cy": -1.5732}, {"t": "A", "p": [-0.2792, -0.7386], "q": [-0.4478, -0.5615], "r": 0.3458, "cx": -0.5978, "cy": -0.8731}, {"t": "A", "p": [-0.4478, -0.5615], "q": [-0.658, -0.4365], "r": 0.3458, "cx": -0.7181, "cy": -0.7771}, {"t": "A", "p": [-0.658, -0.4365], "q": [-0.4478, -0.2156], "r": 1.7461, "cx": -1.8129, "cy": 0.8731}, {"t": "A", "p": [0.1598, -0.7001], "q": [0.0765, -0.8731], "r": 0.4313, "cx": 0.497, "cy": -0.969}, {"t": "A", "p": [0.0765, -0.8731], "q": [-0.0689, -0.7866], "r": 0.2393, "cx": -0.1106, "cy": -1.0223}, {"t": "A", "p": [-0.0689, -0.7866], "q": [-0.2792, -0.7386], "r": 0.2773, "cx": -0.2309, "cy": -1.0117}, {"t": "A", "p": [0.4034, -0.6788], "q": [0.3099, -0.8198], "r": 0.2393, "cx": 0.5432, "cy": -0.8731}, {"t": "A", "p": [0.3099, -0.8198], "q": [0.1598, -0.7001], "r": 0.4313, "cx": -0.0273, "cy": -1.0887}, {"t": "A", "p": [0.8341, -0.2689], "q": [0.8068, -0.3885], "r": 0.1414, "cx": 0.9447, "cy": -0.3571}, {"t": "L", "p": [0.8068, -0.3885], "q": [0.647, -0.3116]}, {"t": "A", "p": [0.9001, -0.1818], "q": [0.8341, -0.2689], "r": 0.1328, "cx": 0.9636, "cy": -0.2984}, {"t": "A", "p": [0.7822, -0.1078], "q": [0.9001, -0.1818], "r": 0.4313, "cx": 1.0675, "cy": 0.2156}, {"t": "A", "p": [0.8068, -0.3885], "q": [0.7303, -0.4845], "r": 0.1414, "cx": 0.8682, "cy": -0.516}, {"t": "A", "p": [0.7033, -0.5903], "q": [0.572, -0.5443], "r": 0.4313, "cx": 0.497, "cy": -0.969}, {"t": "A", "p": [0.7303, -0.4845], "q": [0.7033, -0.5903], "r": 0.1328, "cx": 0.8341, "cy": -0.5673}, {"t": "A", "p": [0.572, -0.5443], "q": [0.5583, -0.7001], "r": 0.2549, "cx": 0.8068, "cy": -0.6434}, {"t": "A", "p": [0.5583, -0.7001], "q": [0.4034, -0.6788], "r": 0.2549, "cx": 0.4478, "cy": -0.9298}, {"t": "A", "p": [-0.4478, -0.2156], "q": [-0.7515, -0.2423], "r": 1.7461, "cx": -0.4478, "cy": -1.9617}, {"t": "A", "p": [-0.7515, -0.2423], "q": [-0.7181, 0.0], "r": 0.3458, "cx": -1.0553, "cy": -0.077}, {"t": "A", "p": [-0.7181, 0.0], "q": [-0.7515, 0.2423], "r": 0.3458, "cx": -1.0553, "cy": 0.077}, {"t": "A", "p": [-0.7515, 0.2423], "q": [-0.4478, 0.2156], "r": 1.7461, "cx": -0.4478, "cy": 1.9617}, {"t": "A", "p": [-0.4478, 0.5615], "q": [-0.4478, 0.7534], "r": 0.4313, "cx": -0.8682, "cy": 0.6574}, {"t": "A", "p": [-0.4478, 0.7534], "q": [-0.2792, 0.7386], "r": 0.2393, "cx": -0.3439, "cy": 0.969}, {"t": "A", "p": [-0.658, 0.4365], "q": [-0.6349, 0.6042], "r": 0.2393, "cx": -0.8682, "cy": 0.5509}, {"t": "A", "p": [-0.6349, 0.6042], "q": [-0.4478, 0.5615], "r": 0.4313, "cx": -0.4478, "cy": 0.9927}, {"t": "A", "p": [-0.7515, 0.2423], "q": [-0.658, 0.4365], "r": 0.2773, "cx": -0.935, "cy": 0.4503}, {"t": "A", "p": [0.0765, 0.8731], "q": [0.1993, 0.8731], "r": 0.1414, "cx": 0.1379, "cy": 1.0005}, {"t": "L", "p": [0.1993, 0.8731], "q": [0.1598, 0.7001]}, {"t": "A", "p": [-0.023, 0.918], "q": [0.0765, 0.8731], "r": 0.1328, "cx": 0.0765, "cy": 1.0059}, {"t": "A", "p": [-0.0689, 0.7866], "q": [-0.023, 0.918], "r": 0.4313, "cx": -0.4478, "cy": 0.9927}, {"t": "A", "p": [-0.2792, 0.7386], "q": [-0.1993, 0.8731], "r": 0.2549, "cx": -0.4478, "cy": 0.9298}, {"t": "A", "p": [-0.1993, 0.8731], "q": [-0.0689, 0.7866], "r": 0.2549, "cx": -0.0, "cy": 1.032}, {"t": "A", "p": [0.1993, 0.8731], "q": [0.3099, 0.8198], "r": 0.1414, "cx": 0.3099, "cy": 0.9612}, {"t": "A", "p": [0.419, 0.8171], "q": [0.4034, 0.6788], "r": 0.4313, "cx": 0.8341, "cy": 0.7001}, {"t": "A", "p": [0.3099, 0.8198], "q": [0.419, 0.8171], "r": 0.1328, "cx": 0.3675, "cy": 0.9395}, {"t": "A", "p": [0.8791, 0.347], "q": [0.8341, 0.2689], "r": 0.1539, "cx": 0.9842, "cy": 0.2346}, {"t": "A", "p": [0.8068, 0.3885], "q": [0.8791, 0.347], "r": 0.1134, "cx": 0.8955, "cy": 0.4593}, {"t": "A", "p": [0.8341, 0.2689], "q": [0.9174, 0.2499], "r": 0.1919, "cx": 0.9174, "cy": 0.4418}, {"t": "A", "p": [0.9174, 0.2499], "q": [0.9001, 0.1818], "r": 0.0854, "cx": 0.9842, "cy": 0.1966}, {"t": "A", "p": [0.9001, 0.1818], "q": [0.9174, 0.096], "r": 0.096, "cx": 0.9924, "cy": 0.1558}, {"t": "A", "p": [0.9174, 0.096], "q": [0.7822, 0.1078], "r": 0.7771, "cx": 0.9174, "cy": 0.8731}, {"t": "A", "p": [0.8955, 0.0], "q": [0.9174, -0.096], "r": 0.1134, "cx": 1.0061, "cy": -0.0252}, {"t": "A", "p": [0.9174, -0.096], "q": [0.7822, -0.1078], "r": 0.7771, "cx": 0.9174, "cy": -0.8731}, {"t": "A", "p": [0.9174, 0.096], "q": [0.8955, 0.0], "r": 0.1134, "cx": 1.0061, "cy": 0.0252}, {"t": "A", "p": [0.8194, 0.4709], "q": [0.8068, 0.3885], "r": 0.1134, "cx": 0.9174, "cy": 0.4138}, {"t": "A", "p": [0.7303, 0.4845], "q": [0.8194, 0.4709], "r": 0.1539, "cx": 0.7971, "cy": 0.6232}, {"t": "A", "p": [0.572, 0.5443], "q": [0.647, 0.6574], "r": 0.7771, "cx": 1.2546, "cy": 0.1729}, {"t": "A", "p": [0.647, 0.6574], "q": [0.7033, 0.5903], "r": 0.096, "cx": 0.7406, "cy": 0.6788}, {"t": "A", "p": [0.7033, 0.5903], "q": [0.7674, 0.5615], "r": 0.0854, "cx": 0.7674, "cy": 0.6469}, {"t": "A", "p": [0.7674, 0.5615], "q": [0.7303, 0.4845], "r": 0.1919, "cx": 0.9174, "cy": 0.4418}, {"t": "A", "p": [0.4034, 0.6788], "q": [0.497, 0.7771], "r": 0.7771, "cx": -0.1106, "cy": 1.2616}, {"t": "A", "p": [0.497, 0.7771], "q": [0.5583, 0.7001], "r": 0.1134, "cx": 0.6076, "cy": 0.8023}, {"t": "A", "p": [0.5583, 0.7001], "q": [0.647, 0.6574], "r": 0.1134, "cx": 0.647, "cy": 0.7709}, {"t": "A", "p": [-0.4478, -0.5615], "q": [-0.4478, -0.7534], "r": 0.4313, "cx": -0.8682, "cy": -0.6574}, {"t": "A", "p": [-0.4478, -0.7534], "q": [-0.2792, -0.7386], "r": 0.2393, "cx": -0.3439, "cy": -0.969}, {"t": "A", "p": [-0.658, -0.4365], "q": [-0.6349, -0.6042], "r": 0.2393, "cx": -0.8682, "cy": -0.5509}, {"t": "A", "p": [-0.6349, -0.6042], "q": [-0.4478, -0.5615], "r": 0.4313, "cx": -0.4478, "cy": -0.9927}, {"t": "A", "p": [-0.7515, -0.2423], "q": [-0.658, -0.4365], "r": 0.2773, "cx": -0.935, "cy": -0.4503}, {"t": "A", "p": [0.0765, -0.8731], "q": [0.1993, -0.8731], "r": 0.1414, "cx": 0.1379, "cy": -1.0005}, {"t": "L", "p": [0.1993, -0.8731], "q": [0.1598, -0.7001]}, {"t": "A", "p": [-0.023, -0.918], "q": [0.0765, -0.8731], "r": 0.1328, "cx": 0.0765, "cy": -1.0059}, {"t": "A", "p": [-0.0689, -0.7866], "q": [-0.023, -0.918], "r": 0.4313, "cx": -0.4478, "cy": -0.9927}, {"t": "A", "p": [-0.2792, -0.7386], "q": [-0.1993, -0.8731], "r": 0.2549, "cx": -0.4478, "cy": -0.9298}, {"t": "A", "p": [-0.1993, -0.8731], "q": [-0.0689, -0.7866], "r": 0.2549, "cx": -0.0, "cy": -1.032}, {"t": "A", "p": [0.1993, -0.8731], "q": [0.3099, -0.8198], "r": 0.1414, "cx": 0.3099, "cy": -0.9612}, {"t": "A", "p": [0.419, -0.8171], "q": [0.4034, -0.6788], "r": 0.4313, "cx": 0.8341, "cy": -0.7001}, {"t": "A", "p": [0.3099, -0.8198], "q": [0.419, -0.8171], "r": 0.1328, "cx": 0.3675, "cy": -0.9395}, {"t": "A", "p": [0.8791, -0.347], "q": [0.8341, -0.2689], "r": 0.1539, "cx": 0.9842, "cy": -0.2346}, {"t": "A", "p": [0.8068, -0.3885], "q": [0.8791, -0.347], "r": 0.1134, "cx": 0.8955, "cy": -0.4593}, {"t": "A", "p": [0.8341, -0.2689], "q": [0.9174, -0.2499], "r": 0.1919, "cx": 0.9174, "cy": -0.4418}, {"t": "A", "p": [0.9174, -0.2499], "q": [0.9001, -0.1818], "r": 0.0854, "cx": 0.9842, "cy": -0.1966}, {"t": "A", "p": [0.9001, -0.1818], "q": [0.9174, -0.096], "r": 0.096, "cx": 0.9924, "cy": -0.1558}, {"t": "A", "p": [0.8194, -0.4709], "q": [0.8068, -0.3885], "r": 0.1134, "cx": 0.9174, "cy": -0.4138}, {"t": "A", "p": [0.7303, -0.4845], "q": [0.8194, -0.4709], "r": 0.1539, "cx": 0.7971, "cy": -0.6232}, {"t": "A", "p": [0.572, -0.5443], "q": [0.647, -0.6574], "r": 0.7771, "cx": 1.2546, "cy": -0.1729}, {"t": "A", "p": [0.647, -0.6574], "q": [0.7033, -0.5903], "r": 0.096, "cx": 0.7406, "cy": -0.6788}, {"t": "A", "p": [0.7033, -0.5903], "q": [0.7674, -0.5615], "r": 0.0854, "cx": 0.7674, "cy": -0.6469}, {"t": "A", "p": [0.7674, -0.5615], "q": [0.7303, -0.4845], "r": 0.1919, "cx": 0.9174, "cy": -0.4418}, {"t": "A", "p": [0.4034, -0.6788], "q": [0.497, -0.7771], "r": 0.7771, "cx": -0.1106, "cy": -1.2616}, {"t": "A", "p": [0.497, -0.7771], "q": [0.5583, -0.7001], "r": 0.1134, "cx": 0.6076, "cy": -0.8023}, {"t": "A", "p": [0.5583, -0.7001], "q": [0.647, -0.6574], "r": 0.1134, "cx": 0.647, "cy": -0.7709}, {"t": "A", "p": [-0.7181, 0.0], "q": [-0.8682, -0.1197], "r": 0.4313, "cx": -1.0553, "cy": 0.2689}, {"t": "A", "p": [-0.8682, -0.1197], "q": [-0.7515, -0.2423], "r": 0.2393, "cx": -0.972, "cy": -0.3353}, {"t": "A", "p": [-0.7515, 0.2423], "q": [-0.8682, 0.1197], "r": 0.2393, "cx": -0.972, "cy": 0.3353}, {"t": "A", "p": [-0.8682, 0.1197], "q": [-0.7181, 0.0], "r": 0.4313, "cx": -1.0553, "cy": -0.2689}, {"t": "A", "p": [-0.4478, 0.7534], "q": [-0.5583, 0.7001], "r": 0.1414, "cx": -0.5583, "cy": 0.8416}, {"t": "L", "p": [-0.5583, 0.7001], "q": [-0.4478, 0.5615]}, {"t": "A", "p": [-0.3775, 0.837], "q": [-0.4478, 0.7534], "r": 0.1328, "cx": -0.5054, "cy": 0.8731}, {"t": "A", "p": [-0.2792, 0.7386], "q": [-0.3775, 0.837], "r": 0.4313, "cx": -0.0273, "cy": 1.0887}, {"t": "A", "p": [-0.5583, 0.7001], "q": [-0.6349, 0.6042], "r": 0.1414, "cx": -0.6962, "cy": 0.7316}, {"t": "A", "p": [-0.7321, 0.5543], "q": [-0.658, 0.4365], "r": 0.4313, "cx": -1.0553, "cy": 0.2689}, {"t": "A", "p": [-0.6349, 0.6042], "q": [-0.7321, 0.5543], "r": 0.1328, "cx": -0.7387, "cy": 0.687}, {"t": "A", "p": [-0.658, 0.4365], "q": [-0.8068, 0.3885], "r": 0.2549, "cx": -0.8068, "cy": 0.6434}, {"t": "A", "p": [-0.8068, 0.3885], "q": [-0.7515, 0.2423], "r": 0.2549, "cx": -1.0061, "cy": 0.2296}, {"t": "A", "p": [0.1427, 0.9342], "q": [0.0765, 0.8731], "r": 0.1539, "cx": 0.0097, "cy": 1.0117}, {"t": "A", "p": [0.1993, 0.8731], "q": [0.1427, 0.9342], "r": 0.1134, "cx": 0.2485, "cy": 0.9753}, {"t": "A", "p": [0.0765, 0.8731], "q": [0.0395, 0.95], "r": 0.1919, "cx": 0.2266, "cy": 0.9927}, {"t": "A", "p": [0.0395, 0.95], "q": [-0.023, 0.918], "r": 0.0854, "cx": -0.0273, "cy": 1.0033}, {"t": "A", "p": [-0.023, 0.918], "q": [-0.1106, 0.9158], "r": 0.096, "cx": -0.0689, "cy": 1.0022}, {"t": "A", "p": [-0.1106, 0.9158], "q": [-0.0689, 0.7866], "r": 0.7771, "cx": 0.647, "cy": 1.0887}, {"t": "A", "p": [-0.1993, 0.8731], "q": [-0.2977, 0.8731], "r": 0.1134, "cx": -0.2485, "cy": 0.9753}, {"t": "A", "p": [-0.2977, 0.8731], "q": [-0.2792, 0.7386], "r": 0.7771, "cx": -1.0553, "cy": 0.7001}, {"t": "A", "p": [-0.1106, 0.9158], "q": [-0.1993, 0.8731], "r": 0.1134, "cx": -0.1993, "cy": 0.9865}, {"t": "A", "p": [0.2768, 0.9036], "q": [0.1993, 0.8731], "r": 0.1134, "cx": 0.1993, "cy": 0.9865}, {"t": "A", "p": [0.3099, 0.8198], "q": [0.2768, 0.9036], "r": 0.1539, "cx": 0.4302, "cy": 0.9158}, {"t": "A", "p": [0.497, 0.7771], "q": [0.419, 0.8171], "r": 0.096, "cx": 0.497, "cy": 0.8731}, {"t": "A", "p": [0.419, 0.8171], "q": [0.3766, 0.8731], "r": 0.0854, "cx": 0.4599, "cy": 0.8921}, {"t": "A", "p": [0.3766, 0.8731], "q": [0.3099, 0.8198], "r": 0.1919, "cx": 0.2266, "cy": 0.9927}, {"t": "A", "p": [0.8341, 0.2689], "q": [0.908, 0.3007], "r": 0.969, "cx": 1.2546, "cy": -0.6042}, {"t": "A", "p": [0.908, 0.3007], "q": [0.8791, 0.347], "r": 0.0591, "cx": 0.938, "cy": 0.3517}, {"t": "A", "p": [0.8791, 0.347], "q": [0.8758, 0.3981], "r": 0.0572, "cx": 0.9285, "cy": 0.3758}, {"t": "A", "p": [0.8758, 0.3981], "q": [0.8068, 0.3885], "r": 0.2549, "cx": 0.8068, "cy": 0.6434}, {"t": "A", "p": [0.9001, 0.1818], "q": [0.9447, 0.2156], "r": 0.1414, "cx": 1.0061, "cy": 0.0882}, {"t": "A", "p": [0.9447, 0.2156], "q": [0.9174, 0.2499], "r": 0.0505, "cx": 0.9666, "cy": 0.2611}, {"t": "A", "p": [0.9174, 0.2499], "q": [0.908, 0.3007], "r": 0.0549, "cx": 0.9604, "cy": 0.2841}, {"t": "A", "p": [0.9174, 0.096], "q": [0.9508, 0.1463], "r": 0.0854, "cx": 1.0007, "cy": 0.077}, {"t": "A", "p": [0.9508, 0.1463], "q": [0.9001, 0.1818], "r": 0.0937, "cx": 0.9761, "cy": 0.2365}, {"t": "A", "p": [0.9555, -0.0439], "q": [0.8955, 0.0], "r": 0.1414, "cx": 1.0061, "cy": 0.0882}, {"t": "A", "p": [0.9174, -0.096], "q": [0.9555, -0.0439], "r": 0.0814, "cx": 0.9968, "cy": -0.1141}, {"t": "A", "p": [0.8955, 0.0], "q": [0.9555, 0.0439], "r": 0.1414, "cx": 1.0061, "cy": -0.0882}, {"t": "A", "p": [0.9555, 0.0439], "q": [0.9174, 0.096], "r": 0.0814, "cx": 0.9968, "cy": 0.1141}, {"t": "A", "p": [0.8068, 0.3885], "q": [0.8572, 0.4365], "r": 0.2549, "cx": 1.0061, "cy": 0.2296}, {"t": "A", "p": [0.8572, 0.4365], "q": [0.8194, 0.4709], "r": 0.0572, "cx": 0.8727, "cy": 0.4916}, {"t": "A", "p": [0.8194, 0.4709], "q": [0.8013, 0.5224], "r": 0.0591, "cx": 0.8598, "cy": 0.5141}, {"t": "A", "p": [0.8013, 0.5224], "q": [0.7303, 0.4845], "r": 0.969, "cx": 0.3099, "cy": 1.3576}, {"t": "A", "p": [0.7033, 0.5903], "q": [0.7072, 0.6522], "r": 0.0937, "cx": 0.7935, "cy": 0.6157}, {"t": "A", "p": [0.7072, 0.6522], "q": [0.647, 0.6574], "r": 0.0854, "cx": 0.6841, "cy": 0.7344}, {"t": "A", "p": [0.7674, 0.5615], "q": [0.7576, 0.6042], "r": 0.0505, "cx": 0.8068, "cy": 0.5929}, {"t": "A", "p": [0.7576, 0.6042], "q": [0.7033, 0.5903], "r": 0.1414, "cx": 0.6962, "cy": 0.7316}, {"t": "A", "p": [0.8013, 0.5224], "q": [0.7674, 0.5615], "r": 0.0549, "cx": 0.8209, "cy": 0.5737}, {"t": "A", "p": [0.5614, 0.7744], "q": [0.497, 0.7771], "r": 0.0814, "cx": 0.5323, "cy": 0.8505}, {"t": "A", "p": [0.5583, 0.7001], "q": [0.5614, 0.7744], "r": 0.1414, "cx": 0.6962, "cy": 0.7316}, {"t": "A", "p": [0.647, 0.6574], "q": [0.6301, 0.7197], "r": 0.0814, "cx": 0.7107, "cy": 0.7082}, {"t": "A", "p": [0.6301, 0.7197], "q": [0.5583, 0.7001], "r": 0.1414, "cx": 0.5583, "cy": 0.8416}, {"t": "A", "p": [-0.4478, -0.7534], "q": [-0.5583, -0.7001], "r": 0.1414, "cx": -0.5583, "cy": -0.8416}, {"t": "L", "p": [-0.5583, -0.7001], "q": [-0.4478, -0.5615]}, {"t": "A", "p": [-0.3775, -0.837], "q": [-0.4478, -0.7534], "r": 0.1328, "cx": -0.5054, "cy": -0.8731}, {"t": "A", "p": [-0.2792, -0.7386], "q": [-0.3775, -0.837], "r": 0.4313, "cx": -0.0273, "cy": -1.0887}, {"t": "A", "p": [-0.5583, -0.7001], "q": [-0.6349, -0.6042], "r": 0.1414, "cx": -0.6962, "cy": -0.7316}, {"t": "A", "p": [-0.7321, -0.5543], "q": [-0.658, -0.4365], "r": 0.4313, "cx": -1.0553, "cy": -0.2689}, {"t": "A", "p": [-0.6349, -0.6042], "q": [-0.7321, -0.5543], "r": 0.1328, "cx": -0.7387, "cy": -0.687}, {"t": "A", "p": [-0.658, -0.4365], "q": [-0.8068, -0.3885], "r": 0.2549, "cx": -0.8068, "cy": -0.6434}, {"t": "A", "p": [-0.8068, -0.3885], "q": [-0.7515, -0.2423], "r": 0.2549, "cx": -1.0061, "cy": -0.2296}, {"t": "A", "p": [0.1427, -0.9342], "q": [0.0765, -0.8731], "r": 0.1539, "cx": 0.0097, "cy": -1.0117}, {"t": "A", "p": [0.1993, -0.8731], "q": [0.1427, -0.9342], "r": 0.1134, "cx": 0.2485, "cy": -0.9753}, {"t": "A", "p": [0.0765, -0.8731], "q": [0.0395, -0.95], "r": 0.1919, "cx": 0.2266, "cy": -0.9927}, {"t": "A", "p": [0.0395, -0.95], "q": [-0.023, -0.918], "r": 0.0854, "cx": -0.0273, "cy": -1.0033}, {"t": "A", "p": [-0.023, -0.918], "q": [-0.1106, -0.9158], "r": 0.096, "cx": -0.0689, "cy": -1.0022}, {"t": "A", "p": [-0.1106, -0.9158], "q": [-0.0689, -0.7866], "r": 0.7771, "cx": 0.647, "cy": -1.0887}, {"t": "A", "p": [-0.1993, -0.8731], "q": [-0.2977, -0.8731], "r": 0.1134, "cx": -0.2485, "cy": -0.9753}, {"t": "A", "p": [-0.2977, -0.8731], "q": [-0.2792, -0.7386], "r": 0.7771, "cx": -1.0553, "cy": -0.7001}, {"t": "A", "p": [-0.1106, -0.9158], "q": [-0.1993, -0.8731], "r": 0.1134, "cx": -0.1993, "cy": -0.9865}, {"t": "A", "p": [0.2768, -0.9036], "q": [0.1993, -0.8731], "r": 0.1134, "cx": 0.1993, "cy": -0.9865}, {"t": "A", "p": [0.3099, -0.8198], "q": [0.2768, -0.9036], "r": 0.1539, "cx": 0.4302, "cy": -0.9158}, {"t": "A", "p": [0.497, -0.7771], "q": [0.419, -0.8171], "r": 0.096, "cx": 0.497, "cy": -0.8731}, {"t": "A", "p": [0.419, -0.8171], "q": [0.3766, -0.8731], "r": 0.0854, "cx": 0.4599, "cy": -0.8921}, {"t": "A", "p": [0.3766, -0.8731], "q": [0.3099, -0.8198], "r": 0.1919, "cx": 0.2266, "cy": -0.9927}, {"t": "A", "p": [0.8341, -0.2689], "q": [0.908, -0.3007], "r": 0.969, "cx": 1.2546, "cy": 0.6042}, {"t": "A", "p": [0.908, -0.3007], "q": [0.8791, -0.347], "r": 0.0591, "cx": 0.938, "cy": -0.3517}, {"t": "A", "p": [0.8791, -0.347], "q": [0.8758, -0.3981], "r": 0.0572, "cx": 0.9285, "cy": -0.3758}, {"t": "A", "p": [0.8758, -0.3981], "q": [0.8068, -0.3885], "r": 0.2549, "cx": 0.8068, "cy": -0.6434}, {"t": "A", "p": [0.9001, -0.1818], "q": [0.9447, -0.2156], "r": 0.1414, "cx": 1.0061, "cy": -0.0882}, {"t": "A", "p": [0.9447, -0.2156], "q": [0.9174, -0.2499], "r": 0.0505, "cx": 0.9666, "cy": -0.2611}, {"t": "A", "p": [0.9174, -0.2499], "q": [0.908, -0.3007], "r": 0.0549, "cx": 0.9604, "cy": -0.2841}, {"t": "A", "p": [0.9174, -0.096], "q": [0.9508, -0.1463], "r": 0.0854, "cx": 1.0007, "cy": -0.077}, {"t": "A", "p": [0.9508, -0.1463], "q": [0.9001, -0.1818], "r": 0.0937, "cx": 0.9761, "cy": -0.2365}, {"t": "A", "p": [0.8068, -0.3885], "q": [0.8572, -0.4365], "r": 0.2549, "cx": 1.0061, "cy": -0.2296}, {"t": "A", "p": [0.8572, -0.4365], "q": [0.8194, -0.4709], "r": 0.0572, "cx": 0.8727, "cy": -0.4916}, {"t": "A", "p": [0.8194, -0.4709], "q": [0.8013, -0.5224], "r": 0.0591, "cx": 0.8598, "cy": -0.5141}, {"t": "A", "p": [0.8013, -0.5224], "q": [0.7303, -0.4845], "r": 0.969, "cx": 0.3099, "cy": -1.3576}, {"t": "A", "p": [0.7033, -0.5903], "q": [0.7072, -0.6522], "r": 0.0937, "cx": 0.7935, "cy": -0.6157}, {"t": "A", "p": [0.7072, -0.6522], "q": [0.647, -0.6574], "r": 0.0854, "cx": 0.6841, "cy": -0.7344}, {"t": "A", "p": [0.7674, -0.5615], "q": [0.7576, -0.6042], "r": 0.0505, "cx": 0.8068, "cy": -0.5929}, {"t": "A", "p": [0.7576, -0.6042], "q": [0.7033, -0.5903], "r": 0.1414, "cx": 0.6962, "cy": -0.7316}, {"t": "A", "p": [0.8013, -0.5224], "q": [0.7674, -0.5615], "r": 0.0549, "cx": 0.8209, "cy": -0.5737}, {"t": "A", "p": [0.5614, -0.7744], "q": [0.497, -0.7771], "r": 0.0814, "cx": 0.5323, "cy": -0.8505}, {"t": "A", "p": [0.5583, -0.7001], "q": [0.5614, -0.7744], "r": 0.1414, "cx": 0.6962, "cy": -0.7316}, {"t": "A", "p": [0.647, -0.6574], "q": [0.6301, -0.7197], "r": 0.0814, "cx": 0.7107, "cy": -0.7082}, {"t": "A", "p": [0.6301, -0.7197], "q": [0.5583, -0.7001], "r": 0.1414, "cx": 0.5583, "cy": -0.8416}, {"t": "A", "p": [-0.8682, -0.1197], "q": [-0.8955, 0.0], "r": 0.1414, "cx": -1.0061, "cy": -0.0882}, {"t": "L", "p": [-0.8955, 0.0], "q": [-0.7181, 0.0]}, {"t": "A", "p": [-0.8898, -0.2267], "q": [-0.8682, -0.1197], "r": 0.1328, "cx": -0.9977, "cy": -0.1492}, {"t": "A", "p": [-0.7515, -0.2423], "q": [-0.8898, -0.2267], "r": 0.4313, "cx": -0.8682, "cy": -0.6574}, {"t": "A", "p": [-0.8955, 0.0], "q": [-0.8682, 0.1197], "r": 0.1414, "cx": -1.0061, "cy": 0.0882}, {"t": "A", "p": [-0.8898, 0.2267], "q": [-0.7515, 0.2423], "r": 0.4313, "cx": -0.8682, "cy": 0.6574}, {"t": "A", "p": [-0.8682, 0.1197], "q": [-0.8898, 0.2267], "r": 0.1328, "cx": -0.9977, "cy": 0.1492}, {"t": "A", "p": [-0.5339, 0.7798], "q": [-0.4478, 0.7534], "r": 0.1539, "cx": -0.4478, "cy": 0.9073}, {"t": "A", "p": [-0.5583, 0.7001], "q": [-0.5339, 0.7798], "r": 0.1134, "cx": -0.647, "cy": 0.7709}, {"t": "A", "p": [-0.4478, 0.7534], "q": [-0.4478, 0.8388], "r": 0.1919, "cx": -0.6349, "cy": 0.7961}, {"t": "A", "p": [-0.4478, 0.8388], "q": [-0.3775, 0.837], "r": 0.0854, "cx": -0.4107, "cy": 0.9158}, {"t": "A", "p": [-0.3775, 0.837], "q": [-0.2977, 0.8731], "r": 0.096, "cx": -0.3727, "cy": 0.9329}, {"t": "A", "p": [-0.6414, 0.6941], "q": [-0.5583, 0.7001], "r": 0.1134, "cx": -0.6076, "cy": 0.8023}, {"t": "A", "p": [-0.6349, 0.6042], "q": [-0.6414, 0.6941], "r": 0.1539, "cx": -0.7849, "cy": 0.6384}, {"t": "A", "p": [-0.658, 0.4365], "q": [-0.7849, 0.4845], "r": 0.7771, "cx": -0.4478, "cy": 1.1846}, {"t": "A", "p": [-0.7849, 0.4845], "q": [-0.7321, 0.5543], "r": 0.096, "cx": -0.8266, "cy": 0.571}, {"t": "A", "p": [-0.7321, 0.5543], "q": [-0.7181, 0.6232], "r": 0.0854, "cx": -0.8014, "cy": 0.6042}, {"t": "A", "p": [-0.7181, 0.6232], "q": [-0.6349, 0.6042], "r": 0.1919, "cx": -0.6349, "cy": 0.7961}, {"t": "A", "p": [-0.7515, 0.2423], "q": [-0.8682, 0.3116], "r": 0.7771, "cx": -1.2054, "cy": -0.3885}, {"t": "A", "p": [-0.8682, 0.3116], "q": [-0.8068, 0.3885], "r": 0.1134, "cx": -0.9174, "cy": 0.4138}, {"t": "A", "p": [-0.8068, 0.3885], "q": [-0.7849, 0.4845], "r": 0.1134, "cx": -0.8955, "cy": 0.4593}, {"t": "A", "p": [0.0765, 0.8731], "q": [0.0912, 0.9522], "r": 0.969, "cx": -0.8682, "cy": 1.0887}, {"t": "A", "p": [0.0912, 0.9522], "q": [0.1427, 0.9342], "r": 0.0591, "cx": 0.1342, "cy": 0.9927}, {"t": "A", "p": [0.1427, 0.9342], "q": [0.1932, 0.9424], "r": 0.0572, "cx": 0.1598, "cy": 0.9888}, {"t": "A", "p": [0.1932, 0.9424], "q": [0.1993, 0.8731], "r": 0.2549, "cx": 0.4478, "cy": 0.9298}, {"t": "A", "p": [-0.023, 0.918], "q": [0.0, 0.969], "r": 0.1414, "cx": -0.1379, "cy": 1.0005}, {"t": "A", "p": [0.0, 0.969], "q": [0.0395, 0.95], "r": 0.0505, "cx": 0.0395, "cy": 1.0005}, {"t": "A", "p": [0.0395, 0.95], "q": [0.0912, 0.9522], "r": 0.0549, "cx": 0.0633, "cy": 0.9995}, {"t": "A", "p": [-0.1106, 0.9158], "q": [-0.0689, 0.9595], "r": 0.0854, "cx": -0.1476, "cy": 0.9927}, {"t": "A", "p": [-0.0689, 0.9595], "q": [-0.023, 0.918], "r": 0.0937, "cx": 0.0133, "cy": 1.0043}, {"t": "A", "p": [-0.2554, 0.9218], "q": [-0.1993, 0.8731], "r": 0.1414, "cx": -0.1379, "cy": 1.0005}, {"t": "A", "p": [-0.2977, 0.8731], "q": [-0.2554, 0.9218], "r": 0.0814, "cx": -0.333, "cy": 0.9464}, {"t": "A", "p": [-0.1993, 0.8731], "q": [-0.1698, 0.9413], "r": 0.1414, "cx": -0.3099, "cy": 0.9612}, {"t": "A", "p": [-0.1698, 0.9413], "q": [-0.1106, 0.9158], "r": 0.0814, "cx": -0.1106, "cy": 0.9972}, {"t": "A", "p": [0.1993, 0.8731], "q": [0.2348, 0.9329], "r": 0.2549, "cx": 0.0, "cy": 1.032}, {"t": "A", "p": [0.2348, 0.9329], "q": [0.2768, 0.9036], "r": 0.0572, "cx": 0.285, "cy": 0.9602}, {"t": "A", "p": [0.2768, 0.9036], "q": [0.331, 0.8974], "r": 0.0591, "cx": 0.3099, "cy": 0.9526}, {"t": "A", "p": [0.331, 0.8974], "q": [0.3099, 0.8198], "r": 0.969, "cx": 1.2546, "cy": 0.6042}], "rE": 0.497, "s": 1.0905};   /* {3,7} tiling: geodesic edges + ring radius, computed by reflection */
+
+/* ════════ §0 deficit chart ════════ */
+function buildDeficit(){
+  const svg=document.getElementById("defSvg"); const W=560,H=250, padL=54,padR=18, padT=18,padB=46;
+  const ks=[3,4,5,6,7,8]; const def=k=>(6-k)*60;
+  const x=k=>padL+(W-padL-padR)*(k-3)/(8-3);
+  const dmin=-120,dmax=180; const y=d=>padT+(H-padT-padB)*(dmax-d)/(dmax-dmin);
+  let s="";
+  // zero baseline
+  s+=`<line x1="${padL}" y1="${y(0).toFixed(1)}" x2="${W-padR}" y2="${y(0).toFixed(1)}" stroke="var(--ink-faint)" stroke-width="1"/>`;
+  s+=`<text x="${W-padR}" y="${(y(0)-5).toFixed(1)}" text-anchor="end" font-family="var(--mono)" font-size="9" fill="var(--ink-faint)">δ = 0 · flat</text>`;
+  // gridline at +60 / -60
+  for(const d of [60,-60]) s+=`<line x1="${padL}" y1="${y(d).toFixed(1)}" x2="${W-padR}" y2="${y(d).toFixed(1)}" stroke="var(--rule)" stroke-width=".7" stroke-dasharray="3 4"/>`;
+  // connecting path
+  const pts=ks.map(k=>`${x(k).toFixed(1)},${y(def(k)).toFixed(1)}`).join(' ');
+  s+=`<polyline points="${pts}" fill="none" stroke="var(--lav)" stroke-width="1.2" opacity=".5"/>`;
+  // markers
+  for(const k of ks){
+    const d=def(k), col = d>0?'var(--jade)':(d===0?'var(--ink-soft)':'var(--amber)');
+    const big = (k===5||k===7);
+    s+=`<line x1="${x(k).toFixed(1)}" y1="${y(0).toFixed(1)}" x2="${x(k).toFixed(1)}" y2="${y(d).toFixed(1)}" stroke="${col}" stroke-width="${big?2:1}" opacity=".55"/>`;
+    s+=`<circle cx="${x(k).toFixed(1)}" cy="${y(d).toFixed(1)}" r="${big?5:3.5}" fill="${d===0?'var(--void)':col}" stroke="${col}" stroke-width="1.5"/>`;
+    s+=`<text x="${x(k).toFixed(1)}" y="${(H-padB+16).toFixed(1)}" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="${col}">k=${k}</text>`;
+    s+=`<text x="${x(k).toFixed(1)}" y="${(y(d)+(d>=0?-9:16)).toFixed(1)}" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="${col}">${d>0?'+':''}${d}°</text>`;
+  }
+  // region labels
+  s+=`<text x="${x(3.5).toFixed(1)}" y="${(padT+12).toFixed(1)}" font-family="var(--mono)" font-size="9" fill="var(--jade)">spherical · finite</text>`;
+  s+=`<text x="${x(7).toFixed(1)}" y="${(H-padB-6).toFixed(1)}" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--amber)">hyperbolic · infinite</text>`;
+  svg.innerHTML=s;
+  document.getElementById("defCap").textContent="δ(k) = (6−k)·60° — the sign flips at k=6; k=5 and k=7 are equal-magnitude reflections";
+}
+
+/* ════════ §1 Poincaré disk {3,7} ════════ */
+function buildDisk(){
+  const svg=document.getElementById("diskSvg"); const cx=220,cy=220,R=200;
+  const M=p=>[cx+p[0]*R, cy-p[1]*R];                       // disk→screen
+  let s="";
+  // boundary
+  s+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--lav)" stroke-width="1.4" opacity=".85"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#vig)"/>`;
+  s+=`<defs><radialGradient id="vig"><stop offset="62%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(11,10,20,.55)"/></radialGradient></defs>`;
+  // seven central faces (tint) — vertices on ring at angles 2πk/7, radius rE
+  const rE=HYP.rE;
+  const ring=k=>[rE*Math.cos(2*PI*k/7), rE*Math.sin(2*PI*k/7)];
+  for(let k=0;k<7;k++){
+    const O=M([0,0]), A=M(ring(k)), B=M(ring(k+1));
+    s+=`<path d="M ${O[0].toFixed(1)} ${O[1].toFixed(1)} L ${A[0].toFixed(1)} ${A[1].toFixed(1)} L ${B[0].toFixed(1)} ${B[1].toFixed(1)} Z" fill="rgba(226,182,90,.07)" stroke="none"/>`;
+  }
+  // geodesic edges
+  const sampleArc=(p,q,ccx,ccy,r)=>{
+    let a0=Math.atan2(p[1]-ccy,p[0]-ccx), a1=Math.atan2(q[1]-ccy,q[0]-ccx);
+    let d=a1-a0; while(d>PI)d-=2*PI; while(d<-PI)d+=2*PI;     // shorter sweep
+    const n=14; let pts=[];
+    for(let i=0;i<=n;i++){const a=a0+d*i/n; pts.push(M([ccx+r*Math.cos(a), ccy+r*Math.sin(a)]));}
+    return pts;
+  };
+  for(const e of HYP.edges){
+    const dist=Math.hypot((e.p[0]+e.q[0])/2,(e.p[1]+e.q[1])/2);   // radial position → fade
+    const op=(0.92-0.55*dist).toFixed(3), w=(1.15-0.5*dist).toFixed(2);
+    let pts;
+    if(e.t==="L"){ pts=[M(e.p),M(e.q)]; }
+    else { pts=sampleArc(e.p,e.q,e.cx,e.cy,e.r); }
+    s+=`<polyline points="${pts.map(P=>P[0].toFixed(1)+','+P[1].toFixed(1)).join(' ')}" fill="none" stroke="var(--lav-bright)" stroke-width="${w}" opacity="${op}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  // central vertex
+  const O=M([0,0]); s+=`<circle cx="${O[0]}" cy="${O[1]}" r="3.2" fill="var(--amber)" stroke="var(--void)" stroke-width="1"/>`;
+  svg.innerHTML=s;
+  document.getElementById("diskCap").textContent="{3,7} · seven equilateral triangles meet at every vertex · edges are geodesics (depth & vignette: rendering only)";
+}
+
+/* ════════ §3 fold emblems ════════ */
+function buildEmblems(){
+  // k=5: finite — pentagon inscribed, closed (jade)
+  let s5=`<circle cx="60" cy="52" r="40" fill="none" stroke="var(--jade-deep)" stroke-width="1" opacity=".5"/>`;
+  let pent=[];for(let i=0;i<5;i++){const a=-PI/2+2*PI*i/5;pent.push([60+38*Math.cos(a),52+38*Math.sin(a)]);}
+  s5+=`<polygon points="${pent.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="rgba(116,198,166,.08)" stroke="var(--jade)" stroke-width="1.6"/>`;
+  // pentagram chords (golden)
+  for(let i=0;i<5;i++){const A=pent[i],B=pent[(i+2)%5];s5+=`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="var(--jade)" stroke-width=".7" opacity=".5"/>`;}
+  document.getElementById("emb-5").innerHTML=s5;
+  // k=7: infinite — disk with inward-bowing arcs (amber/lav), open
+  let s7=`<circle cx="60" cy="52" r="40" fill="none" stroke="var(--amber-deep)" stroke-width="1" opacity=".6"/>`;
+  for(let i=0;i<7;i++){
+    const a0=2*PI*i/7,a1=2*PI*(i+1)/7;
+    const P=[60+40*Math.cos(a0),52+40*Math.sin(a0)],Q=[60+40*Math.cos(a1),52+40*Math.sin(a1)];
+    // bow toward center: quadratic with control pulled inward
+    const mx=(P[0]+Q[0])/2,my=(P[1]+Q[1])/2; const cxp=60+(mx-60)*0.42,cyp=52+(my-52)*0.42;
+    s7+=`<path d="M ${P[0].toFixed(1)} ${P[1].toFixed(1)} Q ${cxp.toFixed(1)} ${cyp.toFixed(1)} ${Q[0].toFixed(1)} ${Q[1].toFixed(1)}" fill="none" stroke="var(--lav-bright)" stroke-width="1.3" opacity=".8"/>`;
+    s7+=`<line x1="60" y1="52" x2="${P[0].toFixed(1)}" y2="${P[1].toFixed(1)}" stroke="var(--amber)" stroke-width=".7" opacity=".45"/>`;
+  }
+  s7+=`<circle cx="60" cy="52" r="2.4" fill="var(--amber)"/>`;
+  document.getElementById("emb-7").innerHTML=s7;
+}
+
+/* ════════ §5 self-check (Gauss–Bonnet; no ternary) ════════ */
+const def=k=>(6-k)*60;
+const faceArea = PI - 3*(2*PI/7);          // π/7
+const symArea  = PI - (PI/2+PI/3+PI/7);    // π/42
+const coshS    = Math.cos(2*PI/7)/(1-Math.cos(2*PI/7));
+const t7=2*Math.cos(2*PI/7), t5=2*Math.cos(2*PI/5);
+const cubic = t7*t7*t7 + t7*t7 - 2*t7 - 1; // ≈0
+const centralDeg = HYP.edges.filter(e=>Math.hypot(e.p[0],e.p[1])<1e-3 || Math.hypot(e.q[0],e.q[1])<1e-3).length; // edges at O = 7
+const checks=[
+  ["δ(6)=0 (flat) and sign flips there",      def(6)===0 && def(5)>0 && def(7)<0],
+  ["k=7 first hyperbolic: δ(7) = −60°",       def(7)===-60],
+  ["excess 7·60−360 = 60° = one triangle",    7*60-360===60],
+  ["{3,7} face area = π−3·(2π/7) = π/7",       Math.abs(faceArea-PI/7)<EPS],
+  ["(2,3,7) area = π−(π/2+π/3+π/7) = π/42",    Math.abs(symArea-PI/42)<EPS],
+  ["6 sym-triangles per face: 6·π/42 = π/7",  Math.abs(6*symArea-faceArea)<EPS],
+  ["42 = 2·3·7  ·  Hurwitz 84 = 2·42",         42===2*3*7 && 84===2*42],
+  ["edge: cosh s = cos(2π/7)/(1−cos(2π/7))",  coshS>1],
+  ["5-fold trace 2cos(2π/5) = φ−1 (quadratic)",Math.abs(t5-(PHI-1))<EPS],
+  ["7-fold trace root of x³+x²−2x−1 (cubic)", Math.abs(cubic)<1e-9],
+  ["7 = L₄ = φ⁴+φ⁻⁴",                          Math.abs((Math.pow(PHI,4)+Math.pow(PHI,-4))-7)<1e-9],
+  ["disk: 7 triangles meet at central vertex", centralDeg===7],
+];
+let html=`<span class="hd">SELF-CHECK · recomputed from angles and L₄=7 · no ternary logic</span>`, allPass=true;
+for(const [l,p] of checks){allPass=allPass&&p; html+=`<span class="ln">${p?'<span class="ok">PASS</span>':'<span style="color:#d98">FAIL</span>'}  ${l}</span>`;}
+html+=`<span class="ln">  face area π/7 = <span class="v">${fmt(PI/7,9)}</span>   (2,3,7) area π/42 = <span class="v">${fmt(PI/42,9)}</span></span>`;
+html+=`<div class="verdict">${allPass?'✓ every invariant forced by Gauss–Bonnet · free parameters = 0 · the fold is asymmetric':'✗ a relation failed'}</div>`;
+document.getElementById("console").innerHTML=html;
+
+/* run */
+buildDeficit(); buildDisk(); buildEmblems();
+</script>
+</body>
+</html>

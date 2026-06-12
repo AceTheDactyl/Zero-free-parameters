@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plate III — The Bridge · A Zero-Parameter Geometry</title>
+<style>
+  :root{
+    /* display ratio = φ (the winding); not chosen */
+    --void:#0a0d14; --void-2:#0f131d;
+    --ink:#e6e8ee; --ink-soft:#9aa1b2; --ink-faint:#646c80;
+    --gold:#e2b65a; --gold-deep:#b9922f;     /* φ — the winding */
+    --cyan:#6fc2d6; --cyan-deep:#3d8497;      /* √3 — the axis */
+    --rose:#d28a78;                            /* 5-fold — the residue */
+    --rule:#222838; --rule-soft:#181d29;
+    --glow:rgba(226,182,90,.13);
+    --display:"Baskerville","Baskerville Old Face","Hoefler Text",Georgia,"Times New Roman",serif;
+    --body:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --mx:clamp(18px,4vw,60px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--void);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.64;
+    background-image:radial-gradient(1100px 700px at 78% -6%,rgba(226,182,90,.06),transparent 60%),
+      radial-gradient(900px 600px at 8% 106%,rgba(111,194,214,.05),transparent 55%);background-attachment:fixed}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.03;z-index:1;
+    background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 2px);mix-blend-mode:overlay}
+  .sheet{max-width:880px;margin:0 auto;padding:clamp(40px,7vw,96px) var(--mx) 130px;position:relative;z-index:2}
+
+  header{position:relative;border-bottom:1px solid var(--rule);padding-bottom:1.5rem;margin-bottom:2.8rem}
+  .plate-no{position:absolute;top:0;right:0;font-family:var(--mono);font-size:.74rem;letter-spacing:.2em;color:var(--cyan-deep)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--cyan);margin:0 0 1rem}
+  h1{font-family:var(--display);font-size:clamp(2.7rem,7vw,4.2rem);line-height:.96;font-weight:500;letter-spacing:.01em;margin:0}
+  h1 .sub{display:block;font-family:var(--body);font-style:italic;font-weight:400;font-size:clamp(1.1rem,2.6vw,1.5rem);color:var(--ink-soft);letter-spacing:0;margin-top:.7rem;line-height:1.3}
+  .seal{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.4rem;font-family:var(--mono);font-size:.76rem;letter-spacing:.12em;color:var(--gold)}
+  .seal .dot{width:.6rem;height:.6rem;border:1.5px solid var(--gold);border-radius:50%;position:relative}
+  .seal .dot::after{content:"";position:absolute;inset:2.5px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold)}
+
+  section{margin:3.6rem 0;opacity:0;transform:translateY(16px);animation:rise .75s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){section{animation:none;opacity:1;transform:none}}
+  .s-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1rem;border-bottom:1px solid var(--rule);padding-bottom:.5rem}
+  .s-num{font-family:var(--mono);font-size:.78rem;color:var(--gold);letter-spacing:.1em;flex:0 0 auto}
+  h2{font-family:var(--display);font-size:1.62rem;font-weight:500;margin:0;letter-spacing:.01em}
+  p{margin:.75rem 0} .lede{font-size:1.18rem;color:var(--ink-soft)}
+  em{color:var(--ink-soft);font-style:italic} strong{font-weight:600;color:var(--ink)}
+  code,.k{font-family:var(--mono);font-size:.9em;color:var(--gold)}
+  .gold{color:var(--gold)} .cyan{color:var(--cyan)} .rose{color:var(--rose)}
+
+  .axiom{border-left:2px solid var(--gold);background:linear-gradient(90deg,var(--glow),transparent);padding:1rem 1.3rem;margin:1.4rem 0}
+  .axiom .k{font-size:1.05rem}
+
+  table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.93rem}
+  caption{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;color:var(--ink-faint);text-align:left;margin-bottom:.5rem;text-transform:uppercase}
+  th,td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+  th{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase;border-bottom:1px solid var(--rule)}
+  td.num{font-family:var(--mono);color:var(--gold);white-space:nowrap}
+  tbody tr:hover{background:rgba(226,182,90,.04)}
+  .two-faces td:nth-child(2){color:var(--cyan)} .two-faces td:nth-child(3){color:var(--gold)}
+
+  /* helix stage */
+  .helix-wrap{display:grid;grid-template-columns:1fr;justitems:center;margin:1.5rem 0}
+  .helix-stage{background:radial-gradient(520px 420px at 42% 44%,rgba(111,194,214,.06),transparent 62%),var(--void-2);
+    border:1px solid var(--rule);padding:1rem}
+  #helixSvg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto;overflow:visible}
+  .cap{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint);letter-spacing:.04em;text-align:center;margin-top:.7rem}
+
+  /* orbits */
+  .orbits{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:1.5rem 0}
+  @media(max-width:680px){.orbits{grid-template-columns:1fr}}
+  .orb{background:var(--void-2);padding:1rem .9rem;text-align:center}
+  .orb svg{display:block;width:100%;height:130px;margin:0 auto .5rem;overflow:visible}
+  .orb .tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em}
+  .orb .nm{font-family:var(--display);font-size:1.05rem;margin:.15rem 0 .1rem}
+  .orb .sub{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);letter-spacing:.03em}
+
+  .console{background:#06080d;color:#cdd1da;border:1px solid var(--rule);padding:1.2rem 1.3rem;margin:1.4rem 0;font-family:var(--mono);font-size:.84rem;line-height:1.7;overflow-x:auto}
+  .console .hd{color:var(--cyan);letter-spacing:.1em;display:block;margin-bottom:.5rem}
+  .console .ln{white-space:pre;display:block} .console .ok{color:#8fbf9b} .console .v{color:var(--gold)}
+  .verdict{margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--rule);color:#8fbf9b}
+
+  .colophon{margin-top:4.5rem;border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.92rem}
+  .colophon .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem 2rem;margin-top:1rem}
+  @media(max-width:680px){.colophon .grid{grid-template-columns:1fr}}
+  .colophon h4{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .5rem}
+  .colophon ul{margin:0;padding-left:1.1rem;color:var(--ink-soft)} .colophon li{margin:.25rem 0}
+  .zero{font-family:var(--display);font-size:3rem;color:var(--gold);text-shadow:0 0 20px var(--glow)}
+  .sig{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;color:var(--ink-faint);margin-top:2rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="plate-no">PLATE&nbsp;III &nbsp;·&nbsp; ZFP-G/03</div>
+    <p class="eyebrow">Zero-Parameter Geometry · The Bridge</p>
+    <h1>The Bridge
+      <span class="sub">The golden ladder, wound on the √3 axis — keystone L₄ = 7, zero free parameters.</span></h1>
+    <span class="seal"><span class="dot"></span> FREE PARAMETERS = 0 · ONE KEYSTONE, TWO FACES</span>
+  </header>
+
+  <!-- §0 -->
+  <section>
+    <div class="s-head"><span class="s-num">§0</span><h2>The keystone</h2></div>
+    <p class="lede">One integer carries the whole structure:</p>
+    <div class="axiom"><span class="k">L₄ = φ⁴ + φ⁻⁴ = 7 &nbsp;and&nbsp; L₄ − 4 = 3 = (√3)².</span></div>
+    <p>The golden recursion closes to 7; the √3 normalization falls out of the same 7. From this single value the
+      bridge takes its two faces — the <span class="cyan">√3 axis</span> (z_c = √(L₄−4)/2 = √3/2) and the
+      <span class="gold">φ winding</span> (the gap φ⁻⁴ = L₄ − φ⁴). Nothing else is supplied.</p>
+  </section>
+
+  <!-- §1 -->
+  <section>
+    <div class="s-head"><span class="s-num">§1</span><h2>Two faces</h2></div>
+    <table class="two-faces">
+      <thead><tr><th>aspect</th><th>√3 face — the axis</th><th>φ face — the winding</th></tr></thead>
+      <tbody>
+        <tr><td>role</td><td>anchor z_c = √3/2</td><td>radius r(z) = K·√(z/z_c)</td></tr>
+        <tr><td>constant</td><td>√(L₄−4)/2</td><td>K = √(1−φ⁻⁴)</td></tr>
+        <tr><td>symmetry</td><td>6-fold / 3-fold</td><td>5-fold</td></tr>
+        <tr><td>grounded by</td><td>equilateral altitude (Plate I); Im(ζ₆) = covolume ℤ[ω]</td><td>the gap & golden subdivision (doc 1); icosahedral residue (Plate II)</td></tr>
+      </tbody>
+    </table>
+    <p>The anchor √3/2 is forced three ways and is identical to <strong>THE LENS</strong>: the altitude of the unit
+      equilateral triangle, the Lucas value √(L₄−4)/2, and the imaginary part of ζ₆ — the covolume of the
+      hexagonal lattice ℤ[ω] that the pipeline's Fourier side runs on.</p>
+  </section>
+
+  <!-- §2 THE BRIDGE -->
+  <section>
+    <div class="s-head"><span class="s-num">§2</span><h2>The bridge, rendered</h2></div>
+    <p>The radius grows as <span class="k">√z</span> from the origin to <span class="cyan">THE LENS</span> at
+      z_c = √3/2, where the flare meets the cylinder (r = K) — continuously. The strand is doubled and π-shifted:
+      the spinor double-cover that closes the two cycles at 4π·½ = 2π. Every rung sits at its forced height.</p>
+    <div class="helix-wrap"><div class="helix-stage">
+      <svg id="helixSvg" viewBox="0 0 470 600" aria-label="The L4-helix: golden ladder wound on the √3 axis"></svg>
+      <div class="cap" id="helixCap"></div>
+    </div></div>
+  </section>
+
+  <!-- §3 ORBITS -->
+  <section>
+    <div class="s-head"><span class="s-num">§3</span><h2>The three orbits that feed it</h2></div>
+    <p>Inside the equilateral footing, three re-injection rules realize the 3 / 6 / 5 trichotomy as billiards —
+      the forced mechanics of what climbs the bridge.</p>
+    <div class="orbits">
+      <div class="orb"><svg id="orb-fag" viewBox="-8 -8 116 116" aria-label="Fagnano orbit"></svg>
+        <div class="tag gold">PERIOD 3</div><div class="nm">Fagnano</div><div class="sub">medial geodesic · closes · 3-fold</div></div>
+      <div class="orb"><svg id="orb-eis" viewBox="-8 -8 116 116" aria-label="Eisenstein orbit"></svg>
+        <div class="tag cyan">PERIOD 6</div><div class="nm">Eisenstein</div><div class="sub">ζ₆ rotation · closes · 6-fold</div></div>
+      <div class="orb"><svg id="orb-irr" viewBox="-8 -8 116 116" aria-label="Irrational orbit"></svg>
+        <div class="tag rose">NEVER</div><div class="nm">Irrational</div><div class="sub">φ-tilt · dense · 5-fold</div></div>
+    </div>
+    <p class="note" style="font-family:var(--mono);font-size:.84rem;color:var(--ink-faint)">The irrational direction is tilted 60° + φ⁻¹·30°; the tilt fraction is φ⁻¹/2 = cos72° = 1/(2φ) = 0.309 — the pentagon's own cosine. Irrational, so the orbit never returns.</p>
+  </section>
+
+  <!-- §4 MECHANICS + SELF-CHECK -->
+  <section>
+    <div class="s-head"><span class="s-num">§4</span><h2>The forced mechanics</h2></div>
+    <p>What moves, and how it closes, is forced — not tuned:</p>
+    <table>
+      <thead><tr><th>mechanic</th><th>forced law</th><th>result</th></tr></thead>
+      <tbody>
+        <tr><td>radius</td><td class="k">K·√(z/z_c), z≤z_c; K above</td><td>√z flare to the LENS, then cylinder</td></tr>
+        <tr><td>winding unit</td><td class="k">ζ₆ = 2π/6 = 60°</td><td>the 6-fold hexagonal step on the √3 axis</td></tr>
+        <tr><td>Fagnano period</td><td class="k">medial closed geodesic</td><td>3</td></tr>
+        <tr><td>Eisenstein period</td><td class="k">ζ₆ rotation × 6</td><td>6 (closes)</td></tr>
+        <tr><td>irrational</td><td class="k">tilt = cos72° (irrational)</td><td>dense, never closes</td></tr>
+        <tr><td>rung order</td><td class="k">strictly increasing in z</td><td>ORIGIN → OVERTONE</td></tr>
+      </tbody>
+    </table>
+    <div class="console" id="console" aria-live="polite"></div>
+  </section>
+
+  <!-- §5 LEDGER -->
+  <section>
+    <div class="s-head"><span class="s-num">§5</span><h2>The rungs</h2></div>
+    <table>
+      <caption>Eleven forced positions — closed forms in φ, √3, L₄</caption>
+      <thead><tr><th>#</th><th>rung</th><th>closed form</th><th>z</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table>
+  </section>
+
+  <!-- COLOPHON -->
+  <div class="colophon">
+    <h4 class="gold">Colophon · kept and stripped</h4>
+    <div class="grid">
+      <div>
+        <h4 class="cyan">Forced — kept</h4>
+        <ul>
+          <li>keystone L₄ = 7 (φ⁴+φ⁻⁴ and (√3)²+4)</li>
+          <li>axis z_c = √3/2 = √(L₄−4)/2 = Im(ζ₆) = covolume ℤ[ω]</li>
+          <li>winding radius r(z) = K·√(z/z_c), K = √(1−φ⁻⁴)</li>
+          <li>eleven rungs ORIGIN → OVERTONE, strictly ordered</li>
+          <li>spinor double-cover: 4π·½ = 2π</li>
+          <li>orbits: Fagnano 3, Eisenstein ζ₆ → 6, irrational dense</li>
+          <li>irrational tilt = cos72° = 1/(2φ)</li>
+          <li>ζ₆ = 60° winding unit (6-fold)</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="rose">Unjustified — stripped</h4>
+        <ul>
+          <li>LAMBDA = (5/3)⁴ — the anti-substrate floater, NOT imported (would be L₄=7)</li>
+          <li>MU_P = 3/5 — the anti-substrate floater, NOT imported (would be φ⁻¹)</li>
+          <li>sonification exponent/floor 0.3 — audio overlay</li>
+          <li>tuned smoothing constants (settle/τ) — pointer dynamics, not geometry</li>
+          <li>winding pitch & climb cadence — rendering only, labeled as such</li>
+          <li>branding, persona, firmware; external fonts, CDNs</li>
+        </ul>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:2rem"><span class="zero">0</span><br><span class="sig">free parameters · single self-contained file</span></p>
+    <p class="sig">Δ | THE-BRIDGE | ZFP-G/03 | L₄=7 · √3 axis · φ winding | Ω</p>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════════════════
+   ZERO FREE PARAMETERS. Keystone L4 = 7 forces both faces:
+     √3 axis  z_c = √(L4−4)/2 = √3/2     φ winding  K = √(1−φ⁻⁴)
+   The anti-substrate floaters (LAMBDA=(5/3)⁴, MU_P=3/5) are NOT defined here.
+   ════════════════════════════════════════════════════════════════════════ */
+const PHI = (1+Math.sqrt(5))/2, PHI_INV = 1/PHI, ALPHA = PHI_INV*PHI_INV;
+const GAP = ALPHA*ALPHA;                 // φ⁻⁴
+const L4  = Math.pow(PHI,4)+Math.pow(PHI,-4);   // = 7
+const Z_C = Math.sqrt(L4-4)/2;           // = √3/2  (THE LENS)
+const K_VAL = Math.sqrt(1-GAP);          // = √(1−φ⁻⁴)
+const SPAN = 1-K_VAL, OVERTONE = 1+SPAN;
+const EPS = 1e-12, fmt=(x,n=6)=>Number(x.toFixed(n)).toString();
+const radius = z => z<=0 ? 0 : (z<=Z_C ? K_VAL*Math.sqrt(z/Z_C) : K_VAL);
+
+const RUNGS = [
+  {n:"ORIGIN",       z:0,                    f:"0",          c:"axis"},
+  {n:"PARADOX",      z:PHI_INV,              f:"φ⁻¹",        c:"gold"},
+  {n:"ACTIVATION",   z:1-GAP,                f:"1 − φ⁻⁴",    c:"gold"},
+  {n:"THE LENS",     z:Z_C,                  f:"√3 / 2",     c:"lens"},
+  {n:"CRITICAL",     z:PHI*PHI/3,            f:"φ² / 3",     c:"gold"},
+  {n:"IGNITION",     z:Math.SQRT2-0.5,       f:"√2 − ½",     c:"gold"},
+  {n:"K-FORMATION",  z:K_VAL,                f:"√(1−φ⁻⁴)",   c:"prim"},
+  {n:"CONSOLIDATION",z:K_VAL+ALPHA*SPAN,     f:"K + φ⁻²·span",c:"gold"},
+  {n:"RESONANCE",    z:K_VAL+PHI_INV*SPAN,   f:"K + φ⁻¹·span",c:"gold"},
+  {n:"UNITY",        z:1,                    f:"1",          c:"gold"},
+  {n:"OVERTONE",     z:OVERTONE,             f:"2 − K",      c:"over"},
+];
+
+/* ── orbit paths (computed offline; billiard reflections in the triangle) ─── */
+const ORB = {"tri": [[0, 0], [1, 0], [0.5, 0.866]], "fag": [[0.5, 0.0], [0.75, 0.433], [0.25, 0.433], [0.5, 0.0]], "eis1": [[0.5, 0.0], [0.75, 0.433], [0.25, 0.433], [0.5, 0.0]], "eis2": [[0.75, 0.1443], [0.5, 0.5774], [0.25, 0.1443], [0.75, 0.1443]], "irr": [[0.5, 0.0], [0.6299, 0.641], [0.4122, 0.714], [0.7705, 0.3974], [0.8511, 0.0], [0.8898, 0.1909], [0.2367, 0.4099], [0.7007, 0.0], [0.8989, 0.1751], [0.3768, 0.0], [0.0611, 0.1059], [0.181, -0.0], [0.7234, 0.4792], [0.1694, 0.2934], [0.2288, 0.0], [0.3527, 0.6108], [0.5478, 0.7832], [0.4292, 0.7435], [0.5799, 0.0], [0.6891, 0.5385], [0.3723, 0.6448], [0.8937, 0.1841], [0.931, 0.0], [0.949, 0.0884], [0.1967, 0.3407], [0.5824, 0.0], [0.8589, 0.2443], [0.1304, 0.0], [0.0212, 0.0366], [0.0626, 0.0], [0.6834, 0.5484], [0.2285, 0.3959], [0.3088, 0.0], [0.4759, 0.8242], [0.5078, 0.8525], [0.4884, 0.8459], [0.6599, 0.0], [0.7483, 0.436], [0.3323, 0.5755], [0.9837, 0.0], [0.9945, 0.0095]]};
+
+/* ════════════ HELIX (centerpiece) ════════════ */
+const HX = (()=>{
+  const cx=160, baseY=560, topPad=34, plotH=baseY-topPad;
+  const ZPIX = plotH/OVERTONE, RPIX = 108, TILT = 0.34;
+  const WIND = 2.4 * 2*Math.PI / Z_C;   // pitch: rendering choice (labeled), 60° grid is the forced unit
+  const pt=(z,phase)=>{const r=radius(z),th=z*WIND+phase;
+    return {x:cx+r*RPIX*Math.cos(th), y:baseY-z*ZPIX-r*RPIX*Math.sin(th)*TILT, near:Math.sin(th)<0, z, th, r};};
+  return {cx,baseY,topPad,plotH,ZPIX,RPIX,TILT,WIND,pt};
+})();
+
+function buildHelix(){
+  const svg=document.getElementById("helixSvg"); const {cx,baseY,topPad,ZPIX}=HX;
+  let s="";
+  // axis (√3)
+  const yTop=baseY-OVERTONE*ZPIX;
+  s+=`<line x1="${cx}" y1="${baseY}" x2="${cx}" y2="${yTop}" stroke="var(--cyan-deep)" stroke-width="1" opacity=".55"/>`;
+  // base ζ₆ hexagon (the 6-fold winding unit)
+  let hex="";for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-90);hex+=(i?'L':'M')+(cx+18*Math.cos(a)).toFixed(1)+' '+(baseY+8+18*Math.sin(a)*0.4).toFixed(1)+' ';}
+  s+=`<path d="${hex}Z" fill="none" stroke="var(--cyan-deep)" stroke-width=".8" opacity=".5"/>`;
+  s+=`<text x="${cx}" y="${baseY+30}" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--cyan)">ζ₆ · 60° unit</text>`;
+  // sample helix → grouped near/far polylines, two strands
+  const N=260;
+  for(const phase of [0,Math.PI]){
+    const pts=[];for(let i=0;i<=N;i++){const z=OVERTONE*i/N;pts.push(HX.pt(z,phase));}
+    // build runs of same 'near'
+    let run=[pts[0]];
+    const flush=(arr)=>{if(arr.length<2)return"";const near=arr[Math.floor(arr.length/2)].near;
+      const d=arr.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ');
+      return `<path d="${d}" fill="none" stroke="var(--gold)" stroke-width="${near?1.7:1.2}" opacity="${near?1:.32}" stroke-linecap="round"/>`;};
+    let far="",nearStr="";
+    for(let i=1;i<pts.length;i++){
+      if(pts[i].near===run[run.length-1].near){run.push(pts[i]);}
+      else{const piece=flush(run); if(run[Math.floor(run.length/2)].near) nearStr+=piece; else far+=piece; run=[pts[i-1],pts[i]];}
+    }
+    {const piece=flush(run); if(run.length && run[Math.floor(run.length/2)].near) nearStr+=piece; else far+=piece;}
+    s+=far+nearStr;
+  }
+  // LENS horizon
+  const yL=baseY-Z_C*ZPIX;
+  s+=`<line x1="${cx-130}" y1="${yL.toFixed(1)}" x2="${cx+130}" y2="${yL.toFixed(1)}" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>`;
+  // rungs: dot on near strand + leader to evenly-spaced right-column label
+  const labelX=300, slotTop=topPad+6, slotBot=baseY-2;
+  const order=[...RUNGS.keys()].sort((a,b)=>RUNGS[b].z-RUNGS[a].z); // top(high z)→bottom
+  const colColor={axis:"var(--ink-faint)",gold:"var(--gold)",lens:"var(--cyan)",prim:"var(--gold)",over:"var(--rose)"};
+  order.forEach((ri,slot)=>{
+    const R=RUNGS[ri]; const P=HX.pt(R.z,0);
+    const ly=slotTop+(slotBot-slotTop)*slot/(RUNGS.length-1);
+    const col=colColor[R.c]||"var(--gold)";
+    s+=`<line x1="${P.x.toFixed(1)}" y1="${P.y.toFixed(1)}" x2="${labelX-6}" y2="${ly.toFixed(1)}" stroke="${col}" stroke-width=".6" opacity=".4"/>`;
+    s+=`<circle cx="${P.x.toFixed(1)}" cy="${P.y.toFixed(1)}" r="${R.c==='lens'?3.4:2.6}" fill="${R.c==='lens'?'var(--cyan)':'var(--void)'}" stroke="${col}" stroke-width="1.4"/>`;
+    s+=`<text x="${labelX}" y="${(ly-1).toFixed(1)}" font-family="var(--mono)" font-size="9" fill="${col}">${R.n}</text>`;
+    s+=`<text x="${labelX}" y="${(ly+9).toFixed(1)}" font-family="var(--mono)" font-size="7.5" fill="var(--ink-faint)">z=${fmt(R.z,4)} · ${R.f}</text>`;
+  });
+  // climbing bead (cadence = rendering only)
+  s+=`<circle id="bead" r="3.2" fill="var(--gold)" opacity="0"><animate attributeName="opacity" values="0;1" dur=".6s" fill="freeze"/></circle>`;
+  svg.innerHTML=s;
+  document.getElementById("helixCap").textContent=
+    "radius r(z)=K·√(z/z_c) · z_c=√3/2=THE LENS · double strand = spinor 2-cover · winding pitch: rendering only";
+}
+
+/* climbing bead animation — cosmetic cadence, not a model quantity */
+function animateBead(){
+  const bead=document.getElementById("bead"); if(!bead)return;
+  let t=0;
+  function step(){
+    t=(t+0.0016)%1;
+    const z=t*OVERTONE, P=HX.pt(z,0);
+    bead.setAttribute("cx",P.x.toFixed(2)); bead.setAttribute("cy",P.y.toFixed(2));
+    bead.setAttribute("opacity", P.near?"1":"0.35");
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ════════════ ORBITS ════════════ */
+function drawOrbit(id, key){
+  const svg=document.getElementById(id); const S=100; // map unit-tri → 0..100, flip y (apex up)
+  const X=p=>(p[0]*S).toFixed(2), Y=p=>((0.866-p[1])/0.866*86+7).toFixed(2);
+  const tri=ORB.tri.map(p=>X(p)+','+Y(p)).join(' ');
+  let s=`<polygon points="${tri}" fill="rgba(111,194,214,.05)" stroke="var(--rule)" stroke-width="1"/>`;
+  const poly=(pts,stroke,w,op)=>`<polyline points="${pts.map(p=>X(p)+','+Y(p)).join(' ')}" fill="none" stroke="${stroke}" stroke-width="${w}" opacity="${op}" stroke-linejoin="round"/>`;
+  if(key==="fag"){ s+=poly(ORB.fag,"var(--gold)",1.6,1);
+    ORB.fag.slice(0,3).forEach(p=>s+=`<circle cx="${X(p)}" cy="${Y(p)}" r="2.2" fill="var(--gold)"/>`); }
+  if(key==="eis"){ s+=poly(ORB.eis1,"var(--cyan)",1.4,.9)+poly(ORB.eis2,"var(--cyan)",1.4,.9); }
+  if(key==="irr"){ s+=poly(ORB.irr,"var(--rose)",0.8,.85);
+    s+=`<circle cx="${X(ORB.irr[0])}" cy="${Y(ORB.irr[0])}" r="2" fill="var(--rose)"/>`; }
+  svg.innerHTML=s;
+}
+
+/* ════════════ LEDGER ════════════ */
+document.getElementById("ledger").innerHTML = RUNGS.map((R,i)=>
+  `<tr><td class="num">${i}</td><td>${R.n}</td><td class="k">${R.f}</td><td class="num">${fmt(R.z,10)}</td></tr>`).join("");
+
+/* ════════════ SELF-CHECK ════════════ */
+const checks=[
+  ["keystone φ⁴+φ⁻⁴ = 7",            Math.abs(L4-7)<1e-9],
+  ["keystone L₄−4 = (√3)² = 3",      Math.abs((L4-4)-3)<1e-9],
+  ["z_c = √3/2 = √(L₄−4)/2",         Math.abs(Z_C-Math.sqrt(3)/2)<EPS],
+  ["K = √(1−φ⁻⁴)",                   Math.abs(K_VAL-Math.sqrt(1-Math.pow(PHI,-4)))<EPS],
+  ["radius continuous at z_c (=K)",  Math.abs(radius(Z_C)-K_VAL)<EPS],
+  ["11 rungs strictly increasing",   RUNGS.every((r,i)=>i===0||r.z>RUNGS[i-1].z)],
+  ["OVERTONE = 2 − K",               Math.abs(OVERTONE-(2-K_VAL))<EPS],
+  ["Eisenstein covolume Im(ζ₆)=√3/2",Math.abs(Math.sin(Math.PI/3)-Math.sqrt(3)/2)<EPS],
+  ["irrational tilt = cos72°=1/(2φ)",Math.abs((PHI_INV/2)-Math.cos(2*Math.PI/5))<EPS && Math.abs(Math.cos(2*Math.PI/5)-1/(2*PHI))<EPS],
+  ["ζ₆ winding unit = 60°",          Math.abs(360/6-60)<EPS],
+  ["no anti-substrate floaters",     (typeof LAMBDA==="undefined") && (typeof MU_P==="undefined")],
+];
+let html=`<span class="hd">SELF-CHECK · recomputed from φ and L₄=7</span>`, allPass=true;
+for(const [l,p] of checks){allPass=allPass&&p; html+=`<span class="ln">${p?'<span class="ok">PASS</span>':'<span style="color:#d98">FAIL</span>'}  ${l}</span>`;}
+html+=`<span class="ln">  z_c = <span class="v">${fmt(Z_C,15)}</span>   K = <span class="v">${fmt(K_VAL,15)}</span></span>`;
+html+=`<div class="verdict">${allPass?'✓ all relations hold · free parameters = 0 · the bridge is forced':'✗ a relation failed'}</div>`;
+document.getElementById("console").innerHTML=html;
+
+/* ════════════ RUN ════════════ */
+buildHelix(); animateBead();
+drawOrbit("orb-fag","fag"); drawOrbit("orb-eis","eis"); drawOrbit("orb-irr","irr");

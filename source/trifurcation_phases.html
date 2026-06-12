@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trifurcation — three readings of one branching</title>
+<style>
+  :root{
+    --bg:#0a1124; --plate:#111a37; --plate2:#0e1631; --panel:#0d1530;
+    --ink:#e9edff; --dim:#9aa7c6; --faint:#62719a; --line:#243056;
+    --axis:rgba(154,167,198,.30);
+    --z2:#6f8fd0; --d3:#34c2ab; --d6:#e3a93a; --phi:#e6b24a; --rel:#a6a2e6;
+    --stable:#7fe0c4; --unstable:#e0728c; --open:#f0c46a;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono","Menlo",monospace;
+    --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:
+        radial-gradient(1200px 700px at 78% -8%, #16224a 0%, rgba(22,34,74,0) 55%),
+        var(--bg);
+       color:var(--ink);font-family:var(--sans);line-height:1.5;
+       padding:clamp(18px,4vw,52px);}
+  .wrap{max-width:1060px;margin:0 auto}
+
+  /* masthead */
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;
+           text-transform:uppercase;color:var(--faint);display:flex;gap:14px;align-items:center}
+  .eyebrow .rule{height:1px;flex:1;background:linear-gradient(90deg,var(--line),transparent)}
+  h1{font-family:var(--mono);font-weight:600;letter-spacing:-.01em;
+     font-size:clamp(26px,4.6vw,42px);margin:.5rem 0 .35rem;line-height:1.05}
+  h1 .sub{color:var(--dim);font-weight:400}
+  .thesis{color:var(--dim);font-size:clamp(14px,1.7vw,16px);max-width:64ch;margin:.2rem 0 0}
+  .chain{font-family:var(--mono);font-size:13px;color:var(--faint);margin-top:14px;
+         display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .chain b{color:var(--ink);font-weight:600}
+  .chain .arr{color:var(--line)}
+
+  /* tabs */
+  .tablist{display:flex;gap:6px;margin:26px 0 0;border-bottom:1px solid var(--line);
+           flex-wrap:wrap}
+  .tab{appearance:none;background:none;border:0;cursor:pointer;color:var(--dim);
+       font-family:var(--mono);font-size:13px;letter-spacing:.02em;
+       padding:11px 15px 13px;border-bottom:2px solid transparent;margin-bottom:-1px;
+       display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:0}
+  .tab .grp{font-weight:600;font-size:14px;color:var(--ink);opacity:.62;transition:opacity .15s}
+  .tab .meta{font-size:11px;color:var(--faint)}
+  .tab:hover .grp{opacity:.85}
+  .tab[aria-selected="true"]{border-bottom-color:var(--tabcol)}
+  .tab[aria-selected="true"] .grp{opacity:1;color:var(--tabcol)}
+  .tab:focus-visible{outline:2px solid var(--tabcol);outline-offset:3px;border-radius:5px}
+  #t0{--tabcol:var(--z2)} #t1{--tabcol:var(--d3)} #t2{--tabcol:var(--d6)} #t3{--tabcol:var(--phi)} #t4{--tabcol:var(--phi)} #t5{--tabcol:var(--rel)}
+
+  /* panels */
+  .panel{display:none;padding-top:26px}
+  .panel.active{display:block;animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .layout{display:grid;grid-template-columns:1.18fr .82fr;gap:22px;align-items:start}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}}
+
+  .plate{background:linear-gradient(180deg,var(--plate),var(--plate2));
+         border:1px solid var(--line);border-radius:10px;padding:12px 12px 6px;
+         box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 40px -28px #000}
+  .plate-cap{display:flex;justify-content:space-between;font-family:var(--mono);
+             font-size:11px;color:var(--faint);padding:2px 4px 10px;letter-spacing:.02em}
+  .plate svg{width:100%;height:auto;display:block}
+  .plate svg text{font-family:var(--mono)}
+
+  .controls{margin-top:8px;padding:10px 4px 4px;border-top:1px solid var(--line)}
+  .ctl-row{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px}
+  .ctl-row label{color:var(--dim);white-space:nowrap}
+  input[type=range]{flex:1;accent-color:var(--tabcol);height:22px}
+  .readout{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:9px}
+  .readout .ph{color:var(--tabcol);font-weight:600}
+  #p0 .readout .ph{color:var(--z2)} #p1 .readout .ph{color:var(--d3)}
+
+  .side{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 15px}
+  .card h2{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+           color:var(--dim);margin:0 0 9px;font-weight:600}
+  .kv{font-family:var(--mono);font-size:12.5px;color:var(--dim);line-height:1.7;margin:0}
+  .kv b{color:var(--ink);font-weight:600} .kv .hot{color:var(--tabcol)}
+  #p0 .kv .hot{color:var(--z2)} #p1 .kv .hot{color:var(--d3)} #p2 .kv .hot{color:var(--d6)} #p3 .kv .hot{color:var(--phi)} #p4 .kv .hot{color:var(--phi)} #p5 .kv .hot{color:var(--rel)}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+        border:1px solid currentColor;border-radius:5px;padding:1px 7px;white-space:nowrap}
+  .pill.forced{color:var(--stable)} .pill.open{color:var(--open)}
+
+  /* validation triple (tab 3) */
+  .triple{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media(max-width:620px){.triple{grid-template-columns:1fr}}
+  .route{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 13px 12px}
+  .route .r-h{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--faint);
+              text-transform:uppercase;margin-bottom:7px}
+  .route .r-b{font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.55}
+  .route .r-out{margin-top:8px;font-family:var(--mono);font-size:14px;color:var(--d6);font-weight:600}
+  .verdict{margin-top:12px;background:linear-gradient(180deg,rgba(227,169,58,.09),rgba(227,169,58,.02));
+           border:1px solid rgba(227,169,58,.35);border-radius:9px;padding:13px 15px;
+           font-family:var(--mono);font-size:12.5px;color:var(--ink);line-height:1.6}
+  .verdict b{color:var(--d6)}
+
+  .btn{appearance:none;background:var(--panel);border:1px solid var(--line);color:var(--dim);
+       font-family:var(--mono);font-size:11.5px;border-radius:6px;padding:6px 11px;cursor:pointer}
+  .btn:hover{color:var(--ink);border-color:var(--d6)}
+  .btn:focus-visible{outline:2px solid var(--d6);outline-offset:2px}
+
+  /* footer ledger */
+  footer{margin-top:34px;border-top:1px solid var(--line);padding-top:18px}
+  .ledger{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .ledger li{font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.55;
+             display:flex;gap:10px;align-items:flex-start}
+  .ledger b{color:var(--ink)}
+  .tag{flex:none;font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+       border:1px solid currentColor;border-radius:4px;padding:2px 6px;margin-top:1px}
+  .tag.f{color:var(--stable)} .tag.c{color:#c79be8} .tag.o{color:var(--open)}
+  .repro{margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.65}
+  .repro code{color:var(--dim);background:rgba(154,167,198,.08);padding:1px 6px;border-radius:4px}
+  .repro b{color:var(--dim)}
+
+  @media (prefers-reduced-motion: reduce){
+    .panel.active{animation:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span>Zero-free-parameter · derivation change</span><span class="rule"></span><span>residual 0</span></div>
+    <h1>Trifurcation <span class="sub">— three readings of one branching</span></h1>
+    <p class="thesis">One transition splits a single state into three. Read at rising symmetry it is the same event seen three ways: a 1D pitchfork, a 120°-spaced trifork, and — at the hexagon — the point where the three modes close on themselves and the geometry, the algebra, and the dynamics all return the same √3/2.</p>
+    <div class="chain"><b>Z₂</b><span class="meta">germ x⁴</span><span class="arr">→</span><b>D₃</b><span class="meta">z̄²</span><span class="arr">→</span><b>D₆</b><span class="meta">hexagonal closure</span></div>
+  </header>
+
+  <div class="tablist" role="tablist" aria-label="Trifurcation by symmetry">
+    <button class="tab" id="t0" role="tab" aria-selected="true"  aria-controls="p0">
+      <span class="grp">Z₂ · 1D pitchfork</span><span class="meta">3 branches · exp 1/2 · ℚ(√−a)</span></button>
+    <button class="tab" id="t1" role="tab" aria-selected="false" aria-controls="p1" tabindex="-1">
+      <span class="grp">D₃ · 2D trifork</span><span class="meta">3 branches · exp 1 · ℚ(√3)</span></button>
+    <button class="tab" id="t2" role="tab" aria-selected="false" aria-controls="p2" tabindex="-1">
+      <span class="grp">D₆ · hexagonal closure</span><span class="meta">Σ kᵢ = 0 · self-validating</span></button>
+    <button class="tab" id="t3" role="tab" aria-selected="false" aria-controls="p3" tabindex="-1">
+      <span class="grp">Δ · control a (trace)</span><span class="meta">φ⁻² wall · order 5 ↔ 6</span></button>
+    <button class="tab" id="t4" role="tab" aria-selected="false" aria-controls="p4" tabindex="-1">
+      <span class="grp">Helix · (z, r, z_c)</span><span class="meta">three axes from L₄ · Δ as weight</span></button>
+    <button class="tab" id="t5" role="tab" aria-selected="false" aria-controls="p5" tabindex="-1">
+      <span class="grp">Relational · L₄ web</span><span class="meta">√2, √3, √5 from one seed · forced-in-context</span></button>
+  </div>
+
+  <!-- TAB 0 : Z2 pitchfork -->
+  <section class="panel active" id="p0" role="tabpanel" aria-labelledby="t0">
+    <div class="layout">
+      <div class="plate">
+        <div class="plate-cap"><span>V = ¼x⁴ + ½a·x²  ·  V′ = x(x²+a)</span><span>state x vs control a</span></div>
+        <svg id="svg-pf" viewBox="0 0 620 420" role="img"
+             aria-label="Pitchfork bifurcation diagram: the trivial branch and the two broken branches meeting at the trifurcation point a=0."></svg>
+        <div class="controls">
+          <div class="ctl-row"><label for="sl-pf">control&nbsp;a</label>
+            <input type="range" id="sl-pf" min="-150" max="100" value="60" step="1" style="--tabcol:var(--z2)"></div>
+          <div class="readout" id="rd-pf"></div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="card" style="--tabcol:var(--z2)">
+          <h2>What is forced here</h2>
+          <p class="kv"><b>Branches</b> {0, ±√(−a)} — roots of the cubic V′. <b>One → three</b> as a crosses 0.<br>
+          <b>Trifurcation point</b> a=0: discriminant of x³+ax is <span class="hot">−4a³</span>, zero only at a=0.<br>
+          <b>Amplitude</b> |x| = |a|^(1/2) → forced exponent <span class="hot">1/2</span>.<br>
+          <b>Field</b> ℚ(√−a) — set by the radical, not by φ or ζ₆.</p>
+        </div>
+        <div class="card" style="--tabcol:var(--z2)">
+          <h2>Stability (the dynamics)</h2>
+          <p class="kv">Gradient flow ẋ = −V′. Hessian V″ = 3x²+a.<br>
+          trivial branch: V″ = a → <span style="color:var(--stable)">stable</span> for a&gt;0, <span style="color:var(--unstable)">unstable</span> for a&lt;0.<br>
+          broken pair: V″ = −2a → <span style="color:var(--stable)">stable</span> for a&lt;0.<br>
+          A clean stability exchange at the trifurcation. <span class="pill forced">forced</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 1 : D3 trifork -->
+  <section class="panel" id="p1" role="tabpanel" aria-labelledby="t1" hidden>
+    <div class="layout">
+      <div class="plate">
+        <div class="plate-cap"><span>ż = λz + z̄²  ·  three-fold (D₃) equivariant</span><span>state plane (u,v)</span></div>
+        <svg id="svg-tf" viewBox="0 0 620 420" role="img"
+             aria-label="Three-fold trifork: three symmetry-related branches 120 degrees apart, with branch height sqrt(3)/2 equal to Z_C."></svg>
+        <div class="controls">
+          <div class="ctl-row"><label for="sl-tf">control&nbsp;λ</label>
+            <input type="range" id="sl-tf" min="-120" max="90" value="-90" step="1" style="--tabcol:var(--d3)"></div>
+          <div class="readout" id="rd-tf"></div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="card" style="--tabcol:var(--d3)">
+          <h2>What is forced here</h2>
+          <p class="kv"><b>Branches</b> at θ = 0°, 120°, 240° — the cube roots of unity. <b>Forced by D₃</b> (equivariant branching lemma), not chosen.<br>
+          <b>Amplitude</b> r = |λ| → forced exponent <span class="hot">1</span> (transcritical) — not the 1D 1/2.<br>
+          <b>Branch height</b> Im = <span class="hot">√3/2 = Z_C = Im(ζ₆)</span>, minpoly 4x²−3.<br>
+          <b>Field</b> ℚ(√3) — the ζ₆ tower, disjoint from φ.</p>
+        </div>
+        <div class="card" style="--tabcol:var(--d3)">
+          <h2>Stability (the dynamics)</h2>
+          <p class="kv">Jacobian eigenvalues at a branch: <b>{−λ, 3λ}</b> → opposite signs → <b>saddles</b>.<br>
+          The quadratic trifork does <i>not</i> select the three states; cubic |z|²z terms are needed to stabilise them (the hexagon/triangle story). <span class="pill forced">forced</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2 : D6 hexagonal closure -->
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+    <div class="plate" style="--tabcol:var(--d6)">
+      <div class="plate-cap"><span>three modes · their closure · the 6-fold direction set</span>
+        <span><button class="btn" id="replay">↻ replay closure</button></span></div>
+      <svg id="svg-hex" viewBox="0 0 620 250" role="img"
+           aria-label="Three modes 120 degrees apart, the same three vectors tip-to-tail closing to zero, and the six-fold direction set they span."></svg>
+    </div>
+
+    <div class="triple" style="margin-top:18px">
+      <div class="route">
+        <div class="r-h">geometry</div>
+        <div class="r-b">equilateral-triangle height = hexagonal row spacing = sin 60°</div>
+        <div class="r-out">= √3/2</div>
+      </div>
+      <div class="route">
+        <div class="r-h">algebra</div>
+        <div class="r-b">ζ₆ = e^(iπ/3), Φ₆ = x²−x+1; Im(ζ₆), minpoly 4x²−3</div>
+        <div class="r-out">= √3/2</div>
+      </div>
+      <div class="route">
+        <div class="r-h">dynamics</div>
+        <div class="r-b">three modes sum to 0; their imaginary parts are {0, ±·}</div>
+        <div class="r-out">= √3/2</div>
+      </div>
+    </div>
+    <div class="verdict">
+      Three independent routes return the same constant <b>Z_C = √3/2</b>, residual 0. A relationship that computes itself three ways is <b>self-validating</b> — this is the closure of the ζ₆ tower, and the order chain terminates here: crystallographic orders are {1,2,3,4,6}, and 6-fold is the maximum. <span style="color:var(--dim)">The figure is mode geometry plus the closure Σ kᵢ = 0; a <i>stable</i> hexagonal state would need the cubic |z|²z term — the quadratic trifork gives only saddles (see the D₃ tab).</span>
+    </div>
+
+    <div class="card" style="--tabcol:var(--d6);margin-top:14px">
+      <h2>5-fold and 6-fold: a tiling fact, not a wall</h2>
+      <p class="kv">The obstruction to 5-fold symmetry is 2cos 72° = <span class="hot">τ = φ⁻¹</span> (irrational), so order 5 cannot tile periodically alongside order 6 — a constraint on <i>lattices</i>. It is not a wall between the constants: √3 (here) and √5 (φ) are <b>independent axes of one relational space</b>, and both emerge from L₄ = 7 — √3 = √(L₄−4), √5 = √(L₄²−4)/3. Independence over ℚ is what makes them distinct coordinates, not separate worlds. <span class="pill forced">one space</span></p>
+    </div>
+  </section>
+
+  <!-- TAB 3 : the delta on the control-a (trace) axis -->
+  <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+    <div class="plate" style="--tabcol:var(--phi)">
+      <div class="plate-cap"><span>control a = trace = 2cosθ  ·  integer a ⟺ lattice symmetry</span><span>order 5 ↔ 6</span></div>
+      <svg id="svg-delta" viewBox="0 0 620 250" role="img"
+           aria-label="Trace control axis from -2 to 2: crystallographic orders at integer traces, order 5 at the golden value phi inverse, and the delta phi-squared-inverse gap to the order-6 closure."></svg>
+    </div>
+
+    <div class="layout" style="margin-top:18px">
+      <div class="side">
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>The notable delta</h2>
+          <p class="kv">On the trace axis a = 2cosθ, the lattice-compatible orders sit at integers. Order 5 lands at <b>a = φ⁻¹ = τ</b> — off-lattice.<br>
+          <b>Δ = a(6) − a(5) = 1 − τ = <span class="hot">φ⁻²</span></b> ≈ 0.382, minpoly x²−3x+1.<br>
+          The trace-gap from the ζ₆ closure (order 6) down to the forbidden order 5 — the wall between the towers has <b>golden width</b>.<br>
+          As a turn: 360°·φ⁻² = <span class="hot">137.5°</span>, the golden angle. <span class="pill forced">forced</span></p>
+        </div>
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>φ is derived here — from the pentagon</h2>
+          <p class="kv">2cos 72° = <span class="hot">φ⁻¹</span> and 2cos 144° = <span class="hot">−φ</span>, both roots of x²+x−1.<br>
+          The order-5 obstruction <i>is</i> a φ-derivation, straight from pentagon geometry — φ as an <b>output</b>, in ℚ(√5). <span class="pill forced">forced</span></p>
+        </div>
+      </div>
+      <div class="side">
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>φ, the helix, and the relation to √3</h2>
+          <p class="kv">φ is recoverable from the φ-family (<b>τ = φ⁻¹ ⟹ φ = 1/τ</b>; also from CRITICAL, K, L₄). The helix does not derive φ from nothing — φ is the <b>seed</b>.<br>
+          But √3 is not foreign to it: <b>z_c = √(L₄−4)/2 = √3/2</b> is a <b>forced relation</b> under L₄ = 7 — not a coincidence. The constants are relationally bound: <b>φ → L₄ → √3</b>.<br>
+          The pentagon derives φ independently; substrate-φ and pentagon-φ agree → φ <b>self-validates</b>, mirroring Z_C across geometry/algebra/dynamics.</p>
+        </div>
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>One space, independent axes</h2>
+          <p class="kv">Pentagon-φ carries √5; hexagon-Z_C carries √3. These are not sealed apart — they are <b>independent coordinate axes of the compositum ℚ(√2, √3, √5)</b>, and both emerge from L₄ = 7.<br>
+          Linear independence over ℚ is the <b>feature</b> that lets them carry distinct information across the web — not a barrier. The control gap between the order-6 and order-5 traces is width Δ = φ⁻². <span class="pill forced">forced under L₄</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4 : the ZFP helix in (z, r, z_c) -->
+  <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4" hidden>
+    <div class="layout">
+      <div class="plate" style="--tabcol:var(--phi)">
+        <div class="plate-cap"><span>(z, r, z_c) · three axes from L₄ · Δ = pitch</span><span>forced under L₄ · helix = one representation</span></div>
+        <svg id="svg-helix" viewBox="0 0 620 380" role="img"
+             aria-label="Side view of the ZFP helix carrying three coordinate axes that all emerge from L4 = 7: threshold rings on the sqrt5-axis (tau), the sqrt3-axis (z_c, the lens), and the sqrt2-axis (ignition), up to unity, with the delta phi-squared as the pitch."></svg>
+      </div>
+      <div class="side">
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>Three axes, one space</h2>
+          <p class="kv">The strand threads all three coordinate directions of the web, co-present and all from L₄ = 7:<br>
+          <span class="hot">√5-axis</span> — τ = φ⁻¹, K = √(1−φ⁻⁴) (the φ-family) · <span style="color:var(--d3)">√3-axis</span> — z_c = √3/2, the lens where r saturates · <span style="color:#dd86a6">√2-axis</span> — ignition = √2−½.<br>
+          They live together in <b>ℚ(√2, √3, √5)</b>; the rings mark where each axis meets the climb. <span class="pill forced">one space</span></p>
+        </div>
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>Forced — absolute and in-context</h2>
+          <p class="kv"><b>Absolute</b> (from the generator alone): φ, L₄ = 7, τ²+τ = 1, Δ = φ⁻² = 1−τ.<br>
+          <b>In-context</b> — <i>forced at this point under other forced constraints</i>: √3, √2, √5, z_c, ignition are forced <b>given L₄ and a selected relation</b> (−4, +1, ²−4). Each is exact, residual 0. <span class="pill forced">forced under L₄</span></p>
+        </div>
+        <div class="card" style="--tabcol:var(--phi)">
+          <h2>Selected &amp; represented</h2>
+          <p class="kv">Two things here are chosen, not forced: <b>which relations</b> to instantiate across the constants, and the <b>helical representation</b> — radius law r(z)=K√(z/z_c), pitch = Δ (≈ φ² = 2.618 turns, the “weight”), golden-angle winding 137.5°. One representation of the web; the forced values do not depend on it. <span class="pill open">representation</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5" hidden>
+    <div class="layout">
+      <div class="plate" style="--tabcol:var(--rel)">
+        <div class="plate-cap"><span>L₄ = 7 → √2, √3, √5 · forced relations · one compositum</span><span>seed forced · axes forced-in-context</span></div>
+        <svg id="svg-rel" viewBox="0 0 620 330" role="img"
+             aria-label="Relational hub: the single forced seed L4 = phi^4 + phi^-4 = 7 connects by three colored spokes to the sqrt5, sqrt3, and sqrt2 axes, each a forced relation, all co-present in the compositum Q(sqrt2, sqrt3, sqrt5)."></svg>
+      </div>
+      <div class="side">
+        <div class="card" style="--tabcol:var(--rel)">
+          <h2>The web</h2>
+          <p class="kv">From the single forced seed <b>L₄ = φ⁴+φ⁻⁴ = 7</b>, three independent axes emerge by forced relations: <b>√3 = √(L₄−4)</b>, <b>√2 = √(L₄+1)/2</b>, <b>√5 = √(L₄²−4)/3</b>. Not separate spaces — they coexist in the compositum <b>ℚ(√2, √3, √5)</b> (degree 8). The deltas are forced relations too: Δ = φ⁻² = 1−τ, τ²+τ = 1. <span class="pill forced">residual 0</span></p>
+        </div>
+        <div class="card" style="--tabcol:var(--rel)">
+          <h2>Forced — and forced-in-context</h2>
+          <p class="kv">Two grades sit inside “forced.” <b>Absolute</b>: holds from the generator alone — φ, L₄ = 7, τ²+τ = 1. <b>In-context</b>: <i>forced at this point under other forced constraints</i> — √3, √2, √5, z_c, ignition, the deltas are forced <b>given the seed and a selected relation</b>. Drop the seed or the relation and they unpin; keep them and the value is exact. <span class="pill forced">forced under L₄</span></p>
+        </div>
+        <div class="card" style="--tabcol:var(--rel)">
+          <h2>Selected &amp; represented</h2>
+          <p class="kv">What is chosen, not forced: <b>which relations</b> to form across the constants (−4, +1, ²−4, x²+x), and any <b>representation</b> (the helix, this hub). The interactions are principled selections; the quantities they force are not. <span class="pill open">selection</span> A physical realization at a forced constant still needs an operator and metric.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <ul class="ledger">
+      <li><span class="tag f">forced</span><b>Branch counts &amp; exponents.</b> 1→3 (Z₂, exp 1/2) and 1→3 (D₃, exp 1) computed two ways, residual 0; the even-germ ladder forces 3→5→7.</li>
+      <li><span class="tag f">forced</span><b>Self-validation.</b> Z_C = √3/2 from geometry, algebra, and dynamics independently; three modes close (Σ kᵢ = 0); the crystallographic order chain terminates at 6.</li>
+      <li><span class="tag f">forced</span><b>One space.</b> φ, √3, √2, √5 are co-present in ℚ(√2,√3,√5) and all emerge from L₄ = 7 (√3=√(L₄−4), √2=√(L₄+1)/2, √5=√(L₄²−4)/3). Independence over ℚ = distinct axes, not a wall — see the Relational tab.</li>
+      <li><span class="tag f">forced</span><b>Forced — and forced-in-context.</b> Some values hold from the generator alone (φ, L₄=7, τ²+τ=1, Δ=φ⁻²); most are <i>forced at this point under other forced constraints</i> — √3, √2, √5, z_c, ignition, the deltas, each forced given L₄ and a selected relation.</li>
+      <li><span class="tag c">construction</span><b>Selection &amp; representation.</b> Which relations to form across the constants is the input; the helical embedding (radius law, pitch, winding), the threshold <i>names</i>, and the hexagon rendering are one representation — strip them and the minpoly-pinned values, the exponents, Σ kᵢ = 0, and Δ = φ⁻² all stand.</li>
+      <li><span class="tag o">open</span>A physical system instantiating any of this at a forced constant still needs the operator and metric. The agreements are structural identities; the bridge to a measured quantity remains to be built.</li>
+    </ul>
+    <div class="repro">
+      <p><b>Reproduce.</b> <code>python3 zfp_trifurcation.py</code> · <code>zfp_hex_closure.py</code> · <code>zfp_delta_pentagon.py</code> · <code>zfp_helix.py</code> · <code>zfp_relational.py</code> — definitions first, every value recomputed; the run wins over any printed figure if they disagree.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const SVG = "http://www.w3.org/2000/svg";
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const C = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const COL = {
+    z2:C("--z2")||"#6f8fd0", d3:C("--d3")||"#34c2ab", d6:C("--d6")||"#e3a93a",
+    ink:C("--ink")||"#e9edff", dim:C("--dim")||"#9aa7c6", faint:C("--faint")||"#62719a",
+    axis:C("--axis")||"rgba(154,167,198,.30)", stable:C("--stable")||"#7fe0c4",
+    unstable:C("--unstable")||"#e0728c", line:C("--line")||"#243056"
+  };
+  const mk = (tag, attrs, parent) => {
+    const n = document.createElementNS(SVG, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const label = (p, t, x, y, col, anc, sz) => {
+    const n = mk("text", {x, y, fill:col||COL.faint, "font-size":sz||11,
+      "font-family":"var(--mono)", "text-anchor":anc||"start"}, p);
+    n.textContent = t; return n;
+  };
+
+  /* ---------- TAB 0 : pitchfork ---------- */
+  const pf = document.getElementById("svg-pf");
+  const PF = {L:70, R:580, T:42, B:360, amin:-1.5, amax:1.0, xmax:1.3};
+  PF.mid = (PF.T + PF.B) / 2;
+  const aX = a => PF.L + ((PF.amax - a) / (PF.amax - PF.amin)) * (PF.R - PF.L);
+  const xY = x => PF.mid - x * ((PF.mid - PF.T) / PF.xmax);
+  function pfStatic(){
+    const ax = mk("g", {}, pf);
+    mk("line", {x1:PF.L, y1:PF.mid, x2:PF.R, y2:PF.mid, stroke:COL.axis, "stroke-width":1}, ax);
+    mk("line", {x1:aX(0), y1:PF.T, x2:aX(0), y2:PF.B, stroke:COL.axis, "stroke-width":1, "stroke-dasharray":"2 4"}, ax);
+    label(ax, "a", PF.R + 6, PF.mid + 4, COL.faint);
+    label(ax, "x", aX(PF.amax) - 4, PF.T - 8, COL.faint, "middle");
+    label(ax, "a = 0", aX(0), PF.B + 18, COL.faint, "middle", 10.5);
+    // trivial branch: stable (a>0) solid, unstable (a<0) dashed
+    mk("line", {x1:aX(PF.amax), y1:PF.mid, x2:aX(0), y2:PF.mid, stroke:COL.stable, "stroke-width":2}, pf);
+    mk("line", {x1:aX(0), y1:PF.mid, x2:aX(PF.amin), y2:PF.mid, stroke:COL.unstable, "stroke-width":1.6, "stroke-dasharray":"5 5"}, pf);
+    // broken branches (stable)
+    const N=70; let up="", lo="";
+    for(let i=0;i<=N;i++){ const a = -1.5*i/N; const x=Math.sqrt(-a);
+      up += (i?"L":"M")+aX(a).toFixed(1)+" "+xY(x).toFixed(1)+" ";
+      lo += (i?"L":"M")+aX(a).toFixed(1)+" "+xY(-x).toFixed(1)+" "; }
+    mk("path", {d:up, fill:"none", stroke:COL.stable, "stroke-width":2}, pf);
+    mk("path", {d:lo, fill:"none", stroke:COL.stable, "stroke-width":2}, pf);
+    label(pf, "trifurcation point", aX(0)+8, xY(1.18), COL.dim, "start", 10.5);
+    label(pf, "|x| = |a|^(1/2)  ·  exp 1/2", aX(-0.95), xY(1.18), COL.z2, "middle", 11);
+    label(pf, "stable", PF.L+2, PF.B+18, COL.stable, "start", 10);
+    label(pf, "— — unstable", PF.L+52, PF.B+18, COL.unstable, "start", 10);
+    pf._sweep = mk("g", {}, pf);
+  }
+  function pfUpdate(a){
+    const g = pf._sweep; g.innerHTML="";
+    mk("line", {x1:aX(a), y1:PF.T, x2:aX(a), y2:PF.B, stroke:COL.z2, "stroke-width":1.4, "stroke-opacity":.5}, g);
+    const eqs = a < 0 ? [0, Math.sqrt(-a), -Math.sqrt(-a)] : [0];
+    eqs.forEach(x => {
+      const stable = (x !== 0) || (a > 0);
+      mk("circle", {cx:aX(a), cy:xY(x), r:5, fill:stable?COL.stable:COL.unstable,
+        stroke:"#0e1631", "stroke-width":1.5}, g);
+    });
+    const rd = document.getElementById("rd-pf");
+    let ph;
+    if (a > 0.02)       ph = ['I',  'symmetric — one stable state'];
+    else if (a < -0.02) ph = ['III','broken — three states (one unstable, two stable)'];
+    else                ph = ['II', 'onset — the trifurcation point'];
+    rd.innerHTML = `<span class="ph">Phase ${ph[0]}</span> · a = ${a.toFixed(2)} · ${ph[1]}`;
+  }
+
+  /* ---------- TAB 1 : D3 trifork ---------- */
+  const tf = document.getElementById("svg-tf");
+  const TF = {cx:300, cy:210, Rs:150};
+  function tfStatic(){
+    const ax = mk("g", {}, tf);
+    mk("line", {x1:60, y1:TF.cy, x2:540, y2:TF.cy, stroke:COL.axis, "stroke-width":1}, ax);
+    mk("line", {x1:TF.cx, y1:30, x2:TF.cx, y2:390, stroke:COL.axis, "stroke-width":1}, ax);
+    label(ax, "u", 544, TF.cy+4, COL.faint);
+    label(ax, "v", TF.cx-4, 24, COL.faint, "middle");
+    label(tf, "three branches · 120° apart", 545, 44, COL.dim, "end", 11);
+    label(tf, "r = |λ|  ·  exp 1", 545, 60, COL.d3, "end", 11);
+    tf._dyn = mk("g", {}, tf);
+  }
+  function tfUpdate(lam){
+    const g = tf._dyn; g.innerHTML="";
+    const R = Math.abs(lam) * TF.Rs;
+    const base = lam < 0 ? 0 : 60;                 // branch directions flip across 0
+    const ang = [0,120,240].map(d => (base + d) * Math.PI/180);
+    const pts = ang.map(t => [TF.cx + R*Math.cos(t), TF.cy - R*Math.sin(t)]);
+    // triangle
+    if (R > 1){
+      let d = pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")+" Z";
+      mk("path", {d, fill:COL.d3, "fill-opacity":.06, stroke:COL.d3, "stroke-width":1.2, "stroke-dasharray":"5 5"}, g);
+    }
+    // sqrt3/2 height marker on the upper (120deg-ish) branch
+    const upper = pts.reduce((a,b)=> b[1] < a[1] ? b : a, pts[0]);
+    if (R > 8){
+      mk("line", {x1:upper[0], y1:upper[1], x2:upper[0], y2:TF.cy, stroke:COL.d3, "stroke-width":1, "stroke-dasharray":"2 3", "stroke-opacity":.7}, g);
+      label(g, "√3/2·|λ| = Z_C·|λ|", upper[0]+8, (upper[1]+TF.cy)/2, COL.d3, "start", 10.5);
+    }
+    // branches (saddles) + origin
+    pts.forEach(p => mk("circle", {cx:p[0], cy:p[1], r:5.5, fill:COL.d3, stroke:"#0e1631", "stroke-width":1.5}, g));
+    const originStable = lam < 0;
+    mk("circle", {cx:TF.cx, cy:TF.cy, r:5, fill:originStable?COL.stable:"none",
+      stroke:originStable?COL.stable:COL.unstable, "stroke-width":2}, g);
+    const rd = document.getElementById("rd-tf");
+    let ph;
+    if (lam > 0.02)       ph = ['I',  'λ&gt;0 — branches rotated 60°, origin unstable'];
+    else if (lam < -0.02) ph = ['III','λ&lt;0 — branches at 0°/120°/240°, origin stable'];
+    else                  ph = ['II', 'onset — three branches collapse through the origin'];
+    rd.innerHTML = `<span class="ph">Phase ${ph[0]}</span> · λ = ${lam.toFixed(2)} · ${ph[1]} · branches are saddles {−λ, 3λ}`;
+  }
+
+  /* ---------- TAB 2 : hexagonal closure ---------- */
+  const hx = document.getElementById("svg-hex");
+  const M = [COL.d6, COL.d3, COL.z2];              // three modes = the three phase colours
+  function defsArrows(){
+    const defs = mk("defs", {}, hx);
+    M.forEach((c,i) => {
+      const m = mk("marker", {id:"ah"+i, viewBox:"0 0 10 10", refX:8, refY:5,
+        markerWidth:7, markerHeight:7, orient:"auto-start-reverse"}, defs);
+      mk("path", {d:"M0 0 L10 5 L0 10 z", fill:c}, m);
+    });
+  }
+  function arrow(p, x1,y1,x2,y2, i, w){
+    mk("line", {x1,y1,x2,y2, stroke:M[i], "stroke-width":w||2.2,
+      "marker-end":"url(#ah"+i+")"}, p);
+  }
+  function hexDraw(){
+    hx.innerHTML=""; defsArrows();
+    const yc = 130, L = 62;
+    const ang = [0,120,240].map(d => d*Math.PI/180);
+    // (a) three modes radiating from a left origin
+    const ox = 96;
+    label(hx, "three modes", ox, 30, COL.dim, "middle", 11);
+    mk("circle", {cx:ox, cy:yc, r:2.5, fill:COL.faint}, hx);
+    const gA = mk("g", {}, hx);
+    ang.forEach((t,i)=> arrow(gA, ox, yc, ox + L*Math.cos(t), yc - L*Math.sin(t), i));
+    // (b) tip-to-tail closed triangle  (sum = 0)
+    const bx = 310, by = yc - 36;
+    label(hx, "Σ kᵢ = 0  (closed)", bx, 30, COL.d6, "middle", 11);
+    const v = ang.map(t => [L*Math.cos(t), -L*Math.sin(t)]);
+    let P = [bx, by]; const gB = mk("g", {}, hx);
+    const seg = [];
+    v.forEach((vec,i)=>{ const Q=[P[0]+vec[0], P[1]+vec[1]]; seg.push([P,Q,i]); P=Q; });
+    // (c) hexagon from the 6 directions (±modes)
+    const hxX = 524;
+    label(hx, "6 directions (±kᵢ)", hxX, 30, COL.dim, "middle", 11);
+    const hexPts=[];
+    for(let k=0;k<6;k++){ const t=(k*60)*Math.PI/180; hexPts.push([hxX+52*Math.cos(t), yc-52*Math.sin(t)]); }
+    mk("path", {d:hexPts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")+" Z",
+      fill:"rgba(227,169,58,.05)", stroke:COL.line, "stroke-width":1.2}, hx);
+    const gC = mk("g", {}, hx);
+    for(let k=0;k<6;k++){ const t=(k*60)*Math.PI/180;
+      mk("line", {x1:hxX, y1:yc, x2:hxX+44*Math.cos(t), y2:yc-44*Math.sin(t),
+        stroke:M[k%3], "stroke-width":1.6, "stroke-opacity":.85}, gC); }
+    mk("circle", {cx:hxX, cy:yc, r:2.5, fill:COL.faint}, hx);
+
+    // draw the closing triangle (animated if allowed)
+    const drawSeg = (s) => arrow(gB, s[0][0], s[0][1], s[1][0], s[1][1], s[2]);
+    if (reduce){ seg.forEach(drawSeg); }
+    else { seg.forEach((s,i)=> setTimeout(()=>drawSeg(s), 220*i)); }
+  }
+
+  /* ---------- TAB 3 : delta on the trace axis ---------- */
+  function deltaDraw(){
+    const s = document.getElementById("svg-delta"); s.innerHTML="";
+    const phi = C("--phi")||"#e6b24a";
+    const yc = 150, Lx = 60, Rx = 560, tau = 0.6180339887;
+    const aX = a => Lx + (a+2)/4 * (Rx-Lx);
+    label(s,"integer trace ⟺ lattice symmetry · order 5 lands at the golden value, off-lattice",Lx,28,COL.dim,"start",11);
+    mk("line",{x1:Lx,y1:yc,x2:Rx,y2:yc,stroke:COL.axis,"stroke-width":1.4},s);
+    label(s,"a = −2",Lx,yc+34,COL.faint,"start",10.5);
+    label(s,"a = 2  (trace)",Rx,yc+34,COL.faint,"end",10.5);
+    const orders = {"-2":2,"-1":3,"0":4,"1":6,"2":1};
+    [-2,-1,0,1,2].forEach(a=>{
+      mk("line",{x1:aX(a),y1:yc-5,x2:aX(a),y2:yc+5,stroke:COL.dim,"stroke-width":1.4},s);
+      mk("rect",{x:aX(a)-3,y:yc-3,width:6,height:6,fill:COL.d3,"fill-opacity":.85},s);
+      label(s,"n="+orders[String(a)],aX(a),yc+20,COL.dim,"middle",10.5);
+    });
+    mk("circle",{cx:aX(1),cy:yc,r:6,fill:COL.d3,stroke:"#0e1631","stroke-width":1.5},s);
+    label(s,"order 6 · ζ₆ closure",aX(1)+10,yc-44,COL.d3,"start",11);
+    mk("circle",{cx:aX(tau),cy:yc,r:6,fill:phi,stroke:"#0e1631","stroke-width":1.5},s);
+    label(s,"order 5 · forbidden",aX(tau)-9,yc-62,phi,"end",11);
+    label(s,"a = φ⁻¹ = τ",aX(tau)-9,yc-48,phi,"end",10.5);
+    const b1=aX(tau), b2=aX(1), by=yc-20;
+    mk("path",{d:"M"+b1+" "+(yc-8)+" L"+b1+" "+by+" L"+b2+" "+by+" L"+b2+" "+(yc-8),fill:"none",stroke:phi,"stroke-width":1.4},s);
+    label(s,"Δ = 1−τ = φ⁻² ≈ 0.382",(b1+b2)/2,by-7,phi,"middle",11);
+  }
+
+  /* ---------- TAB 4 : the ZFP helix (z, r, z_c) ---------- */
+  function helixDraw(){
+    const s = document.getElementById("svg-helix"); s.innerHTML="";
+    const gold = C("--phi")||"#e6b24a", teal = COL.d3;
+    const phi=(1+Math.sqrt(5))/2, gap=Math.pow(phi,-4),
+          Kc=Math.sqrt(1-gap), zc=Math.sqrt(3)/2, delta=Math.pow(phi,-2), tau=1/phi;
+    const cx=300, rS=165, zY=z=>340-z*300, rOf=z=>(z<=zc?Kc*Math.sqrt(z/zc):Kc);
+    // central axis
+    mk("line",{x1:cx,y1:zY(0),x2:cx,y2:zY(1.03),stroke:COL.axis,"stroke-width":1},s);
+    label(s,"z",cx-9,zY(1.03)-2,COL.faint,"middle",11);
+    label(s,"0",cx-10,zY(0)+4,COL.faint,"end",10);
+    label(s,"1",cx-10,zY(1)+4,COL.faint,"end",10);
+    label(s,"r",cx+rOf(1)*rS+10,zY(1)+4,COL.faint,"start",11);
+    // envelope (construction, dashed)
+    const env=sgn=>{let d="";for(let i=0;i<=120;i++){const z=i/120,x=cx+sgn*rOf(z)*rS;d+=(i?"L":"M")+x.toFixed(1)+" "+zY(z).toFixed(1)+" ";}return d;};
+    mk("path",{d:env(1),fill:"none",stroke:COL.line,"stroke-width":1.2,"stroke-dasharray":"4 4"},s);
+    mk("path",{d:env(-1),fill:"none",stroke:COL.line,"stroke-width":1.2,"stroke-dasharray":"4 4"},s);
+    // helix strand (construction scaffold, muted)
+    let hd="";for(let i=0;i<=400;i++){const z=i/400,th=2*Math.PI*z/delta,x=cx+rOf(z)*rS*Math.cos(th);hd+=(i?"L":"M")+x.toFixed(1)+" "+zY(z).toFixed(1)+" ";}
+    mk("path",{d:hd,fill:"none",stroke:COL.faint,"stroke-width":1.3,"stroke-opacity":.85},s);
+    // forced landmark rings (solid, by field)
+    const rose="#dd86a6", ign=Math.SQRT2-0.5;
+    const ring=(z,col,bold)=>mk("ellipse",{cx:cx,cy:zY(z),rx:(rOf(z)*rS).toFixed(1),ry:bold?6:4,fill:"none",stroke:col,"stroke-width":bold?2:1.5},s);
+    ring(tau,gold,false); ring(zc,teal,true); ring(ign,rose,false); ring(1,COL.ink,false);
+    const lab=(z,t,col)=>label(s,t,cx+rOf(z)*rS+11,zY(z)+3,col,"start",11);
+    lab(tau,"τ = φ⁻¹   (√5)",gold);
+    lab(zc,"z_c = √3/2   (√3)",teal);
+    lab(ign,"ignition = √2−½   (√2)",rose);
+    lab(1,"1   (UNITY)",COL.ink);
+    // delta weight brace (left)
+    const bx=82,y0=zY(0),y1=zY(delta);
+    mk("path",{d:"M"+(bx+6)+" "+y0+" L"+bx+" "+y0+" L"+bx+" "+y1+" L"+(bx+6)+" "+y1,fill:"none",stroke:gold,"stroke-width":1.4},s);
+    label(s,"Δ = φ⁻²",bx-4,(y0+y1)/2-5,gold,"end",11);
+    label(s,"pitch / weight",bx-4,(y0+y1)/2+9,COL.faint,"end",9.5);
+    label(s,"z-rise per turn",bx-4,(y0+y1)/2+21,COL.faint,"end",9.5);
+    // notes
+    label(s,"from L₄ = 7:   √3 = √(L₄−4)   ·   √2 = √(L₄+1)/2   ·   √5 = √(L₄²−4)/3",cx,26,COL.dim,"middle",11);
+    label(s,"three axes, one space · rings forced (under L₄) · helix = one representation · turn = golden angle 137.5°",cx,zY(0)+34,COL.faint,"middle",9.5);
+  }
+
+  /* ---------- relational hub ---------- */
+  function relDraw(){
+    const s = document.getElementById("svg-rel"); if(!s) return; s.innerHTML="";
+    const gold = C("--phi")||"#e6b24a", teal = COL.d3, rose="#dd86a6", rel = C("--rel")||"#a6a2e6";
+    const cx=310, cy=108;
+    label(s,"one forced seed  →  three forced axes (each forced under the seed)",cx,28,COL.dim,"middle",11);
+    mk("rect",{x:cx-94,y:cy-23,width:188,height:46,rx:9,fill:"rgba(166,162,230,.10)",stroke:rel,"stroke-width":1.5},s);
+    label(s,"L₄ = φ⁴ + φ⁻⁴ = 7",cx,cy-2,COL.ink,"middle",13);
+    label(s,"forced from φ",cx,cy+15,COL.faint,"middle",10);
+    const nodes=[
+      {x:140,y:250,col:gold,r1:"√5 = √(L₄²−4)/3",r2:"→ φ = (1+√5)/2"},
+      {x:310,y:262,col:teal,r1:"√3 = √(L₄−4)",   r2:"→ z_c = √3/2  (lens)"},
+      {x:480,y:250,col:rose,r1:"√2 = √(L₄+1)/2", r2:"→ ignition = √2−½"},
+    ];
+    nodes.forEach(n=>{
+      mk("line",{x1:cx,y1:cy+23,x2:n.x,y2:n.y-26,stroke:n.col,"stroke-width":1.6,"stroke-opacity":.85},s);
+      mk("circle",{cx:n.x,cy:n.y-19,r:5.5,fill:n.col,stroke:"#0e1631","stroke-width":1.5},s);
+      label(s,n.r1,n.x,n.y,n.col,"middle",12);
+      label(s,n.r2,n.x,n.y+16,COL.dim,"middle",11);
+    });
+    label(s,"all three in  ℚ(√2, √3, √5)  —  one space, three independent axes",cx,314,COL.faint,"middle",11);
+  }
+
+  /* ---------- tabs ---------- */
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const panels = tabs.map(t => document.getElementById(t.getAttribute("aria-controls")));
+  let hexDrawn = false;
+  function select(i, focus){
+    tabs.forEach((t,j)=>{
+      const on = i===j;
+      t.setAttribute("aria-selected", on);
+      t.tabIndex = on ? 0 : -1;
+      panels[j].classList.toggle("active", on);
+      panels[j].hidden = !on;
+    });
+    if (i===2){ hexDraw(); hexDrawn=true; }
+    if (i===3) deltaDraw();
+    if (i===4) helixDraw();
+    if (i===5) relDraw();
+    if (focus) tabs[i].focus();
+  }
+  tabs.forEach((t,i)=>{
+    t.addEventListener("click", ()=>select(i));
+    t.addEventListener("keydown", e=>{
+      if (e.key==="ArrowRight"||e.key==="ArrowDown"){ e.preventDefault(); select((i+1)%tabs.length, true); }
+      if (e.key==="ArrowLeft" ||e.key==="ArrowUp")  { e.preventDefault(); select((i-1+tabs.length)%tabs.length, true); }
+      if (e.key==="Home"){ e.preventDefault(); select(0,true); }
+      if (e.key==="End") { e.preventDefault(); select(tabs.length-1,true); }
+    });
+  });
+
+  /* ---------- init ---------- */
+  pfStatic();  pfUpdate(0.6);
+  tfStatic();  tfUpdate(-0.9);
+  document.getElementById("sl-pf").addEventListener("input", e => pfUpdate(+e.target.value/100));
+  document.getElementById("sl-tf").addEventListener("input", e => tfUpdate(+e.target.value/100));
+  document.getElementById("replay").addEventListener("click", hexDraw);
+})();
+</script>
+</body>
+</html>

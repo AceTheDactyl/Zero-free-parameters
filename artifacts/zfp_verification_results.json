@@ -1,0 +1,676 @@
+{
+  "harness": "ZFP Master Verification Harness",
+  "generator": "zfp_master_verify.py",
+  "total": 74,
+  "pass": 74,
+  "fail": 0,
+  "verdict": "ALL PASS",
+  "results": [
+    {
+      "id": 1,
+      "name": "phi^2 - phi - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "golden-core",
+      "chain": "defining polynomial of phi"
+    },
+    {
+      "id": 2,
+      "name": "tau^2 + tau - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "golden-core",
+      "chain": "tau = phi^{-1}, substitute into x^2+x-1"
+    },
+    {
+      "id": 3,
+      "name": "phi + tau - sqrt(5) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "golden-core",
+      "chain": "phi + phi^{-1} = (1+sqrt5)/2 + (sqrt5-1)/2 = sqrt5"
+    },
+    {
+      "id": 4,
+      "name": "phi - tau - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "golden-core",
+      "chain": "phi - phi^{-1} = (1+sqrt5)/2 - (sqrt5-1)/2 = 1"
+    },
+    {
+      "id": 5,
+      "name": "phi * psi + 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "golden-core",
+      "chain": "phi*(-phi^{-1}) = -1, so phi*psi + 1 = 0"
+    },
+    {
+      "id": 6,
+      "name": "L_4 - 7 = 0  (via phi^4 + psi^4)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "L_n = phi^n + psi^n at n=4"
+    },
+    {
+      "id": 7,
+      "name": "F_4 - 3 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "F_n = (phi^n - psi^n)/sqrt5 at n=4"
+    },
+    {
+      "id": 8,
+      "name": "L_4 = F_3 + F_5  (Lucas-Fibonacci bridge at n=4)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "L_n = F_{n-1} + F_{n+1}, standard identity"
+    },
+    {
+      "id": 9,
+      "name": "F_4 + L_4 = 2*F_5  (at n=4: 3+7=10=2*5)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "F_n + L_n = 2*F_{n+1}, standard identity"
+    },
+    {
+      "id": 10,
+      "name": "phi^4 + phi^{-4} - 7 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "L_4 = phi^4 + psi^4 = phi^4 + phi^{-4} (even power)"
+    },
+    {
+      "id": 11,
+      "name": "F_12 - 144 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "Fibonacci at n=12"
+    },
+    {
+      "id": 12,
+      "name": "F_12 - 12^2 = 0  (Cohn: only square Fibonacci > 1)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "F_12 = 144 = 12^2, Cohn's theorem"
+    },
+    {
+      "id": 13,
+      "name": "F_24 - F_12 * L_12 = 0  (doubling identity)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lucas-fib",
+      "chain": "F_{2n} = F_n * L_n at n=12"
+    },
+    {
+      "id": 14,
+      "name": "gap - phi^{-4} = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "definition: gap = phi^{-4}"
+    },
+    {
+      "id": 15,
+      "name": "gap - (7 - 3*sqrt(5))/2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "phi^{-4} = (7 - 3*sqrt5)/2 by expansion"
+    },
+    {
+      "id": 16,
+      "name": "K^2 + gap - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "K = sqrt(1 - gap), so K^2 = 1 - gap"
+    },
+    {
+      "id": 17,
+      "name": "K - sqrt(1 - phi^{-4}) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "definition of K"
+    },
+    {
+      "id": 18,
+      "name": "span - (1 - K) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "definition: span = 1 - K"
+    },
+    {
+      "id": 19,
+      "name": "span - gap/(1 + K) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "1 - K = (1-K)(1+K)/(1+K) = gap/(1+K)"
+    },
+    {
+      "id": 20,
+      "name": "K^2 - (3*sqrt(5) - 5)/2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "gap-K",
+      "chain": "K^2 = 1 - (7-3sqrt5)/2 = (2-7+3sqrt5)/2 = (3sqrt5-5)/2"
+    },
+    {
+      "id": 21,
+      "name": "z_c - sqrt(3)/2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt3)",
+      "category": "lens",
+      "chain": "definition: z_c = sqrt(3)/2"
+    },
+    {
+      "id": 22,
+      "name": "z_c - sqrt(L_4 - 4)/2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt3,sqrt5)",
+      "category": "lens",
+      "chain": "L_4 - 4 = 3, so sqrt(3)/2"
+    },
+    {
+      "id": 23,
+      "name": "z_c - sin(pi/3) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt3)",
+      "category": "lens",
+      "chain": "sin(60 degrees) = sqrt(3)/2"
+    },
+    {
+      "id": 24,
+      "name": "z_c - cos(pi/6) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt3)",
+      "category": "lens",
+      "chain": "cos(30 degrees) = sqrt(3)/2"
+    },
+    {
+      "id": 25,
+      "name": "L_4 - 4 - 3 = 0  (the bridge integer)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)->Q",
+      "category": "lens",
+      "chain": "L_4 = 7, so L_4 - 4 = 3 in Q"
+    },
+    {
+      "id": 26,
+      "name": "L_4 - 4 - F_4 = 0  (single-point coincidence at n=4)",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z[phi]",
+      "category": "lens",
+      "chain": "L_4 - 4 = 3 = F_4; holds only at n=4"
+    },
+    {
+      "id": 27,
+      "name": "z_IGN - (sqrt(2) - 1/2) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt2)",
+      "category": "ignition",
+      "chain": "selfref(7/4) = (-1+sqrt(1+7))/2 = (-1+2sqrt2)/2 = sqrt2 - 1/2"
+    },
+    {
+      "id": 28,
+      "name": "4*z_IGN^2 + 4*z_IGN - 7 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt2)",
+      "category": "ignition",
+      "chain": "minimal polynomial: 4x^2 + 4x - 7"
+    },
+    {
+      "id": 29,
+      "name": "1 + z_c^2 - 7/4 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt3)->Q",
+      "category": "ignition",
+      "chain": "1 + 3/4 = 7/4, the self-reference constant c for IGNITION"
+    },
+    {
+      "id": 30,
+      "name": "PARADOX: tau^2 + tau - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "self-reference",
+      "chain": "c=1: tau is the positive root of x^2+x=1"
+    },
+    {
+      "id": 31,
+      "name": "IGNITION: z_IGN^2 + z_IGN - 7/4 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt2)",
+      "category": "self-reference",
+      "chain": "c=7/4: z_IGN is the positive root of x^2+x=7/4"
+    },
+    {
+      "id": 32,
+      "name": "UNITY: 1^2 + 1 - 2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q",
+      "category": "self-reference",
+      "chain": "c=2: x=1 is the positive root of x^2+x=2"
+    },
+    {
+      "id": 33,
+      "name": "threshold ORIGIN is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "ORIGIN reduces to algebraic constant"
+    },
+    {
+      "id": 34,
+      "name": "threshold PARADOX is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "PARADOX reduces to algebraic constant"
+    },
+    {
+      "id": 35,
+      "name": "threshold ACTIVATION is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "ACTIVATION reduces to algebraic constant"
+    },
+    {
+      "id": 36,
+      "name": "threshold THE_LENS is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "THE_LENS reduces to algebraic constant"
+    },
+    {
+      "id": 37,
+      "name": "threshold CRITICAL is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "CRITICAL reduces to algebraic constant"
+    },
+    {
+      "id": 38,
+      "name": "threshold IGNITION is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "IGNITION reduces to algebraic constant"
+    },
+    {
+      "id": 39,
+      "name": "threshold K_FORMATION is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "K_FORMATION reduces to algebraic constant"
+    },
+    {
+      "id": 40,
+      "name": "threshold CONSOLIDATION is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "CONSOLIDATION reduces to algebraic constant"
+    },
+    {
+      "id": 41,
+      "name": "threshold RESONANCE is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "RESONANCE reduces to algebraic constant"
+    },
+    {
+      "id": 42,
+      "name": "threshold UNITY is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "UNITY reduces to algebraic constant"
+    },
+    {
+      "id": 43,
+      "name": "threshold OVERTONE is symbol-free (closed form)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Q(sqrt2,sqrt3,sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "OVERTONE reduces to algebraic constant"
+    },
+    {
+      "id": 44,
+      "name": "11 thresholds strictly increasing (ORIGIN < ... < OVERTONE)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "R",
+      "category": "threshold-ladder",
+      "chain": "numerical comparison of all 11 closed forms"
+    },
+    {
+      "id": 45,
+      "name": "(z_CONSOL - K)/(1 - K) - tau^2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "z_CONSOL = K + tau^2*(1-K), rearrange"
+    },
+    {
+      "id": 46,
+      "name": "(z_RESON - K)/(1 - K) - tau = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "threshold-ladder",
+      "chain": "z_RESON = K + tau*(1-K), rearrange"
+    },
+    {
+      "id": 47,
+      "name": "phi - 2*cos(pi/5) = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "angular",
+      "chain": "golden ratio = diagonal/side of regular pentagon"
+    },
+    {
+      "id": 48,
+      "name": "cos(2*pi/5) - (sqrt(5) - 1)/4 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "angular",
+      "chain": "cos(72 degrees) = (sqrt5 - 1)/4"
+    },
+    {
+      "id": 49,
+      "name": "trace(5) = 1 + 2*cos(2pi/5) - phi = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(sqrt5)",
+      "category": "angular",
+      "chain": "5-fold trace = phi (irrational, hence non-crystallographic)"
+    },
+    {
+      "id": 50,
+      "name": "trace(4) = 1 + 2*cos(2pi/4) - 1 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q",
+      "category": "angular",
+      "chain": "4-fold trace = 1 (integer, crystallographic)"
+    },
+    {
+      "id": 51,
+      "name": "trace(6) = 1 + 2*cos(2pi/6) - 2 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q",
+      "category": "angular",
+      "chain": "6-fold trace = 2 (integer, crystallographic)"
+    },
+    {
+      "id": 52,
+      "name": "7 * 60 = 420",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "7 equilateral triangles at a vertex: 7*60=420 degrees"
+    },
+    {
+      "id": 53,
+      "name": "heptagonal excess = 420 - 360 = 60",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "excess over 360 = one triangle of angular surplus"
+    },
+    {
+      "id": 54,
+      "name": "Euler V-E+F=2 for tetrahedron: 4-6+4=2",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Euler's polyhedron formula for tetrahedron"
+    },
+    {
+      "id": 55,
+      "name": "Gauss-Bonnet for tetrahedron: V*(6-k)*60 = 720 = 720",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Descartes' theorem: total angular defect = 4*pi = 720 deg"
+    },
+    {
+      "id": 56,
+      "name": "Euler V-E+F=2 for octahedron: 6-12+8=2",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Euler's polyhedron formula for octahedron"
+    },
+    {
+      "id": 57,
+      "name": "Gauss-Bonnet for octahedron: V*(6-k)*60 = 720 = 720",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Descartes' theorem: total angular defect = 4*pi = 720 deg"
+    },
+    {
+      "id": 58,
+      "name": "Euler V-E+F=2 for icosahedron: 12-30+20=2",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Euler's polyhedron formula for icosahedron"
+    },
+    {
+      "id": 59,
+      "name": "Gauss-Bonnet for icosahedron: V*(6-k)*60 = 720 = 720",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "angular",
+      "chain": "Descartes' theorem: total angular defect = 4*pi = 720 deg"
+    },
+    {
+      "id": 60,
+      "name": "R^2 - R - I = 0  (golden self-touch)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "R = [[1,1],[1,0]] satisfies x^2 - x - 1 = 0 (same as phi)"
+    },
+    {
+      "id": 61,
+      "name": "N^2 + I = 0  (hidden rotation closure)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "N = [[0,-1],[1,0]], N^2 = -I"
+    },
+    {
+      "id": 62,
+      "name": "R^2 - R + N^2 = 0  (surplus = deficit)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "R^2 - R = I and N^2 = -I, so sum = 0"
+    },
+    {
+      "id": 63,
+      "name": "P = R + N, P^2 - P = 0  (idempotent)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "P = [[1,0],[2,0]], P^2 = P"
+    },
+    {
+      "id": 64,
+      "name": "exp(2*pi*N) = I  (via Cayley-Hamilton: cos(2pi)*I + sin(2pi)*N = I)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "N^2 = -I => eigenvalues {i,-i} => exp(2pi*N) = I by Euler"
+    },
+    {
+      "id": 65,
+      "name": "S^2 - I = 0  (swap self-reference, f''=f)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "S = [[0,1],[1,0]], eigenvalues {+1,-1}, char eq x^2-1=0 (f''=f)"
+    },
+    {
+      "id": 66,
+      "name": "[S, R] = N  (golden-swap commutator = rotation)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "SR-RS=N: interference of Fibonacci growth and oscillation IS rotation"
+    },
+    {
+      "id": 67,
+      "name": "{S, N} = SN + NS = 0  (Clifford anti-commutation)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "M2(Z)",
+      "category": "dynamical",
+      "chain": "S^2=+I, N^2=-I, {S,N}=0: Clifford algebra Cl(1,1) = M2(R)"
+    },
+    {
+      "id": 68,
+      "name": "lcm(4, 5, 6) - 60 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z",
+      "category": "bridges",
+      "chain": "co-closure index: lcm(4,5,6) = 60"
+    },
+    {
+      "id": 69,
+      "name": "F_4 divides F_12  (3 | 144)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "bridges",
+      "chain": "F_m | F_n whenever m | n"
+    },
+    {
+      "id": 70,
+      "name": "L_4 divides L_12  (7 | 322, since 12/4=3 is odd)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "bridges",
+      "chain": "L_m | L_n when n/m is odd"
+    },
+    {
+      "id": 71,
+      "name": "L_4 does NOT divide L_24  (24/4=6 is even)",
+      "status": "PASS",
+      "residual": "True",
+      "lattice": "Z",
+      "category": "bridges",
+      "chain": "L_m does not divide L_n when n/m is even"
+    },
+    {
+      "id": 72,
+      "name": "(2,3,7) triangle area: pi - pi/2 - pi/3 - pi/7 - pi/42 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Q(pi)",
+      "category": "heptagonal",
+      "chain": "hyperbolic Gauss-Bonnet: area = pi - sum(angles)"
+    },
+    {
+      "id": 73,
+      "name": "42 - 2*3*7 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z",
+      "category": "heptagonal",
+      "chain": "42 = 2 * 3 * 7, the product of the triangle indices"
+    },
+    {
+      "id": 74,
+      "name": "84 - 2*42 = 0",
+      "status": "PASS",
+      "residual": "0",
+      "lattice": "Z",
+      "category": "heptagonal",
+      "chain": "Hurwitz bound: |Aut(S_g)| <= 84*(g-1), 84 = 2*42"
+    }
+  ]
+}

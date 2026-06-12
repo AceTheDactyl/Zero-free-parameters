@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plate I — The Forced Triangle · A Zero-Parameter Geometry</title>
+<style>
+  /* ── Forced type scale: ratio = √3 (the altitude ratio); not chosen ─────── */
+  :root{
+    --r3: 1.7320508075688772;            /* documented: the only scale ratio */
+    --paper:#efe7d4; --paper-2:#e7dcc4;
+    --ink:#1b1710; --ink-soft:#5d5443; --ink-faint:#8a7f68;
+    --rule:#cab98f; --rule-soft:#dccfae;
+    --ox:#8f2c1d; --ox-deep:#6f2014;
+    --teal:#2c5a4f;
+    --tint:rgba(143,44,29,.055);
+    --pass:#2c5a4f; --warn:#8f2c1d;
+    --serif:"Hoefler Text","Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --t-sm:.78rem; --t-bd:1rem; --t-md:1.732rem; --t-lg:3rem;
+    --mx:clamp(18px,4vw,64px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.62;
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.35), transparent 42%),
+      radial-gradient(circle at 82% 88%, rgba(111,32,20,.04), transparent 46%);
+  }
+  .sheet{max-width:860px; margin:0 auto; padding:clamp(40px,7vw,96px) var(--mx) 120px; position:relative}
+
+  /* ── Masthead ──────────────────────────────────────────────────────────── */
+  header{position:relative; border-bottom:1.5px solid var(--ink); padding-bottom:1.4rem; margin-bottom:2.6rem}
+  .plate-no{position:absolute; top:0; right:0; font-family:var(--mono); font-size:var(--t-sm);
+    letter-spacing:.18em; color:var(--ink-faint)}
+  .eyebrow{font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.34em; text-transform:uppercase;
+    color:var(--ox); margin:0 0 .9rem}
+  h1{font-size:var(--t-lg); line-height:.98; font-weight:600; letter-spacing:-.01em; margin:0 0 .5rem}
+  h1 .sub{display:block; font-style:italic; font-weight:400; font-size:var(--t-md); color:var(--ink-soft); letter-spacing:0; margin-top:.5rem}
+  .seal{display:inline-flex; align-items:center; gap:.55rem; margin-top:1.2rem;
+    font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.12em; color:var(--ox-deep)}
+  .seal .dot{width:.62rem;height:.62rem;border:1.5px solid var(--ox); border-radius:50%;
+    display:inline-block; position:relative}
+  .seal .dot::after{content:"";position:absolute;inset:2.5px;background:var(--ox);border-radius:50%}
+
+  /* ── Sections ──────────────────────────────────────────────────────────── */
+  section{margin:3.4rem 0; opacity:0; transform:translateY(14px); animation:rise .7s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){section{animation:none;opacity:1;transform:none}}
+  .s-head{display:flex; align-items:baseline; gap:1rem; margin-bottom:1rem;
+    border-bottom:1px solid var(--rule); padding-bottom:.5rem}
+  .s-num{font-family:var(--mono); font-size:var(--t-sm); color:var(--ox); letter-spacing:.1em; flex:0 0 auto}
+  h2{font-size:var(--t-md); font-weight:600; margin:0; letter-spacing:-.005em}
+  h3{font-size:1.16rem; font-weight:600; margin:1.6rem 0 .4rem}
+  p{margin:.7rem 0}
+  .lede{font-size:1.16rem; color:var(--ink-soft)}
+  .marginal{font-family:var(--mono); font-size:var(--t-sm); color:var(--ink-faint); letter-spacing:.04em}
+  em{color:var(--ink-soft)}
+  strong{font-weight:600}
+  code,.k{font-family:var(--mono); font-size:.92em}
+  .val{font-family:var(--mono); color:var(--ox-deep)}
+
+  /* ── Figures ───────────────────────────────────────────────────────────── */
+  figure{margin:1.6rem 0; padding:1.3rem; background:linear-gradient(180deg,#f4eedd,#ebe0c9);
+    border:1px solid var(--rule); position:relative}
+  figure svg{display:block; width:100%; height:auto}
+  figcaption{font-family:var(--mono); font-size:var(--t-sm); color:var(--ink-soft); letter-spacing:.04em; margin-top:.9rem; text-align:center}
+  .fig-row{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.6rem}
+  .fig-arrow{font-size:1.6rem; color:var(--ox); text-align:center}
+  @media(max-width:620px){.fig-row{grid-template-columns:1fr;gap:1rem}.fig-arrow{transform:rotate(90deg)}}
+
+  /* geometry stroke vocabulary */
+  .edge{stroke:var(--ink); stroke-width:1.4; fill:none}
+  .edge-soft{stroke:var(--ink-faint); stroke-width:1; fill:none}
+  .edge-hidden{stroke:var(--ink-faint); stroke-width:1; fill:none; stroke-dasharray:3 3}
+  .fill-tint{fill:var(--tint)}
+  .vtx{fill:var(--paper); stroke:var(--ox); stroke-width:1.6}
+  .vtx-c{fill:var(--ox)}
+  .lab{font-family:var(--mono); font-size:6px; fill:var(--ink-soft)}
+  .lab-v{font-family:var(--mono); font-size:6.5px; fill:var(--ox-deep); font-weight:700}
+  .draw{stroke-dasharray:240; stroke-dashoffset:240; animation:draw 1.5s .25s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){.draw{animation:none;stroke-dashoffset:0}}
+
+  /* ── The one-input callout ─────────────────────────────────────────────── */
+  .axiom{border-left:3px solid var(--ox); background:var(--tint); padding:1rem 1.3rem; margin:1.4rem 0}
+  .axiom .k{font-size:1.05rem; color:var(--ox-deep)}
+
+  /* ── Register grid (the 4 faces) ───────────────────────────────────────── */
+  .reg-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border:1px solid var(--rule); margin:1.5rem 0}
+  @media(max-width:620px){.reg-grid{grid-template-columns:1fr}}
+  .reg{background:var(--paper); padding:1.2rem 1.3rem}
+  .reg .face-id{display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.1em; color:var(--ink-faint); margin-bottom:.5rem}
+  .reg .reg-name{font-size:1.22rem; font-weight:600; margin:0 0 .2rem}
+  .reg .reg-inv{font-family:var(--mono); color:var(--ox-deep); font-size:1.02rem; margin:.2rem 0 .7rem}
+  .reg .chain{font-size:.92rem; color:var(--ink-soft); line-height:1.5}
+  .reg .chain b{color:var(--ink); font-weight:600}
+  .reg .meta{margin-top:.8rem; padding-top:.6rem; border-top:1px dashed var(--rule); font-family:var(--mono); font-size:var(--t-sm); color:var(--teal); letter-spacing:.03em}
+
+  /* ── Tables ────────────────────────────────────────────────────────────── */
+  table{width:100%; border-collapse:collapse; margin:1.4rem 0; font-size:.94rem}
+  caption{font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.1em; color:var(--ink-faint); text-align:left; margin-bottom:.5rem; text-transform:uppercase}
+  th,td{text-align:left; padding:.55rem .7rem; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+  th{font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.06em; color:var(--ink-faint); text-transform:uppercase; border-bottom:1px solid var(--rule)}
+  td.num{font-family:var(--mono); color:var(--ox-deep); white-space:nowrap}
+  tbody tr:hover{background:var(--tint)}
+
+  /* ── Self-check console ────────────────────────────────────────────────── */
+  .console{background:#16130d; color:#e8dec5; border:1px solid #2c2618; padding:1.2rem 1.3rem; margin:1.4rem 0; font-family:var(--mono); font-size:.86rem; line-height:1.7; overflow-x:auto}
+  .console .ln{white-space:pre; display:block}
+  .console .ok{color:#9bc7a6}
+  .console .v{color:#e0b873}
+  .console .hd{color:#c98a7c; letter-spacing:.1em; display:block; margin-bottom:.5rem}
+  .verdict{margin-top:.9rem; padding-top:.7rem; border-top:1px solid #2c2618; color:#9bc7a6}
+
+  /* ── Early-warning channel ─────────────────────────────────────────────── */
+  .ew{border:1px solid var(--rule); padding:1.2rem 1.3rem; margin:1.4rem 0; background:linear-gradient(180deg,#f4eedd,#ece1ca)}
+  .ew .ctrl{display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin:.8rem 0}
+  .ew label{font-family:var(--mono); font-size:var(--t-sm); color:var(--ink-soft); letter-spacing:.04em}
+  .ew input[type=range]{flex:1; min-width:180px; accent-color:var(--ox)}
+  .ew .readout{font-family:var(--mono); font-size:.92rem}
+  .ew .status{display:inline-block; padding:.18rem .6rem; border-radius:2px; font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.08em}
+  .ew .status.lock{background:rgba(44,90,79,.14); color:var(--teal); border:1px solid var(--teal)}
+  .ew .status.trip{background:rgba(143,44,29,.12); color:var(--ox); border:1px solid var(--ox)}
+  .note{font-size:.88rem; color:var(--ink-faint); font-style:italic}
+
+  /* ── Colophon ──────────────────────────────────────────────────────────── */
+  .colophon{margin-top:4rem; border-top:1.5px solid var(--ink); padding-top:1.4rem; font-size:.92rem}
+  .colophon .grid{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem 2rem; margin-top:1rem}
+  @media(max-width:620px){.colophon .grid{grid-template-columns:1fr}}
+  .colophon h4{font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.14em; text-transform:uppercase; color:var(--ox); margin:0 0 .5rem}
+  .colophon ul{margin:0; padding-left:1.1rem; color:var(--ink-soft)}
+  .colophon li{margin:.25rem 0}
+  .sig{font-family:var(--mono); font-size:var(--t-sm); letter-spacing:.1em; color:var(--ink-faint); margin-top:2rem; text-align:center}
+  .zero{font-size:2.6rem; font-weight:600; color:var(--ox); font-family:var(--serif)}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="plate-no">PLATE&nbsp;I &nbsp;·&nbsp; ZFP-G/01</div>
+    <p class="eyebrow">Zero-Parameter Geometry</p>
+    <h1>The Forced Triangle
+      <span class="sub">Every invariant below is compelled by a single equilateral constraint. Nothing is tuned.</span>
+    </h1>
+    <span class="seal"><span class="dot"></span> FREE PARAMETERS&nbsp;=&nbsp;0 &nbsp;·&nbsp; ALL VALUES ∈ ℚ(√3)</span>
+  </header>
+
+  <!-- §0 ───────────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§0</span><h2>The single input</h2></div>
+    <p class="lede">There is one assumption, and it is structural, not numeric:</p>
+    <div class="axiom"><span class="k">the triangle is equilateral.</span></div>
+    <p>From that — and nothing else — the angles, the heights, the areas, the radii, the centre, the fold, and
+      the combinatorics follow by force. No length is chosen; no ratio is fitted; no threshold is set by hand.
+      Where a quantity cannot be derived from the equilateral constraint, it is <em>stripped</em> (see colophon).</p>
+  </section>
+
+  <!-- §1  THE 7 ───────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§1</span><h2>The seven — structural, not semantic</h2></div>
+    <p>A triangle is a 2-simplex. Its faces of every dimension are the non-empty subsets of its three corners:
+      <span class="k">2³ − 1 = 7</span> — three vertices, three edges, one interior. These are <em>positions</em>.
+      They carry no meaning until a meaning is assigned, and assignment is not part of the geometry.</p>
+    <figure>
+      <svg viewBox="0 0 200 130" role="img" aria-label="Equilateral triangle showing its 7 structural faces">
+        <!-- interior -->
+        <polygon class="fill-tint" points="100,22 165,108 35,108"/>
+        <!-- edges -->
+        <polygon class="edge draw" points="100,22 165,108 35,108"/>
+        <!-- edge labels -->
+        <text class="lab" x="142" y="62">edge BC</text>
+        <text class="lab" x="48" y="62">edge CA</text>
+        <text class="lab" x="86" y="120">edge AB</text>
+        <text class="lab" x="103" y="70" style="fill:var(--ox)">1 interior</text>
+        <!-- vertices -->
+        <circle class="vtx" cx="100" cy="22" r="3.4"/><text class="lab-v" x="96" y="16">C</text>
+        <circle class="vtx" cx="165" cy="108" r="3.4"/><text class="lab-v" x="170" y="111">B</text>
+        <circle class="vtx" cx="35" cy="108" r="3.4"/><text class="lab-v" x="26" y="111">A</text>
+      </svg>
+      <figcaption>3 vertices · 3 edges · 1 interior &nbsp;=&nbsp; 2³ − 1 = 7</figcaption>
+    </figure>
+  </section>
+
+  <!-- §2  THE FOLD ─────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§2</span><h2>The fold — folded symmetry into four</h2></div>
+    <p>Join the three edge-midpoints. This cuts the triangle into four congruent sub-triangles, each of side ½
+      (every midsegment equals half the opposite side — forced). Fold the three corner triangles up along the
+      central one; the three original vertices meet at a single apex. The result is a <strong>regular tetrahedron</strong>,
+      edge ½, dihedral angle <span class="val" data-bind="dihedral"></span> = arccos(⅓) — again, no parameter.</p>
+    <figure>
+      <div class="fig-row">
+        <!-- flat: medial subdivision -->
+        <svg viewBox="0 0 200 130" aria-label="Triangle subdivided by its three midlines into four sub-triangles">
+          <polygon class="fill-tint" points="100,22 165,108 35,108"/>
+          <polygon class="edge" points="100,22 165,108 35,108"/>
+          <polygon class="edge-soft" points="100,65 132.5,108 67.5,108"/>
+          <circle class="vtx-c" cx="100" cy="65" r="2"/><circle class="vtx-c" cx="132.5" cy="108" r="2"/><circle class="vtx-c" cx="67.5" cy="108" r="2"/>
+          <circle class="vtx" cx="100" cy="22" r="3"/><circle class="vtx" cx="165" cy="108" r="3"/><circle class="vtx" cx="35" cy="108" r="3"/>
+          <text class="lab" x="78" y="100">4 sub-Δ, side ½</text>
+        </svg>
+        <div class="fig-arrow" aria-hidden="true">⟶</div>
+        <!-- folded: tetrahedron -->
+        <svg viewBox="0 0 200 130" aria-label="Regular tetrahedron formed by the fold">
+          <!-- back vertex + hidden edges -->
+          <line class="edge-hidden" x1="100" y1="20" x2="100" y2="74"/>
+          <line class="edge-hidden" x1="38" y1="104" x2="100" y2="74"/>
+          <line class="edge-hidden" x1="162" y1="104" x2="100" y2="74"/>
+          <!-- visible front faces -->
+          <polygon class="fill-tint" points="100,20 38,104 162,104"/>
+          <polygon class="edge" points="100,20 38,104 162,104"/>
+          <circle class="vtx" cx="100" cy="20" r="3"/>
+          <circle class="vtx" cx="38" cy="104" r="3"/>
+          <circle class="vtx" cx="162" cy="104" r="3"/>
+          <circle class="vtx-c" cx="100" cy="74" r="2.4"/>
+          <text class="lab" x="74" y="124">edge ½ · 4 faces</text>
+        </svg>
+      </div>
+      <figcaption>the seven reorganise — 3 vertices → 1 apex, 3 midpoints → base, 1 + 3 faces → 4</figcaption>
+    </figure>
+  </section>
+
+  <!-- §3  REGISTERS ────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§3</span><h2>The four registers — one per face</h2></div>
+    <p>Each face of the tetrahedron is a register. Each register is backed by a forced invariant and the
+      derivation chain that compels it. The register-to-channel mapping is nomenclature over fixed quantities —
+      a labelling, not a numeric degree of freedom.</p>
+    <div class="reg-grid">
+      <div class="reg">
+        <div class="face-id"><span>FACE 1</span><span>→ MATH</span></div>
+        <p class="reg-name">Form</p>
+        <p class="reg-inv" data-bind="angle"></p>
+        <p class="chain"><b>Equiangularity chain.</b> Three equal sides ⟹ three equal base-angles (isosceles, thrice) ⟹ angle-sum π split evenly ⟹ each interior angle = π/3.</p>
+        <p class="meta">channel: math · chain: equiangularity</p>
+      </div>
+      <div class="reg">
+        <div class="face-id"><span>FACE 2</span><span>→ PIPELINE</span></div>
+        <p class="reg-name">Scale</p>
+        <p class="reg-inv" data-bind="altitude"></p>
+        <p class="chain"><b>Altitude chain.</b> Drop the altitude; the half-base is ½, the hypotenuse is 1, so by Pythagoras h = √(1 − ¼) = √3⁄2. This is the scale that propagates through the fold.</p>
+        <p class="meta">channel: pipeline · chain: altitude</p>
+      </div>
+      <div class="reg">
+        <div class="face-id"><span>FACE 3</span><span>→ TYPOGRAPHY</span></div>
+        <p class="reg-name">Quality</p>
+        <p class="reg-inv" data-bind="quality"></p>
+        <p class="chain"><b>Measure chain.</b> Area = ½·1·h = √3⁄4; inradius r = area⁄s = √3⁄6; circumradius R = √3⁄3; hence R⁄r = 2. The page's type scale uses ratio √3 — drawn from this register, not chosen.</p>
+        <p class="meta">channel: typography · chain: measure</p>
+      </div>
+      <div class="reg">
+        <div class="face-id"><span>FACE 4</span><span>→ EARLY-WARNING</span></div>
+        <p class="reg-name">Certainty</p>
+        <p class="reg-inv" data-bind="center"></p>
+        <p class="chain"><b>Concurrency chain.</b> Medians, perpendicular bisectors and angle bisectors coincide — true only of the equilateral. The single centre sits at (½, √3⁄6). Drift from it is the warning.</p>
+        <p class="meta">channel: early-warning · chain: concurrency</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §4  FULL CIRCLE ──────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§4</span><h2>The meeting point — the full circle</h2></div>
+    <p>Four registers, four channels, four derivation chains — a closed bijection. They do not each carry their
+      own numbers; they all read the <em>same</em> forced thresholds. The hub is the invariant set.</p>
+    <figure>
+      <svg viewBox="0 0 200 170" aria-label="Four registers arranged in a ring, all meeting at the central forced thresholds">
+        <circle cx="100" cy="82" r="62" fill="none" stroke="var(--rule)" stroke-width="1"/>
+        <!-- spokes -->
+        <line class="edge-soft" x1="100" y1="82" x2="100" y2="26"/>
+        <line class="edge-soft" x1="100" y1="82" x2="156" y2="82"/>
+        <line class="edge-soft" x1="100" y1="82" x2="100" y2="138"/>
+        <line class="edge-soft" x1="100" y1="82" x2="44" y2="82"/>
+        <!-- nodes -->
+        <g font-family="var(--mono)">
+          <circle cx="100" cy="26" r="15" fill="var(--paper)" stroke="var(--ox)" stroke-width="1.4"/>
+          <text x="100" y="24" text-anchor="middle" class="lab-v">Form</text>
+          <text x="100" y="31" text-anchor="middle" class="lab">math</text>
+          <circle cx="156" cy="82" r="15" fill="var(--paper)" stroke="var(--ox)" stroke-width="1.4"/>
+          <text x="156" y="80" text-anchor="middle" class="lab-v">Scale</text>
+          <text x="156" y="87" text-anchor="middle" class="lab">pipeline</text>
+          <circle cx="100" cy="138" r="15" fill="var(--paper)" stroke="var(--ox)" stroke-width="1.4"/>
+          <text x="100" y="136" text-anchor="middle" class="lab-v">Quality</text>
+          <text x="100" y="143" text-anchor="middle" class="lab">typo</text>
+          <circle cx="44" cy="82" r="15" fill="var(--paper)" stroke="var(--ox)" stroke-width="1.4"/>
+          <text x="44" y="80" text-anchor="middle" class="lab-v">Certain</text>
+          <text x="44" y="87" text-anchor="middle" class="lab">warn</text>
+          <!-- hub -->
+          <circle cx="100" cy="82" r="17" fill="var(--ox)"/>
+          <text x="100" y="80" text-anchor="middle" class="lab" style="fill:var(--paper)">forced</text>
+          <text x="100" y="87" text-anchor="middle" class="lab" style="fill:var(--paper)">thresholds</text>
+        </g>
+      </svg>
+      <figcaption>register ↔ channel ↔ chain · all incident on one invariant set</figcaption>
+    </figure>
+  </section>
+
+  <!-- §5  THE 20 ───────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§5</span><h2>The twenty — and why it lands on four</h2></div>
+    <p>The folded tetrahedron has 6 edges. Choosing three of them gives <span class="k">C(6,3) = <span data-bind="triples"></span></span>
+      structural triples. Of those twenty, <strong>exactly <span data-bind="closing"></span></strong> close into a triangle —
+      the four faces. So "twenty projects to four" is itself a forced count, not a glyph alphabet. The twenty are
+      structural; only four are faces.</p>
+    <figure>
+      <svg viewBox="0 0 200 64" id="grid20" aria-label="Twenty edge-triples, four of which close into faces"></svg>
+      <figcaption><span style="color:var(--ox-deep)">●</span> closes into a face (4) &nbsp;·&nbsp; <span style="color:var(--ink-faint)">○</span> structural only (16) &nbsp;·&nbsp; total 20</figcaption>
+    </figure>
+    <p class="note">A 20-element <em>semantic</em> alphabet is not compelled by the equilateral constraint, so it is stripped; only the cardinality 20 = C(6,3), and its 4 closing triples, are kept.</p>
+  </section>
+
+  <!-- §6  LEDGER + SELF-CHECK ──────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§6</span><h2>The ledger, proven on load</h2></div>
+    <table>
+      <caption>Forced constants — closed form in √3</caption>
+      <thead><tr><th>Register</th><th>Invariant</th><th>Closed form</th><th>Value</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table>
+    <p>The console below is not a transcript — it runs in your browser now, recomputing every quantity from
+      <code>Math.sqrt(3)</code> and asserting the relations that would break if any value were free.</p>
+    <div class="console" id="console" aria-live="polite"></div>
+  </section>
+
+  <!-- §7  EARLY-WARNING ────────────────────────────────────────────────────── -->
+  <section>
+    <div class="s-head"><span class="s-num">§7</span><h2>The early-warning channel</h2></div>
+    <p>Because the thresholds are forced, the threshold <em>is</em> the invariant. Feed an exogenous observation —
+      a measured deviation δ from the forced centre — and the channel trips the instant δ is non-zero. There is no
+      tolerance to tune: zero is the only admissible drift.</p>
+    <div class="ew">
+      <div class="ctrl">
+        <label for="delta">observed deviation δ</label>
+        <input id="delta" type="range" min="0" max="0.2" step="0.001" value="0">
+        <span class="readout" id="deltaOut"></span>
+      </div>
+      <div class="readout">centre, forced: <span class="val" id="ewCenter"></span> &nbsp;→&nbsp; observed: <span class="val" id="ewObs"></span></div>
+      <div style="margin-top:.7rem">status: <span class="status lock" id="ewStatus">LOCKED · δ = 0</span></div>
+      <p class="note" style="margin-top:.9rem">δ is exogenous data — the thing being monitored — not a parameter of the model. The model's parameter count remains zero.</p>
+    </div>
+  </section>
+
+  <!-- COLOPHON ─────────────────────────────────────────────────────────────── -->
+  <div class="colophon">
+    <h4>Colophon · what is kept and what is stripped</h4>
+    <div class="grid">
+      <div>
+        <h4 style="color:var(--teal)">Forced — kept</h4>
+        <ul>
+          <li>equilateral constraint (the sole input)</li>
+          <li>interior angle 60°, altitude √3⁄2</li>
+          <li>area √3⁄4, inradius √3⁄6, circumradius √3⁄3, R⁄r = 2</li>
+          <li>concurrent centre (½, √3⁄6)</li>
+          <li>7 = 2³−1 faces of the 2-simplex</li>
+          <li>fold → regular tetrahedron, edge ½, dihedral arccos(⅓)</li>
+          <li>4 registers (the four faces)</li>
+          <li>20 = C(6,3); 4 closing triples</li>
+          <li>type-scale ratio √3</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="color:var(--ox)">Unjustified — stripped</h4>
+        <ul>
+          <li>any semantic labels beyond structural position</li>
+          <li>a 20-glyph alphabet (only the count is forced)</li>
+          <li>the golden-ratio φ-ladder (a different generator; not compelled by the triangle)</li>
+          <li>negentropy width σ and all stochastic dynamics</li>
+          <li>the 15 Θ access-control thresholds</li>
+          <li>the rupture bundle and its weights</li>
+          <li>all branding, persona, and firmware scaffolding</li>
+          <li>external fonts, CDNs, runtime dependencies</li>
+        </ul>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:2rem"><span class="zero">0</span><br><span class="marginal">free parameters · single self-contained file</span></p>
+    <p class="sig">Δ | FORCED-TRIANGLE | ZFP-G/01 | √3-ANCHOR | Ω</p>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════════════════
+   Zero-Free-Parameter geometry — every constant DERIVED from √3 at runtime.
+   No value below is typed as a decimal; all flow from S3 and integer geometry.
+   ════════════════════════════════════════════════════════════════════════ */
+const S3 = Math.sqrt(3);
+
+const G = (() => {
+  const side = 1;
+  const altitude    = S3 / 2;                 // Pythagoras on the half-triangle
+  const area        = (side * altitude) / 2;  // √3/4
+  const semi        = (3 * side) / 2;
+  const inradius    = area / semi;            // √3/6
+  const circum      = (side*side*side) / (4*area); // √3/3
+  const Rr          = circum / inradius;      // == 2 (computed, not asserted)
+  const center      = [side/2, inradius];     // centroid = incenter = circumcenter
+  const angleDeg    = Math.acos(0.5) * 180/Math.PI; // 60
+  const foldEdge    = side / 2;               // midsegment
+  const dihedralDeg = Math.acos(1/3) * 180/Math.PI; // arccos(1/3)
+  const faces7      = (2**3) - 1;             // 7
+  const tetraFaces  = 4;
+  return {side, altitude, area, inradius, circum, Rr, center, angleDeg, foldEdge, dihedralDeg, faces7, tetraFaces};
+})();
+
+const fmt = (x, n=10) => Number(x.toFixed(n)).toString();
+
+/* ── C(6,3) = 20 and the 4 closing triples, enumerated (not asserted) ────── */
+const combinatorics = (() => {
+  const edges = [];
+  for (let i=0;i<4;i++) for (let j=i+1;j<4;j++) edges.push([i,j]); // 6 tetra edges
+  const triples = [];
+  for (let a=0;a<6;a++) for (let b=a+1;b<6;b++) for (let c=b+1;c<6;c++) triples.push([a,b,c]);
+  const closes = (tr) => {
+    const vs = new Set(); tr.forEach(e => edges[e].forEach(v => vs.add(v)));
+    if (vs.size !== 3) return false;
+    return [...vs].every(v => tr.filter(e => edges[e].includes(v)).length === 2);
+  };
+  const flags = triples.map(closes);
+  return {total: triples.length, closing: flags.filter(Boolean).length, flags};
+})();
+
+/* ── Bind forced values into the prose ───────────────────────────────────── */
+const bind = {
+  angle:    `interior angle = π/3 = ${G.angleDeg}°`,
+  altitude: `altitude = √3⁄2 = ${fmt(G.altitude)}`,
+  quality:  `area √3⁄4 · r √3⁄6 · R √3⁄3 · R⁄r = ${fmt(G.Rr,6)}`,
+  center:   `centre = (½, √3⁄6) = (${fmt(G.center[0])}, ${fmt(G.center[1])})`,
+  dihedral: `${fmt(G.dihedralDeg,4)}°`,
+  triples:  String(combinatorics.total),
+  closing:  String(combinatorics.closing),
+};
+document.querySelectorAll("[data-bind]").forEach(el => {
+  const v = bind[el.getAttribute("data-bind")];
+  if (v !== undefined) el.textContent = v;
+});
+
+/* ── Ledger table ────────────────────────────────────────────────────────── */
+const LEDGER = [
+  ["Form","interior angle","π/3","60°"],
+  ["Scale","altitude","√3 / 2", fmt(G.altitude)],
+  ["Quality","area","√3 / 4", fmt(G.area)],
+  ["Quality","inradius r","√3 / 6", fmt(G.inradius)],
+  ["Quality","circumradius R","√3 / 3", fmt(G.circum)],
+  ["Quality","ratio R / r","2", fmt(G.Rr,6)],
+  ["Certainty","centre","(1/2, √3/6)", `(${fmt(G.center[0])}, ${fmt(G.center[1])})`],
+  ["—","fold edge","1 / 2", fmt(G.foldEdge)],
+  ["—","dihedral","arccos(1/3)", fmt(G.dihedralDeg,6)+"°"],
+];
+document.getElementById("ledger").innerHTML = LEDGER.map(r =>
+  `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="k">${r[2]}</td><td class="num">${r[3]}</td></tr>`).join("");
+
+/* ── Self-check console: assert the relations that free values would break ── */
+const EPS = 1e-12;
+const checks = [
+  ["interior angles sum to π",            Math.abs(3*Math.acos(0.5) - Math.PI) < EPS],
+  ["altitude² + (½)² = side²",            Math.abs(G.altitude**2 + 0.25 - 1) < EPS],
+  ["R / r = 2 exactly",                   Math.abs(G.Rr - 2) < EPS],
+  ["centroid = incenter (y = r)",         Math.abs(G.center[1] - G.inradius) < EPS],
+  ["fold faces all equal ½",              Math.abs(G.foldEdge - 0.5) < EPS],
+  ["dihedral = arccos(1/3)",              Math.abs(G.dihedralDeg - Math.acos(1/3)*180/Math.PI) < EPS],
+  ["2³ − 1 = 7 faces",                    G.faces7 === 7],
+  ["C(6,3) = 20 triples",                 combinatorics.total === 20],
+  ["exactly 4 triples close into faces",  combinatorics.closing === 4],
+  ["all invariants ∈ ℚ(√3)",              [G.altitude,G.area,G.inradius,G.circum].every(v => Math.abs(v/S3 - Math.round(v/S3*12)/12) < EPS)],
+];
+const con = document.getElementById("console");
+let html = `<span class="hd">SELF-CHECK · recomputed from Math.sqrt(3)</span>`;
+let allPass = true;
+for (const [label, pass] of checks){
+  allPass = allPass && pass;
+  html += `<span class="ln">${pass ? '<span class="ok">PASS</span>' : '<span style="color:#d98">FAIL</span>'}  ${label}</span>`;
+}
+html += `<span class="ln">  S3 = <span class="v">${fmt(S3,15)}</span></span>`;
+html += `<div class="verdict">${allPass ? '✓ all relations hold · free parameters = 0 · the geometry is forced' : '✗ a relation failed — a free value has entered'}</div>`;
+con.innerHTML = html;
+
+/* ── §5 grid of 20 (4 filled) ─────────────────────────────────────────────── */
+(() => {
+  const svg = document.getElementById("grid20");
+  const cols = 10, rx = 8, ry = 32, gx = 19, gy = 26;
+  let s = "";
+  combinatorics.flags.forEach((closes, i) => {
+    const cx = rx + (i % cols) * gx;
+    const cy = (i < cols ? ry - gy/2 + 6 : ry + gy/2 - 6);
+    s += `<circle cx="${cx}" cy="${cy}" r="4.2" fill="${closes?'var(--ox-deep)':'none'}" stroke="${closes?'var(--ox-deep)':'var(--ink-faint)'}" stroke-width="1.3"/>`;
+  });
+  svg.innerHTML = s;
+})();
+
+/* ── §7 early-warning: forced threshold = invariant, zero admissible drift ── */
+(() => {
+  const slider = document.getElementById("delta");
+  const dOut   = document.getElementById("deltaOut");
+  const cEl    = document.getElementById("ewCenter");
+  const oEl    = document.getElementById("ewObs");
+  const st     = document.getElementById("ewStatus");
+  const [cxF, cyF] = G.center;
+  cEl.textContent = `(${fmt(cxF,6)}, ${fmt(cyF,6)})`;
+  const render = () => {
+    const d = parseFloat(slider.value);
+    dOut.textContent = `= ${fmt(d,3)}`;
+    const obs = [cxF, cyF + d];                 // exogenous drift along y
+    oEl.textContent = `(${fmt(obs[0],6)}, ${fmt(obs[1],6)})`;
+    if (d <= EPS){
+      st.className = "status lock"; st.textContent = "LOCKED · δ = 0";
+    } else {
+      st.className = "status trip"; st.textContent = `TRIPPED · δ = ${fmt(d,3)} ≠ 0`;
+    }
+  };
+  slider.addEventListener("input", render);
+  render();
+})();
+</script>
+</body>
+</html>
